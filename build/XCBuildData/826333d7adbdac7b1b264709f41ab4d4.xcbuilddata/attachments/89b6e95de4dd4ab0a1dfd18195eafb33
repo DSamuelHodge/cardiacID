@@ -1,0 +1,225 @@
+{
+  "" : {
+    "const-values" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master.swiftconstvalues",
+    "dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master.d",
+    "diagnostics" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master.dia",
+    "emit-module-dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master-emit-module.dia",
+    "swift-dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacID-master.swiftdeps"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/CardiacIDApp.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacIDApp.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacIDApp.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/CardiacIDApp.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/ContentView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/HeartReading.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReading.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReading.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReading.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/HeartReadingDetailView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReadingDetailView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReadingDetailView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartReadingDetailView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/AuthenticationManager.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthenticationManager.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthenticationManager.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthenticationManager.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/HeartPattern.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartPattern.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartPattern.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartPattern.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/LoginAttemptTracker.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginAttemptTracker.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginAttemptTracker.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginAttemptTracker.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/User.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/User.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/User.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/User.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Persistence.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Persistence.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Persistence.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Persistence.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/BluetoothDoorLockService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/BluetoothDoorLockService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/BluetoothDoorLockService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/BluetoothDoorLockService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/DeviceManagementService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/EncryptionService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EncryptionService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EncryptionService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EncryptionService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/EntraIDService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EntraIDService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EntraIDService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EntraIDService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/KeychainService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/KeychainService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/KeychainService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/KeychainService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/NFCService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NFCService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NFCService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NFCService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/PasswordlessAuthService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/ServiceIntegrationTest.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ServiceIntegrationTest.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ServiceIntegrationTest.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ServiceIntegrationTest.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/SuprabaseService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SuprabaseService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SuprabaseService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SuprabaseService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/TechnologyIntegrationService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyIntegrationService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyIntegrationService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyIntegrationService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/WatchConnectivityService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/WatchConnectivityService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/WatchConnectivityService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/WatchConnectivityService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/DebugConfig.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugConfig.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugConfig.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugConfig.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/DebugLogger.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugLogger.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugLogger.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugLogger.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/HeartIDColors.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartIDColors.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartIDColors.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartIDColors.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/ViewModels/AuthViewModel.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthViewModel.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthViewModel.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/AuthViewModel.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/ActivityLogView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ActivityLogView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ActivityLogView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ActivityLogView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DashboardView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DashboardView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DashboardView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DashboardView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DebugPanelView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugPanelView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugPanelView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DebugPanelView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DeviceManagementView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/DeviceManagementView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/EnrollmentView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnrollmentView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnrollmentView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnrollmentView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/EnterpriseAuthView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnterpriseAuthView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnterpriseAuthView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/EnterpriseAuthView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LaunchScreen.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LaunchScreen.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LaunchScreen.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LaunchScreen.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LockoutSettingsView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LockoutSettingsView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LockoutSettingsView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LockoutSettingsView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LoginView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/LoginView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/NavigationMenuView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NavigationMenuView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NavigationMenuView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/NavigationMenuView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/PasswordlessAuthView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/PasswordlessAuthView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/ProfileView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ProfileView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ProfileView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/ProfileView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/SecuritySettingsView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SecuritySettingsView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SecuritySettingsView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SecuritySettingsView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/SettingsView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/SettingsView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/TechnologyManagementView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyManagementView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyManagementView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/TechnologyManagementView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/HeartID_Mobile+CoreDataModel.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartID_Mobile+CoreDataModel.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartID_Mobile+CoreDataModel.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/HeartID_Mobile+CoreDataModel.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/Item+CoreDataClass.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataClass.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataClass.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataClass.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/Item+CoreDataProperties.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataProperties.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataProperties.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/Item+CoreDataProperties.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

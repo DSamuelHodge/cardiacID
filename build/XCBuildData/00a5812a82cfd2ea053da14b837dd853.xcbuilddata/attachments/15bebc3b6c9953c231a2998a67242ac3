@@ -1,0 +1,130 @@
+{
+  "" : {
+    "const-values" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master.swiftconstvalues",
+    "dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master.d",
+    "diagnostics" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master.dia",
+    "emit-module-dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master-emit-module.dia",
+    "swift-dependencies" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacID Watch App-master.swiftdeps"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/CardiacIDApp.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacIDApp.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacIDApp.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/CardiacIDApp.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/ContentView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/AuthenticationSession.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationSession.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationSession.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationSession.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/HeartPattern.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartPattern.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartPattern.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartPattern.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/UserProfile.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/UserProfile.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/UserProfile.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/UserProfile.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/AuthenticationManager.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationManager.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationManager.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationManager.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/AuthenticationService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticationService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/BackgroundTaskService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BackgroundTaskService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BackgroundTaskService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BackgroundTaskService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/BluetoothNFCService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BluetoothNFCService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BluetoothNFCService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/BluetoothNFCService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/DataManager.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/DataManager.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/DataManager.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/DataManager.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/EncryptionService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EncryptionService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EncryptionService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EncryptionService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/EnhancedHeartCalculator.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnhancedHeartCalculator.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnhancedHeartCalculator.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnhancedHeartCalculator.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/HealthKitService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HealthKitService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HealthKitService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HealthKitService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/NASACalculator.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/NASACalculator.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/NASACalculator.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/NASACalculator.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/WatchConnectivityService.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/WatchConnectivityService.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/WatchConnectivityService.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/WatchConnectivityService.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/XenonXCalculator.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/XenonXCalculator.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/XenonXCalculator.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/XenonXCalculator.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/AppConfiguration.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AppConfiguration.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AppConfiguration.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AppConfiguration.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/Extensions.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/Extensions.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/Extensions.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/Extensions.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/HeartIDColors.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartIDColors.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartIDColors.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/HeartIDColors.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/AuthenticateView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticateView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticateView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/AuthenticateView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/EnrollView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnrollView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnrollView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/EnrollView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/MenuView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/MenuView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/MenuView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/MenuView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/SettingsView.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/SettingsView.o"
+  },
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

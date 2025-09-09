@@ -1,0 +1,488 @@
+{
+  "source": "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/TechnologyManagementView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Error",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "Technology Management",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 128
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manage enterprise, device, and security integrations",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 131
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sign Out",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 289
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refresh User Info",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connect to EntraID",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 299
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 338
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 343
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 388
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 393
+        }
+      },
+      {
+        "comment": "",
+        "key": "Read Tag",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 399
+        }
+      },
+      {
+        "comment": "",
+        "key": "Write Tag",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 404
+        }
+      },
+      {
+        "comment": "",
+        "key": "Discover Door Locks",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 436
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refresh Status",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 442
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Scanning",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 482
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refresh Devices",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 488
+        }
+      },
+      {
+        "comment": "",
+        "key": "Disconnect",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 533
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sync Users",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 538
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connect to AD",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 543
+        }
+      },
+      {
+        "comment": "",
+        "key": "Active Directory Information",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 553
+        }
+      },
+      {
+        "comment": "",
+        "key": "Legacy Systems",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 584
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sync All Systems",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 597
+        }
+      },
+      {
+        "comment": "",
+        "key": "Test Connections",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 602
+        }
+      },
+      {
+        "comment": "",
+        "key": "Available Methods",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 628
+        }
+      },
+      {
+        "comment": "",
+        "key": "Configure Methods",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 641
+        }
+      },
+      {
+        "comment": "",
+        "key": "Test Authentication",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 646
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stored Items",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 676
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add New Item",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 689
+        }
+      },
+      {
+        "comment": "",
+        "key": "Clear All Items",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 694
+        }
+      },
+      {
+        "comment": "",
+        "key": "User: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 727
+        }
+      },
+      {
+        "comment": "",
+        "key": "User Information",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 744
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enterprise Features",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 788
+        }
+      },
+      {
+        "comment": "",
+        "key": "Discovered Devices",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 853
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected Devices",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 887
+        }
+      },
+      {
+        "comment": "",
+        "key": "Available Devices",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 914
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld dBm",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 960
+        }
+      },
+      {
+        "comment": "",
+        "key": "Last Scanned Tag",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 977
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected Door Locks",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 999
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected",
+        "location": {
+          "startingColumn": 45,
+          "startingLine": 1047
+        }
+      },
+      {
+        "comment": "",
+        "key": "Disconnected",
+        "location": {
+          "startingColumn": 59,
+          "startingLine": 1047
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1066
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1070
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1076
+        }
+      },
+      {
+        "comment": "",
+        "key": "Available",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1080
+        }
+      },
+      {
+        "comment": "",
+        "key": "Security Status",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1099
+        }
+      },
+      {
+        "comment": "",
+        "key": "Security Features",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1144
+        }
+      },
+      {
+        "comment": "",
+        "key": "Device Details",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1277
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 1281
+        }
+      },
+      {
+        "comment": "",
+        "key": "Device Information",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1305
+        }
+      },
+      {
+        "comment": "",
+        "key": "Actions",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1329
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connect",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1333
+        }
+      },
+      {
+        "comment": "",
+        "key": "Disconnect",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1338
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refresh Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1343
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1361
+        }
+      },
+      {
+        "comment": "",
+        "key": "Technology Settings",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1428
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 1432
+        }
+      },
+      {
+        "comment": "",
+        "key": "Last sync: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1554
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ • %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1629
+        }
+      }
+    ]
+  },
+  "version": 1
+}

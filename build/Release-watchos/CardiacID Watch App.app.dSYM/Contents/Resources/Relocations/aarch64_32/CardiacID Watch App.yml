@@ -1,0 +1,5 @@
+---
+triple:          'arm64_32-apple-darwin'
+binary-path:     '/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/Release-watchos/CardiacID Watch App.app/CardiacID Watch App'
+relocations:     []
+...

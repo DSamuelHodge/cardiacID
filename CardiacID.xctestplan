@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "EFDBA404-794A-418F-A529-B1F726AE7B27",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:CardiacID.xcodeproj",
+      "identifier" : "FBF0C0982E70DF24005C425B",
+      "name" : "CardiacID"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:CardiacIDver1.xcodeproj",
+        "identifier" : "FBF0C0A52E70DF25005C425B",
+        "name" : "CardiacIDTests"
+      }
+    }
+  ],
+  "version" : 1
+}

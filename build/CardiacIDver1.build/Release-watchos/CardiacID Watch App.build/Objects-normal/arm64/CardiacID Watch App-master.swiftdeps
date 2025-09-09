@@ -1,0 +1,43 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "00bd825f3e3ca6d02459f350296c2a66ff144aad95e6e2a8bc471046d797072a"
+build_start_time: [1758562758, 372608000]
+build_end_time: [1758562767, 262008000]
+inputs:
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/CardiacIDApp.swift": [1758391725, 648988179]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/ContentView.swift": [1758562575, 672604021]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/AuthenticationSession.swift"
+  : [1758392562, 517671657]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/HeartPattern.swift": [1758392562, 517706240]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Models/UserProfile.swift": [1758075283, 173228025]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/AuthenticationManager.swift"
+  : [1758068853, 549269199]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/AuthenticationService.swift"
+  : [1758400963, 283964183]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/BackgroundTaskService.swift"
+  : [1758400963, 290019325]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/BluetoothNFCService.swift"
+  : [1758068853, 549822569]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/DataManager.swift": [1758068853, 515372515]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/EncryptionService.swift"
+  : [1758068853, 549110651]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/EnhancedHeartCalculator.swift"
+  : [1758068853, 549293756]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/HealthKitService.swift"
+  : [1758067602, 54012299]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/NASACalculator.swift"
+  : [1758068853, 549135208]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/WatchConnectivityService.swift"
+  : [1758068853, 548658371]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Services/XenonXCalculator.swift"
+  : [1758391725, 660308330]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/AppConfiguration.swift"
+  : [1758073224, 720058918]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/Extensions.swift": [1758400963, 284089892]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Utils/HeartIDColors.swift": [1758068853, 548677444]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/AuthenticateView.swift"
+  : [1758562575, 672650146]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/EnrollView.swift": [1758393377, 555583678]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/MenuView.swift": [1758393377, 570608079]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID Watch App/Views/SettingsView.swift": [1758393377, 555614095]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-watchos/CardiacID Watch App.build/DerivedSources/GeneratedAssetSymbols.swift"
+  : [1758391590, 759439855]

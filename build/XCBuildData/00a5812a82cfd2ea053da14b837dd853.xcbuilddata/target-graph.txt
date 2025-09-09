@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'CardiacID' in project 'CardiacIDver1'
+➜ Explicit dependency on target 'CardiacID Watch App' in project 'CardiacIDver1'
+Target 'CardiacID Watch App' in project 'CardiacIDver1' (no dependencies)

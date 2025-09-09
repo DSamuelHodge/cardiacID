@@ -1,0 +1,57 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "90ee8bfd7523f5cb6742fa3e02f257165f282625cb0448bf60c89cb73a081488"
+build_start_time: [1758562766, 733468000]
+build_end_time: [1758562781, 76638000]
+inputs:
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/CardiacIDApp.swift": [1758562027, 76111440]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/ContentView.swift": [1758561010, 85048312]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/HeartReading.swift": [1758067582, 855248213]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/HeartReadingDetailView.swift": [1758067585, 555453777]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/AuthenticationManager.swift": [1758067568, 415341616]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/HeartPattern.swift": [1758249850, 879542112]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/LoginAttemptTracker.swift": [1758562575, 672669312]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Models/User.swift": [1758067568, 415744305]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Persistence.swift": [1758067580, 570232630]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/BluetoothDoorLockService.swift"
+  : [1758252003, 119908913]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/DeviceManagementService.swift"
+  : [1758403598, 51882326]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/EncryptionService.swift": [1758254627, 582661885]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/EntraIDService.swift": [1758249824, 960215688]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/KeychainService.swift": [1758252003, 118714781]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/NFCService.swift": [1758403598, 38854003]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/PasswordlessAuthService.swift"
+  : [1758249841, 641938448]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/ServiceIntegrationTest.swift": [1758403598, 38701502]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/SuprabaseService.swift": [1758561010, 85099104]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/TechnologyIntegrationService.swift"
+  : [1758257453, 594904727]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Services/WatchConnectivityService.swift"
+  : [1758391931, 900576728]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/DebugConfig.swift": [1758067572, 470496655]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/DebugLogger.swift": [1758067572, 470783234]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Utils/HeartIDColors.swift": [1758067572, 471026421]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/ViewModels/AuthViewModel.swift": [1758561010, 85077812]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/ActivityLogView.swift": [1758067576, 582404613]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DashboardView.swift": [1758067576, 582767487]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DebugPanelView.swift": [1758067576, 583211184]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/DeviceManagementView.swift": [1758403598, 38620168]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/EnrollmentView.swift": [1758067576, 584343195]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/EnterpriseAuthView.swift": [1758249873, 221722245]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LaunchScreen.swift": [1758067576, 584750175]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LockoutSettingsView.swift": [1758404699, 871420024]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/LoginView.swift": [1758409123, 635924025]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/NavigationMenuView.swift": [1758561010, 85025646]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/PasswordlessAuthView.swift": [1758403598, 38729502]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/ProfileView.swift": [1758067576, 585573435]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/SecuritySettingsView.swift": [1758561010, 85303019]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/SettingsView.swift": [1758561010, 85065770]
+  "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/CardiacID/Views/TechnologyManagementView.swift": [1758405595, 124875521]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/HeartID_Mobile+CoreDataModel.swift"
+  : [1758391883, 577740023]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/Item+CoreDataClass.swift"
+  : [1758391883, 579206110]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/CoreDataGenerated/HeartID_Mobile/Item+CoreDataProperties.swift"
+  : [1758391883, 579686652]
+  ? "/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/CardiacIDver1.build/Release-iphoneos/CardiacID.build/DerivedSources/GeneratedAssetSymbols.swift"
+  : [1758403525, 608840479]
