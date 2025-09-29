@@ -8,9 +8,5 @@
     <true/>
     <key>com.apple.developer.watchkit.companion-app</key>
     <true/>
-    <key>com.apple.developer.bluetooth-central</key>
-    <true/>
-    <key>com.apple.developer.bluetooth-peripheral</key>
-    <true/>
 </dict>
 </plist>

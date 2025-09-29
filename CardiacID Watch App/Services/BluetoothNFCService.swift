@@ -23,7 +23,11 @@ class BluetoothNFCService: NSObject, ObservableObject {
     // MARK: - Bluetooth Setup
     
     private func setupBluetooth() {
-        centralManager = CBCentralManager(delegate: self, queue: nil)
+        // Initialize central manager with proper options for watchOS
+        centralManager = CBCentralManager(delegate: self, queue: nil, options: [
+            CBCentralManagerOptionShowPowerAlertKey: true
+        ])
+        
         #if os(iOS)
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         #else
@@ -136,7 +140,36 @@ class BluetoothNFCService: NSObject, ObservableObject {
 extension BluetoothNFCService: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         DispatchQueue.main.async {
-            self.isBluetoothAvailable = central.state == .poweredOn
+            switch central.state {
+            case .poweredOn:
+                self.isBluetoothAvailable = true
+                self.errorMessage = nil
+                print("✅ Bluetooth is powered on and ready")
+            case .poweredOff:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth is turned off. Please enable Bluetooth in Settings."
+                print("❌ Bluetooth is powered off")
+            case .resetting:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth is resetting..."
+                print("🔄 Bluetooth is resetting")
+            case .unauthorized:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth access denied. Please grant permission in Settings."
+                print("❌ Bluetooth access unauthorized")
+            case .unsupported:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth is not supported on this device."
+                print("❌ Bluetooth not supported")
+            case .unknown:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth state unknown."
+                print("❓ Bluetooth state unknown")
+            @unknown default:
+                self.isBluetoothAvailable = false
+                self.errorMessage = "Bluetooth state unknown."
+                print("❓ Unknown Bluetooth state")
+            }
         }
     }
     
