@@ -6,7 +6,7 @@
     <true/>
     <key>com.apple.developer.healthkit.background-delivery</key>
     <true/>
-    <key>com.apple.developer.watchkit2.companion-app</key>
+    <key>com.apple.developer.watchkit.companion-app</key>
     <true/>
     <key>com.apple.developer.bluetooth-central</key>
     <true/>
