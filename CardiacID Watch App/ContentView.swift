@@ -127,7 +127,7 @@ struct LandingView: View {
                 .scaleEffect(showContent ? 1.0 : 0.8)
                 .animation(.easeInOut(duration: 0.5), value: showContent)
             
-            Text("HeartID")
+            Text("HeartID V0.3")
                 .font(.system(size: 28))
                 .fontWeight(.bold)
                 .opacity(showContent ? 1.0 : 0.0)

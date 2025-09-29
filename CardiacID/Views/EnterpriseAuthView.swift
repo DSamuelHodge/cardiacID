@@ -132,7 +132,7 @@ struct EnterpriseAuthView: View {
                             
                             EnterpriseFeatureCard(
                                 icon: "heart.fill",
-                                title: "Heart ID",
+                                title: "Heart ID V0.3",
                                 description: "Biometric authentication",
                                 isEnabled: entraIDService.hasPermission(.heartAuthentication)
                             )

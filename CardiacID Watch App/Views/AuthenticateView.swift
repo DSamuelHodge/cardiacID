@@ -193,7 +193,7 @@ struct AuthenticateView: View {
         stopProcessingTimer()
         stopCountdownTimer()
         
-        WKInterfaceDevice.current().enableWaterLock()
+        // Removed problematic WatchKit API call
         dismiss()
     }
     
@@ -250,32 +250,51 @@ struct AuthenticateView: View {
             }
         }
         .onDisappear {
-            // Clean up all timers and reset backlight control
+            // Clean up all timers and resources
             stopProcessingTimer()
             stopCountdownTimer()
-            WKInterfaceDevice.current().enableWaterLock()
+            // Removed problematic WatchKit API call
         }
     }
     
     // MARK: - Actions
     
     private func startAuthentication() {
+        // Validate system state before starting
         guard healthKitService.isAuthorized else {
+            print("❌ HealthKit not authorized - cannot start authentication")
             return
         }
+        
+        // Ensure no other processes are running
+        guard !healthKitService.isCapturing else {
+            print("❌ Heart rate capture already in progress - waiting for completion")
+            return
+        }
+        
+        // Clean up any existing timers first
+        stopProcessingTimer()
+        stopCountdownTimer()
         
         retryCount = 0
         
         // Start with initialization phase
         authenticationState = .initializing
         
-        // Give HealthKit time to initialize properly
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        // Give HealthKit and sensors time to initialize properly (increased delay)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            print("✅ HealthKit initialization complete - starting countdown")
             self.startCountdown()
         }
     }
     
     private func startCountdown() {
+        // Validate state before starting countdown
+        guard authenticationState == .initializing else {
+            print("❌ Invalid state for countdown start: \(authenticationState)")
+            return
+        }
+        
         countdownValue = 3
         authenticationState = .countdown(countdownValue)
         
@@ -287,47 +306,101 @@ struct AuthenticateView: View {
             } else {
                 timer.invalidate()
                 self.countdownTimer = nil
-                self.startCapture()
+                
+                // Add delay before starting capture to ensure countdown fully completes
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    print("✅ Countdown complete - starting capture")
+                    self.startCapture()
+                }
             }
         }
     }
     
     private func startCapture() {
+        // Validate state before starting capture
+        guard authenticationState == .countdown(0) else {
+            print("❌ Invalid state for capture start: \(authenticationState)")
+            return
+        }
+        
+        // Ensure HealthKit is ready
+        guard healthKitService.isAuthorized && !healthKitService.isCapturing else {
+            print("❌ HealthKit not ready for capture")
+            return
+        }
+        
         authenticationState = .capturing
         
-        // Start heart rate capture
-        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration)
+        // Start heart rate capture with proper duration
+        let captureDuration: TimeInterval = 12.0 // Increased for better sensor engagement
+        healthKitService.startHeartRateCapture(duration: captureDuration)
         
-        // Listen for completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + AppConfiguration.defaultCaptureDuration + 1) {
+        print("📊 Starting heart rate capture for \(captureDuration) seconds")
+        
+        // Listen for completion with buffer time for sensor stabilization
+        DispatchQueue.main.asyncAfter(deadline: .now() + captureDuration + 2.0) {
             if self.authenticationState == .capturing {
+                print("✅ Capture duration complete - starting processing")
                 self.completeAuthentication()
             }
         }
     }
     
     private func stopCapture() {
+        // Ensure we're in capturing state before stopping
+        guard authenticationState == .capturing else {
+            print("❌ Not in capturing state - cannot stop capture")
+            return
+        }
+        
+        print("🛑 Stopping heart rate capture")
         healthKitService.stopHeartRateCapture()
-        completeAuthentication()
+        
+        // Give sensors time to properly close out before processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            print("✅ Sensor capture closed - starting processing")
+            self.completeAuthentication()
+        }
     }
     
     private func completeAuthentication() {
+        // Validate state before processing
+        guard authenticationState == .capturing else {
+            print("❌ Invalid state for processing: \(authenticationState)")
+            return
+        }
+        
+        // Ensure HealthKit capture has fully stopped
+        guard !healthKitService.isCapturing else {
+            print("❌ HealthKit still capturing - waiting for completion")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.completeAuthentication()
+            }
+            return
+        }
+        
         print("🔬 Starting authentication processing...")
         authenticationState = .processing
         processingProgress = 0
         
-        // Keep backlight on during processing
-        WKExtension.shared().isAutorotating = false
-        WKInterfaceDevice.current().enableWaterLock()
+        // Keep backlight on during processing (simplified for stability)
+        // Removed problematic WatchKit API calls that can cause crashes
         
         // Start processing timer
         startProcessingTimer()
         
-        // Get captured heart rate data
+        // Get captured heart rate data with validation
         let heartRateData = healthKitService.heartRateSamples.map { $0.value }
         print("📊 Processing \(heartRateData.count) heart rate samples...")
         
-        // Validate data
+        // Validate data quality
+        guard heartRateData.count >= 5 else {
+            print("❌ Insufficient heart rate samples: \(heartRateData.count)")
+            stopProcessingTimer()
+            authenticationState = .result(.failed)
+            return
+        }
+        
         guard healthKitService.validateHeartRateData(healthKitService.heartRateSamples) else {
             print("❌ Heart rate data validation failed")
             stopProcessingTimer()
@@ -335,8 +408,8 @@ struct AuthenticateView: View {
             return
         }
         
-        // Simulate processing with realistic timing (3 seconds for better visual feedback)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+        // Give Watch sensors and processing systems adequate time (increased for stability)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
             print("🔍 Performing authentication analysis...")
             
             // Perform authentication
@@ -353,19 +426,25 @@ struct AuthenticateView: View {
             
             self.stopProcessingTimer()
             
-            // Add a brief pause before showing result for better UX
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // Add buffer time before showing result to ensure processing is complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.authenticationState = .result(result)
             }
         }
     }
     
     private func startProcessingTimer() {
+        // Clean up any existing timer first
+        stopProcessingTimer()
+        
         processingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.1)) {
-                processingProgress += 0.033 // Complete in 3 seconds (0.1 * 30 = 3.0)
-                if processingProgress >= 1.0 {
-                    processingProgress = 1.0
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    processingProgress += 0.033 // Complete in 3 seconds (0.1 * 30 = 3.0)
+                    if processingProgress >= 1.0 {
+                        processingProgress = 1.0
+                        stopProcessingTimer() // Stop timer when complete
+                    }
                 }
             }
         }
@@ -378,17 +457,43 @@ struct AuthenticateView: View {
     }
     
     private func retryAuthentication() {
-        authenticationState = .ready
-        startAuthentication()
+        // Ensure we're in a valid state for retry
+        guard case .result = authenticationState else {
+            print("❌ Invalid state for retry: \(authenticationState)")
+            return
+        }
+        
+        // Clean up all resources before retry
+        stopProcessingTimer()
+        stopCountdownTimer()
+        
+        // Give system time to fully reset
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            print("🔄 Starting authentication retry")
+            self.authenticationState = .ready
+            self.startAuthentication()
+        }
     }
     
     private func resetAuthentication() {
+        // Clean up all resources
         stopProcessingTimer()
-        authenticationState = .ready
-        retryCount = 0
-        lastResult = nil
-        showingSuccess = false
-        healthKitService.clearError()
+        stopCountdownTimer()
+        
+        // Ensure HealthKit is stopped
+        if healthKitService.isCapturing {
+            healthKitService.stopHeartRateCapture()
+        }
+        
+        // Give system time to fully reset before changing state
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.authenticationState = .ready
+            self.retryCount = 0
+            self.lastResult = nil
+            self.showingSuccess = false
+            self.healthKitService.clearError()
+            print("✅ Authentication system reset complete")
+        }
     }
 }
 
