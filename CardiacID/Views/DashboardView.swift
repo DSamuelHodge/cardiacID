@@ -457,7 +457,7 @@ struct AuthenticationDetailView: View {
     private let colors = HeartIDColors()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Authentication details will be implemented here

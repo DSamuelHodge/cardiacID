@@ -1,5 +1,17 @@
 import Foundation
 
+// MARK: - Authentication Result
+
+enum AuthenticationResult: String, CaseIterable, Codable {
+    case pending = "pending"
+    case approved = "approved"
+    case denied = "denied"
+    case error = "error"
+    case timeout = "timeout"
+}
+
+// MARK: - User Model
+
 struct User: Identifiable, Codable, Equatable {
     let id: String
     let email: String

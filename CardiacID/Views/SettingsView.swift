@@ -457,7 +457,7 @@ struct TermsOfServiceView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         SettingsView()
             .environmentObject(AuthenticationManager())
             .environmentObject(WatchConnectivityService.shared)
