@@ -117,6 +117,7 @@ struct AuthenticateView: View {
             .buttonStyle(.borderedProminent)
         } else if result.isSuccessful {
             Button("Continue") {
+                NotificationCenter.default.post(name: .init("UserAuthenticated"), object: nil)
                 showingResult = true
             }
             .buttonStyle(.borderedProminent)
@@ -203,7 +204,7 @@ struct AuthenticateView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             mainContentView
                 .navigationTitle("Authenticate")
                 .navigationBarTitleDisplayMode(.inline)

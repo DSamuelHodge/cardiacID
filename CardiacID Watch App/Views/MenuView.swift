@@ -3,15 +3,16 @@ import SwiftUI
 struct MenuView: View {
     @EnvironmentObject var authenticationService: AuthenticationService
     @EnvironmentObject var dataManager: DataManager
-    @State private var showingEnroll = false
-    @State private var showingAuthenticate = false
-    @State private var showingSettings = false
-    @State private var showingCalibrate = false
-    @State private var showingSecurityLevel = false
-    @State private var showingAlarmNotification = false
+
+    // Unified sheet router
+    private enum SheetRoute: Hashable, Identifiable {
+        case enroll, authenticate, settings, calibrate, security, alarm
+        var id: Int { self.hashValue }
+    }
+    @State private var activeSheet: SheetRoute?
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
                     // Header
@@ -57,11 +58,10 @@ struct MenuView: View {
                             color: .blue,
                             isEnabled: !authenticationService.isUserEnrolled
                         ) {
-                            // Ensure data manager is set before showing enrollment
                             if authenticationService.dataManager == nil {
                                 authenticationService.setDataManager(dataManager)
                             }
-                            showingEnroll = true
+                            activeSheet = .enroll
                         }
                         
                         MenuButton(
@@ -70,7 +70,7 @@ struct MenuView: View {
                             color: .green,
                             isEnabled: authenticationService.isUserEnrolled
                         ) {
-                            showingAuthenticate = true
+                            activeSheet = .authenticate
                         }
                         
                         MenuButton(
@@ -79,7 +79,7 @@ struct MenuView: View {
                             color: .purple,
                             isEnabled: authenticationService.isUserEnrolled
                         ) {
-                            showingCalibrate = true
+                            activeSheet = .calibrate
                         }
                         
                         MenuButton(
@@ -88,7 +88,7 @@ struct MenuView: View {
                             color: .orange,
                             isEnabled: true
                         ) {
-                            showingSecurityLevel = true
+                            activeSheet = .security
                         }
                         
                         MenuButton(
@@ -97,7 +97,7 @@ struct MenuView: View {
                             color: .red,
                             isEnabled: true
                         ) {
-                            showingAlarmNotification = true
+                            activeSheet = .alarm
                         }
                         
                         MenuButton(
@@ -106,7 +106,7 @@ struct MenuView: View {
                             color: .gray,
                             isEnabled: true
                         ) {
-                            showingSettings = true
+                            activeSheet = .settings
                         }
                     }
                     
@@ -143,27 +143,24 @@ struct MenuView: View {
             .navigationTitle("Menu")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .sheet(isPresented: $showingEnroll) {
-            EnrollView()
-        }
-        .sheet(isPresented: $showingAuthenticate) {
-            AuthenticateView()
-        }
-        .sheet(isPresented: $showingSettings) {
-            SettingsView()
-        }
-        .sheet(isPresented: $showingCalibrate) {
-            CalibrateView()
-        }
-        .sheet(isPresented: $showingSecurityLevel) {
-            SecurityLevelView()
-        }
-        .sheet(isPresented: $showingAlarmNotification) {
-            AlarmNotificationView()
+        // Single, enum-driven sheet router
+        .sheet(item: $activeSheet) { route in
+            switch route {
+            case .enroll:        EnrollView()
+            case .authenticate:  AuthenticateView()
+            case .settings:      SettingsView()
+            case .calibrate:     CalibrateView()
+            case .security:      SecurityLevelView()
+            case .alarm:         AlarmNotificationView()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .init("UserDeleted"))) { _ in
             // Refresh the view when user is deleted
             // The authentication service state will be updated automatically
+        }
+        // After a successful enrollment, auto-open Settings to complete setup
+        .onReceive(NotificationCenter.default.publisher(for: .init("UserEnrolled"))) { _ in
+            activeSheet = .settings
         }
     }
 }

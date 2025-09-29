@@ -158,11 +158,83 @@ struct EnrollView: View {
     @State private var heartRateDifference: Double = 0
 
     var body: some View {
-        // ... your existing UI (omitted here for brevity) ...
-        Text("") // placeholder to indicate UI retained
-            .onReceive(healthKitService.$captureProgress) { captureProgress = $0 }
-            .onReceive(healthKitService.$currentHeartRate) { currentHeartRate = $0 }
-            .onReceive(healthKitService.$errorMessage) { if let e = $0 { enrollmentState = .error(e) } }
+        VStack(spacing: 14) {
+            // Header
+            VStack(spacing: 8) {
+                Image(systemName: "person.badge.plus")
+                    .font(.system(size: 36))
+                    .foregroundColor(.blue)
+                Text("Enroll").font(.headline)
+                Text(helperSubtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            // State-driven content
+            Group {
+                switch enrollmentState {
+                case .ready:
+                    Text("Ready to start").font(.caption)
+                case .initializing:
+                    ProgressView("Initializing...")
+                case .countdown(let n):
+                    VStack {
+                        Text("\(n)")
+                            .font(.system(size: 48, weight: .bold))
+                            .foregroundColor(.orange)
+                        Text("Get Ready").font(.caption)
+                    }
+                case .capturing:
+                    CapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
+                case .processing:
+                    ProcessingStateView(progress: processingProgress, title: "Creating Template")
+                case .verification:
+                    ProcessingStateView(progress: processingProgress, title: "Verifying")
+                case .verificationComplete:
+                    ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
+                case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
+                    Text("Complete").font(.caption)
+                case .error(let msg):
+                    Text(msg).font(.caption).foregroundColor(.red)
+                }
+            }
+
+            // Action row
+            HStack {
+                if case .ready = enrollmentState {
+                    Button("Start") { startEnrollment() }
+                        .buttonStyle(.borderedProminent)
+                } else if case .error = enrollmentState {
+                    Button("Close") { dismiss() }.buttonStyle(.bordered)
+                } else {
+                    Button("Cancel") { dismiss() }.buttonStyle(.bordered)
+                }
+            }
+        }
+        .padding()
+        .navigationTitle("Enroll")
+        .navigationBarTitleDisplayMode(.inline)
+        // Keep progress/HR in sync
+        .onReceive(healthKitService.$captureProgress) { captureProgress = $0 }
+        .onReceive(healthKitService.$currentHeartRate) { currentHeartRate = $0 }
+        .onReceive(healthKitService.$errorMessage) { if let e = $0 { enrollmentState = .error(e) } }
+        // Start automatically when view appears
+        .task { if enrollmentState == .ready { startEnrollment() } }
+    }
+
+    private var helperSubtitle: String {
+        switch enrollmentState {
+        case .ready: return "We'll capture a short baseline, then verify it."
+        case .initializing: return "Preparing sensors"
+        case .countdown: return "Place your finger on the Digital Crown"
+        case .capturing: return "Keep still during capture"
+        case .processing: return "Analyzing pattern"
+        case .verification: return "Verifying against baseline"
+        case .verificationComplete: return "Reviewing result"
+        case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete: return ""
+        case .error: return ""
+        }
     }
 
     // MARK: - Enrollment Flow
@@ -204,11 +276,10 @@ struct EnrollView: View {
             // Wait for capture to complete with buffer time
             try await Task.sleep(nanoseconds: UInt64((duration + 2.0) * 1_000_000_000))
             
-            // Ensure capture has fully stopped
-            guard !healthKitService.isCapturing else {
-                print("❌ HealthKit still capturing - waiting")
-                try await Task.sleep(nanoseconds: 1_000_000_000) // Wait 1 more second
-                return // Exit if still capturing after wait
+            // Ensure capture has fully stopped (wait, don't early return)
+            while healthKitService.isCapturing {
+                print("⏳ Waiting for capture to stop…")
+                try await Task.sleep(nanoseconds: 300_000_000)
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
@@ -232,7 +303,7 @@ struct EnrollView: View {
     private func completeEnrollment() {
         enrollmentState = .processing
         processingProgress = 0
-        startProcessingTimer()
+        if processingTimer == nil { startProcessingTimer() }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             self.stopProcessingTimer()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.startAutomaticVerification() }
@@ -271,6 +342,9 @@ struct EnrollView: View {
             
             // Wait for capture to complete
             try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            while healthKitService.isCapturing {
+                try await Task.sleep(nanoseconds: 300_000_000)
+            }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
             performVerification(with: values)
@@ -293,11 +367,67 @@ struct EnrollView: View {
         } else {
             verificationResult = VerificationResult(passed: false, message: "Insufficient data for comparison", testType: nil, heartRate: nil, difference: nil)
         }
+
+        // On success: mark enrolled, notify, and dismiss so Menu can open Settings
+        if let vr = verificationResult, vr.passed {
+            authenticationService.markEnrolledAndAuthenticated()
+            NotificationCenter.default.post(name: .init("UserEnrolled"), object: nil)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { dismiss() }
+        }
+
         enrollmentState = .verificationComplete
     }
 
     // MARK: - (Optional) Range tests – unchanged behavior, left for your flow
     // ... keep your existing range test and timer helpers ...
+}
+
+// MARK: - Supporting Views
+struct CapturingStateView: View {
+    let progress: Double
+    let heartRate: Double
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+            Text("Heart Rate: \(Int(heartRate)) BPM")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct ProcessingStateView: View {
+    let progress: Double
+    let title: String
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct ResultStateView: View {
+    let result: AuthenticationResult
+    let retryCount: Int
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: result.isSuccessful ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .font(.system(size: 32))
+                .foregroundColor(result.isSuccessful ? .green : .red)
+            Text(result.message)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
 }
 
 // MARK: - Your existing types unchanged
