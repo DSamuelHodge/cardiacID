@@ -15,8 +15,6 @@
 		<string>TAG</string>
 		<string>NDEF</string>
 	</array>
-	<key>com.apple.developer.watchkit.companion-app</key>
-	<true/>
 	<key>com.apple.developer.watchkit2.companion-app</key>
 	<true/>
 </dict>
