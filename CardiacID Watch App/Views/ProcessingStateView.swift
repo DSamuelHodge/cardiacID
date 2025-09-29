@@ -15,23 +15,12 @@ struct ProcessingStateView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Pulsating Heart Icon
-            ZStack {
-                // Background circle for visual appeal
-                Circle()
-                    .fill(Color.red.opacity(0.1))
-                    .frame(width: 100, height: 100)
-                    .scaleEffect(isPulsating ? 1.2 : 1.0)
-                    .opacity(isPulsating ? 0.3 : 0.1)
-                    .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isPulsating)
-                
-                // Heart icon with pulsating effect
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 50))
-                    .foregroundColor(.red)
-                    .scaleEffect(heartScale)
-                    .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: heartScale)
-            }
+            // Simplified Heart Icon (removed multiple animations to prevent crashes)
+            Image(systemName: "heart.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.red)
+                .scaleEffect(isPulsating ? 1.1 : 1.0)
+                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isPulsating)
             
             // Progress Bar
             VStack(spacing: 12) {
@@ -55,13 +44,13 @@ struct ProcessingStateView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .frame(width: CGFloat(safeProgress) * 200, height: 8)
+                        .frame(width: CGFloat(max(0, min(200, safeProgress * 200))), height: 8)
                         .animation(.easeInOut(duration: 0.3), value: safeProgress)
                 }
                 .frame(width: 200)
                 
-                // Progress percentage
-                Text("\(Int(safeProgress * 100))%")
+                // Progress percentage (with safety check)
+                Text("\(Int(max(0, min(100, safeProgress * 100))))%")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.secondary)
@@ -102,7 +91,6 @@ struct ProcessingStateView: View {
     
     private func startPulsatingAnimation() {
         isPulsating = true
-        heartScale = 1.2
     }
 }
 
