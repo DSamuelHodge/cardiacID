@@ -6,10 +6,6 @@
 	<true/>
 	<key>com.apple.developer.healthkit.background-delivery</key>
 	<true/>
-	<key>com.apple.developer.bluetooth-central</key>
-	<true/>
-	<key>com.apple.developer.bluetooth-peripheral</key>
-	<true/>
 	<key>com.apple.developer.nfc.readersession.formats</key>
 	<array>
 		<string>TAG</string>

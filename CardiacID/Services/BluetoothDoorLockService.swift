@@ -15,11 +15,25 @@ class BluetoothDoorLockService: NSObject, ObservableObject {
     private var centralManager: CBCentralManager?
     private var peripheralManager: CBPeripheralManager?
     
-    // Door lock characteristics
-    private let doorLockServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
+    // HeartID Door Lock Service UUIDs (HeartID Standard)
+    private let heartIDServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
     private let unlockCharacteristicUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABD")
     private let statusCharacteristicUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABE")
     private let batteryCharacteristicUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABF")
+    private let authenticationCharacteristicUUID = CBUUID(string: "12345678-1234-1234-1234-123456789AC0")
+    
+    // Common Door Lock Service UUIDs (Industry Standard)
+    private let genericDoorLockServiceUUID = CBUUID(string: "00001800-0000-1000-8000-00805F9B34FB")
+    private let batteryServiceUUID = CBUUID(string: "0000180F-0000-1000-8000-00805F9B34FB")
+    private let deviceInformationServiceUUID = CBUUID(string: "0000180A-0000-1000-8000-00805F9B34FB")
+    
+    // Supported service UUIDs for scanning
+    private let supportedServiceUUIDs: [CBUUID] = [
+        heartIDServiceUUID,
+        genericDoorLockServiceUUID,
+        batteryServiceUUID,
+        deviceInformationServiceUUID
+    ]
     
     // Security
     private let encryptionService = EncryptionService.shared
@@ -55,10 +69,14 @@ class BluetoothDoorLockService: NSObject, ObservableObject {
         }
         
         isScanning = true
-        discoveredLocks.removeAll()
-        centralManager?.scanForPeripherals(withServices: [doorLockServiceUUID], options: [
+        errorMessage = nil
+        
+        // Scan for HeartID-compatible door locks and generic door locks
+        centralManager?.scanForPeripherals(withServices: supportedServiceUUIDs, options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: false
         ])
+        
+        print("🔍 Started scanning for door locks with services: \(supportedServiceUUIDs)")
     }
     
     /// Stop scanning for door locks

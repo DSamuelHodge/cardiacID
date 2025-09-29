@@ -45,14 +45,25 @@ class BluetoothNFCService: NSObject, ObservableObject {
     
     // MARK: - Bluetooth Communication
     
-    /// Start Bluetooth scanning
+    /// Start Bluetooth scanning for HeartID devices
     func startBluetoothScanning() {
         guard isBluetoothAvailable else {
             errorMessage = "Bluetooth is not available"
             return
         }
         
-        centralManager?.scanForPeripherals(withServices: [CBUUID(string: "12345678-1234-1234-1234-123456789ABC")])
+        // HeartID Service UUIDs
+        let heartIDServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
+        let doorLockServiceUUID = CBUUID(string: "00001800-0000-1000-8000-00805F9B34FB")
+        let batteryServiceUUID = CBUUID(string: "0000180F-0000-1000-8000-00805F9B34FB")
+        
+        let serviceUUIDs = [heartIDServiceUUID, doorLockServiceUUID, batteryServiceUUID]
+        
+        centralManager?.scanForPeripherals(withServices: serviceUUIDs, options: [
+            CBCentralManagerScanOptionAllowDuplicatesKey: false
+        ])
+        
+        print("🔍 Watch app scanning for HeartID devices with services: \(serviceUUIDs)")
     }
     
     /// Stop Bluetooth scanning

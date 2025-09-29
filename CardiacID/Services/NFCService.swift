@@ -38,7 +38,15 @@ class NFCService: NSObject, ObservableObject {
     // MARK: - NFC Availability
     
     private func checkNFCAvailability() {
+        #if os(iOS)
         isNFCAvailable = NFCNDEFReaderSession.readingAvailable
+        if !isNFCAvailable {
+            errorMessage = "NFC is not available on this device or NFC is disabled in Settings"
+        }
+        #else
+        isNFCAvailable = false
+        errorMessage = "NFC is not supported on this platform"
+        #endif
     }
     
     // MARK: - NFC Tag Reading
@@ -292,9 +300,15 @@ extension NFCService: NFCNDEFReaderSessionDelegate {
                     // User cancelled, no error message needed
                     break
                 case .readerSessionInvalidationErrorSessionTimeout:
-                    self.errorMessage = "NFC session timed out"
+                    self.errorMessage = "NFC session timed out - please try again"
                 case .readerSessionInvalidationErrorSessionTerminatedUnexpectedly:
                     self.errorMessage = "NFC session terminated unexpectedly"
+                case .readerSessionInvalidationErrorSystemIsBusy:
+                    self.errorMessage = "NFC system is busy, please try again"
+                case .readerSessionInvalidationErrorUnsupportedFeature:
+                    self.errorMessage = "NFC feature not supported on this device"
+                case .readerSessionInvalidationErrorTagConnectionLost:
+                    self.errorMessage = "NFC tag connection lost - please try again"
                 default:
                     self.errorMessage = "NFC error: \(error.localizedDescription)"
                 }
