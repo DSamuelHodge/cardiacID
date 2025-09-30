@@ -305,10 +305,8 @@ extension NFCService: NFCNDEFReaderSessionDelegate {
                     self.errorMessage = "NFC session terminated unexpectedly"
                 case .readerSessionInvalidationErrorSystemIsBusy:
                     self.errorMessage = "NFC system is busy, please try again"
-                case .readerSessionInvalidationErrorUnsupportedFeature:
-                    self.errorMessage = "NFC feature not supported on this device"
-                case .readerSessionInvalidationErrorTagConnectionLost:
-                    self.errorMessage = "NFC tag connection lost - please try again"
+                case .readerSessionInvalidationErrorFirstNDEFTagRead:
+                    self.errorMessage = "First NDEF tag read error"
                 default:
                     self.errorMessage = "NFC error: \(error.localizedDescription)"
                 }
