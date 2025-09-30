@@ -671,14 +671,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "CardiacID-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = HeartID;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Detction and usage of Blutooth signa for communication  and usage of the watch to the computer and phone";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "HeartID uses your heart rate data to create a unique biometric signature for secure authentication. Your heart rate data is processed locally on your device and is never shared with third parties.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "HeartID may update your health data to record authentication sessions for security purposes. This helps maintain the integrity of your biometric authentication system.";
-				INFOPLIST_KEY_NSNearbyInteractionUsageDescription = "Computer and Doorlocks";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ARGOS.CardiacID;
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -708,14 +700,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "CardiacID-Watch-App-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = HeartID;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Detction and usage of Blutooth signa for communication  and usage of the watch to the computer and phone";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "HeartID uses your heart rate data to create a unique biometric signature for secure authentication. Your heart rate data is processed locally on your device and is never shared with third parties.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "HeartID may update your health data to record authentication sessions for security purposes. This helps maintain the integrity of your biometric authentication system.";
-				INFOPLIST_KEY_NSNearbyInteractionUsageDescription = "Computer and Doorlocks";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = ARGOS.CardiacID;
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
