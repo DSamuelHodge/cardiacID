@@ -158,69 +158,78 @@ struct EnrollView: View {
     @State private var heartRateDifference: Double = 0
 
     var body: some View {
-        VStack(spacing: 14) {
-            // Header
-            VStack(spacing: 8) {
-                Image(systemName: "person.badge.plus")
-                    .font(.system(size: 36))
-                    .foregroundColor(.blue)
-                Text("Enroll").font(.headline)
-                Text(helperSubtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+        NavigationView {
+            VStack(spacing: 14) {
+                // Header
+                VStack(spacing: 8) {
+                    Image(systemName: "person.badge.plus")
+                        .font(.system(size: 36))
+                        .foregroundColor(.blue)
+                    Text("Enroll").font(.headline)
+                    Text(helperSubtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
 
-            // State-driven content
-            Group {
-                switch enrollmentState {
-                case .ready:
-                    Text("Ready to start").font(.caption)
-                case .initializing:
-                    ProgressView("Initializing...")
-                case .countdown(let n):
-                    VStack {
-                        Text("\(n)")
-                            .font(.system(size: 48, weight: .bold))
-                            .foregroundColor(.orange)
-                        Text("Get Ready").font(.caption)
+                // State-driven content
+                Group {
+                    switch enrollmentState {
+                    case .ready:
+                        Text("Ready to start").font(.caption)
+                    case .initializing:
+                        ProgressView("Initializing...")
+                    case .countdown(let n):
+                        VStack {
+                            Text("\(n)")
+                                .font(.system(size: 48, weight: .bold))
+                                .foregroundColor(.orange)
+                            Text("Get Ready").font(.caption)
+                        }
+                    case .capturing:
+                        CapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
+                    case .processing:
+                        ProcessingStateView(progress: processingProgress, title: "Creating Template")
+                    case .verification:
+                        ProcessingStateView(progress: processingProgress, title: "Verifying")
+                    case .verificationComplete:
+                        ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
+                    case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
+                        Text("Complete").font(.caption)
+                    case .error(let msg):
+                        Text(msg).font(.caption).foregroundColor(.red)
                     }
-                case .capturing:
-                    CapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
-                case .processing:
-                    ProcessingStateView(progress: processingProgress, title: "Creating Template")
-                case .verification:
-                    ProcessingStateView(progress: processingProgress, title: "Verifying")
-                case .verificationComplete:
-                    ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
-                case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
-                    Text("Complete").font(.caption)
-                case .error(let msg):
-                    Text(msg).font(.caption).foregroundColor(.red)
+                }
+
+                // Action row
+                HStack {
+                    if case .ready = enrollmentState {
+                        Button("Start") { startEnrollment() }
+                            .buttonStyle(.borderedProminent)
+                    } else if case .error = enrollmentState {
+                        Button("Close") { dismiss() }.buttonStyle(.bordered)
+                    } else {
+                        Button("Cancel") { dismiss() }.buttonStyle(.bordered)
+                    }
                 }
             }
-
-            // Action row
-            HStack {
-                if case .ready = enrollmentState {
-                    Button("Start") { startEnrollment() }
-                        .buttonStyle(.borderedProminent)
-                } else if case .error = enrollmentState {
-                    Button("Close") { dismiss() }.buttonStyle(.bordered)
-                } else {
-                    Button("Cancel") { dismiss() }.buttonStyle(.bordered)
+            .padding()
+            .navigationTitle("Enroll")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
                 }
             }
         }
-        .padding()
-        .navigationTitle("Enroll")
-        .navigationBarTitleDisplayMode(.inline)
         // Keep progress/HR in sync
         .onReceive(healthKitService.$captureProgress) { captureProgress = $0 }
         .onReceive(healthKitService.$currentHeartRate) { currentHeartRate = $0 }
         .onReceive(healthKitService.$errorMessage) { if let e = $0 { enrollmentState = .error(e) } }
-        // Start automatically when view appears
-        .task { if enrollmentState == .ready { startEnrollment() } }
+        // Check HealthKit authorization on appear
+        .onAppear {
+            checkHealthKitAuthorization()
+        }
     }
 
     private var helperSubtitle: String {
@@ -237,8 +246,35 @@ struct EnrollView: View {
         }
     }
 
+    // MARK: - HealthKit Authorization
+    private func checkHealthKitAuthorization() {
+        print("🔍 Checking HealthKit authorization...")
+        
+        if !healthKitService.isAuthorized {
+            print("⚠️ HealthKit not authorized, requesting permission...")
+            healthKitService.requestAuthorization()
+            
+            // Wait a moment for authorization to complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                if !self.healthKitService.isAuthorized {
+                    self.enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
+                }
+            }
+        } else {
+            print("✅ HealthKit is authorized")
+        }
+    }
+
     // MARK: - Enrollment Flow
     private func startEnrollment() {
+        print("🚀 Starting enrollment process...")
+        
+        // Check HealthKit authorization before starting
+        guard healthKitService.isAuthorized else {
+            enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
+            return
+        }
+        
         enrollmentState = .initializing
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.startCountdown() }
     }
@@ -263,12 +299,19 @@ struct EnrollView: View {
         // Validate state before capture
         guard enrollmentState == .capturing else {
             print("❌ Invalid state for enrollment capture: \(enrollmentState)")
+            enrollmentState = .error("Invalid capture state")
             return
         }
         
         do {
             let duration: TimeInterval = 12.0 // Increased for better sensor engagement
             print("📊 Starting enrollment capture for \(duration) seconds")
+            
+            // Check HealthKit authorization again before capture
+            guard healthKitService.isAuthorized else {
+                enrollmentState = .error("HealthKit authorization lost during capture")
+                return
+            }
             
             // Use the HealthKitService from Services
             healthKitService.startHeartRateCapture(duration: duration)
@@ -277,18 +320,34 @@ struct EnrollView: View {
             try await Task.sleep(nanoseconds: UInt64((duration + 2.0) * 1_000_000_000))
             
             // Ensure capture has fully stopped (wait, don't early return)
-            while healthKitService.isCapturing {
-                print("⏳ Waiting for capture to stop…")
+            var waitCount = 0
+            while healthKitService.isCapturing && waitCount < 20 { // Max 6 seconds wait
+                print("⏳ Waiting for capture to stop… (\(waitCount + 1)/20)")
                 try await Task.sleep(nanoseconds: 300_000_000)
+                waitCount += 1
+            }
+            
+            if healthKitService.isCapturing {
+                print("⚠️ Capture still running after timeout, forcing stop")
+                healthKitService.stopHeartRateCapture()
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
             print("✅ Captured \(values.count) heart rate samples")
             
+            // Validate captured data
+            guard values.count >= 8 else {
+                enrollmentState = .error("Insufficient heart rate data captured. Please try again.")
+                return
+            }
+            
             baselinePattern = values
             if let tpl = makeTemplate(from: values) { 
                 storeBaseline(tpl)
                 print("✅ Heart template created and stored")
+            } else {
+                enrollmentState = .error("Failed to create heart template from captured data")
+                return
             }
             
             // Give system time before completing enrollment
@@ -296,7 +355,7 @@ struct EnrollView: View {
             completeEnrollment()
         } catch {
             print("❌ Enrollment capture error: \(error.localizedDescription)")
-            enrollmentState = .error(error.localizedDescription)
+            enrollmentState = .error("Capture failed: \(error.localizedDescription)")
         }
     }
 
@@ -337,19 +396,46 @@ struct EnrollView: View {
     private func captureVerificationWindow() async {
         do {
             let duration: TimeInterval = 10.0
+            print("📊 Starting verification capture for \(duration) seconds")
+            
+            // Check HealthKit authorization before verification
+            guard healthKitService.isAuthorized else {
+                enrollmentState = .error("HealthKit authorization lost during verification")
+                return
+            }
+            
             // Use the HealthKitService from Services
             healthKitService.startHeartRateCapture(duration: duration)
             
             // Wait for capture to complete
             try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
-            while healthKitService.isCapturing {
+            
+            // Wait for capture to stop with timeout
+            var waitCount = 0
+            while healthKitService.isCapturing && waitCount < 15 { // Max 4.5 seconds wait
+                print("⏳ Waiting for verification capture to stop… (\(waitCount + 1)/15)")
                 try await Task.sleep(nanoseconds: 300_000_000)
+                waitCount += 1
+            }
+            
+            if healthKitService.isCapturing {
+                print("⚠️ Verification capture still running after timeout, forcing stop")
+                healthKitService.stopHeartRateCapture()
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
+            print("✅ Verification captured \(values.count) heart rate samples")
+            
+            // Validate verification data
+            guard values.count >= 5 else {
+                enrollmentState = .error("Insufficient verification data. Please try again.")
+                return
+            }
+            
             performVerification(with: values)
         } catch {
-            enrollmentState = .error("Heart Rate query error: \(error.localizedDescription)")
+            print("❌ Verification capture error: \(error.localizedDescription)")
+            enrollmentState = .error("Verification failed: \(error.localizedDescription)")
         }
     }
 
