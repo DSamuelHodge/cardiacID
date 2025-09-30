@@ -509,89 +509,6 @@ enum AuthenticationViewState: Equatable {
     case result(AuthenticationResult)
 }
 
-struct ResultStateView: View {
-    let result: AuthenticationResult
-    let retryCount: Int
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            // Result Icon
-            Image(systemName: resultIcon)
-                .font(.system(size: 50))
-                .foregroundColor(resultColor)
-            
-            // Result Text
-            Text(resultTitle)
-                .font(.headline)
-                .foregroundColor(resultColor)
-            
-            Text(result.message)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            // Additional Info
-            if result.requiresRetry && retryCount < 3 {
-                Text("Please try again for better accuracy")
-                    .font(.caption2)
-                    .foregroundColor(.orange)
-            } else if result == .systemUnavailable {
-                Text("Please try again later")
-                    .font(.caption2)
-                    .foregroundColor(.red)
-            }
-        }
-    }
-    
-    private var resultIcon: String {
-        switch result {
-        case .success, .approved:
-            return "checkmark.circle.fill"
-        case .retryRequired:
-            return "exclamationmark.triangle.fill"
-        case .failure, .failed:
-            return "xmark.circle.fill"
-        case .pending:
-            return "clock.fill"
-        case .cancelled:
-            return "xmark.circle"
-        case .systemUnavailable:
-            return "wifi.slash"
-        }
-    }
-    
-    private var resultColor: Color {
-        switch result {
-        case .success, .approved:
-            return .green
-        case .retryRequired:
-            return .orange
-        case .failure, .failed, .systemUnavailable:
-            return .red
-        case .pending:
-            return .blue
-        case .cancelled:
-            return .gray
-        }
-    }
-    
-    private var resultTitle: String {
-        switch result {
-        case .success, .approved:
-            return "Authentication Successful!"
-        case .retryRequired:
-            return "Please Try Again"
-        case .failure, .failed:
-            return "Authentication Failed"
-        case .pending:
-            return "Authentication Pending"
-        case .cancelled:
-            return "Authentication Cancelled"
-        case .systemUnavailable:
-            return "System Unavailable"
-        }
-    }
-}
 
 // MARK: - State Views
 
@@ -652,32 +569,6 @@ struct CountdownStateView: View {
     }
 }
 
-struct CapturingStateView: View {
-    let progress: Double
-    let heartRate: Double
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 50))
-                .foregroundColor(.red)
-                .scaleEffect(1.0 + (progress * 0.2))
-                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: progress)
-            
-            Text("Capturing Heart Pattern")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            ProgressView(value: progress, total: 1.0)
-                .progressViewStyle(LinearProgressViewStyle())
-                .frame(height: 8)
-            
-            Text("Heart Rate: \(Int(heartRate)) BPM")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
-}
 
 
 #Preview {

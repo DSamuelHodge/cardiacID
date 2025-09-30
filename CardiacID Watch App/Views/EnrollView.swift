@@ -398,20 +398,6 @@ struct CapturingStateView: View {
     }
 }
 
-struct ProcessingStateView: View {
-    let progress: Double
-    let title: String
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ProgressView(value: progress)
-                .progressViewStyle(LinearProgressViewStyle())
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
-}
 
 struct ResultStateView: View {
     let result: AuthenticationResult
