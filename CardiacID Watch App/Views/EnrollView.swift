@@ -228,7 +228,24 @@ struct EnrollView: View {
         .onReceive(healthKitService.$errorMessage) { if let e = $0 { enrollmentState = .error(e) } }
         // Check HealthKit authorization on appear
         .onAppear {
-            checkHealthKitAuthorization()
+            Task { @MainActor in
+                await ensureHealthKitAuthorization()
+            }
+        }
+    }
+    
+    @MainActor
+    private func ensureHealthKitAuthorization() async {
+        guard !healthKitService.isAuthorized else { return }
+        
+        // Request authorization synchronously
+        healthKitService.requestAuthorization()
+        
+        // Wait a moment for authorization to complete
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        
+        if !healthKitService.isAuthorized {
+            enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
         }
     }
 
