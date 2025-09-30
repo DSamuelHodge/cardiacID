@@ -259,41 +259,43 @@ struct SecurityLevelView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("Security Level")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Text("Choose your preferred security level. Higher levels provide more security but may require more precise heart pattern matching.")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.secondary)
-                
-                VStack(spacing: 12) {
-                    ForEach(SecurityLevel.allCases, id: \.self) { level in
-                        SecurityLevelRow(
-                            level: level,
-                            isSelected: selectedLevel == level
-                        ) {
-                            selectedLevel = level
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Security Level")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("Choose your preferred security level. Higher levels provide more security but may require more precise heart pattern matching.")
+                        .font(.body)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.secondary)
+                    
+                    VStack(spacing: 12) {
+                        ForEach(SecurityLevel.allCases, id: \.self) { level in
+                            SecurityLevelRow(
+                                level: level,
+                                isSelected: selectedLevel == level
+                            ) {
+                                selectedLevel = level
+                            }
                         }
                     }
+                    
+                    Spacer()
+                    
+                    Button("Save Security Level") {
+                        var preferences = dataManager.userPreferences
+                        preferences.securityLevel = selectedLevel
+                        dataManager.saveUserPreferences(preferences)
+                        dismiss()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(selectedLevel == dataManager.userPreferences.securityLevel)
+                    
+                    Spacer()
                 }
-                
-                Spacer()
-                
-                Button("Save Security Level") {
-                    var preferences = dataManager.userPreferences
-                    preferences.securityLevel = selectedLevel
-                    dataManager.saveUserPreferences(preferences)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(selectedLevel == dataManager.userPreferences.securityLevel)
-                
-                Spacer()
+                .padding()
             }
-            .padding()
             .navigationTitle("Security Level")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -365,36 +367,38 @@ struct AlarmNotificationView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("Alarm & Notifications")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                VStack(spacing: 16) {
-                    Toggle("Enable Alarms", isOn: $enableAlarms)
-                        .toggleStyle(SwitchToggleStyle())
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Alarm & Notifications")
+                        .font(.title2)
+                        .fontWeight(.bold)
                     
-                    Toggle("Enable Notifications", isOn: $enableNotifications)
-                        .toggleStyle(SwitchToggleStyle())
+                    VStack(spacing: 16) {
+                        Toggle("Enable Alarms", isOn: $enableAlarms)
+                            .toggleStyle(SwitchToggleStyle())
+                        
+                        Toggle("Enable Notifications", isOn: $enableNotifications)
+                            .toggleStyle(SwitchToggleStyle())
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                    
+                    Spacer()
+                    
+                    Button("Save Settings") {
+                        var preferences = dataManager.userPreferences
+                        preferences.enableAlarms = enableAlarms
+                        preferences.enableNotifications = enableNotifications
+                        dataManager.saveUserPreferences(preferences)
+                        dismiss()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Spacer()
                 }
                 .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
-                
-                Spacer()
-                
-                Button("Save Settings") {
-                    var preferences = dataManager.userPreferences
-                    preferences.enableAlarms = enableAlarms
-                    preferences.enableNotifications = enableNotifications
-                    dataManager.saveUserPreferences(preferences)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                Spacer()
             }
-            .padding()
             .navigationTitle("Alarms & Notifications")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
