@@ -28,12 +28,14 @@ class BluetoothDoorLockService: NSObject, ObservableObject {
     private let deviceInformationServiceUUID = CBUUID(string: "0000180A-0000-1000-8000-00805F9B34FB")
     
     // Supported service UUIDs for scanning
-    private let supportedServiceUUIDs: [CBUUID] = [
-        heartIDServiceUUID,
-        genericDoorLockServiceUUID,
-        batteryServiceUUID,
-        deviceInformationServiceUUID
-    ]
+    private var supportedServiceUUIDs: [CBUUID] {
+        return [
+            heartIDServiceUUID,
+            genericDoorLockServiceUUID,
+            batteryServiceUUID,
+            deviceInformationServiceUUID
+        ]
+    }
     
     // Security
     private let encryptionService = EncryptionService.shared
