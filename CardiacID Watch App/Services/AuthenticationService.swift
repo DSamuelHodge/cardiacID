@@ -332,6 +332,13 @@ class AuthenticationService: ObservableObject {
         // In production, you might want to clear this too
     }
     
+    /// Test helper to mark user as enrolled and authenticated
+    func markEnrolledAndAuthenticated() {
+        self.isUserEnrolled = true
+        self.isAuthenticated = true
+        self.lastAuthenticationResult = .approved
+    }
+    
     // MARK: - Watch Connectivity Integration
     
     /// Send enrollment status to iOS companion app

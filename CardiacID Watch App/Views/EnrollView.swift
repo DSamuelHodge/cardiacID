@@ -132,17 +132,6 @@ extension EnrollView {
     }
 }
 
-// MARK: - AuthenticationService Extension
-extension AuthenticationService {
-    /// Mark user as enrolled and authenticated (missing method)
-    func markEnrolledAndAuthenticated() {
-        self.isUserEnrolled = true
-        self.isAuthenticated = true
-        self.lastAuthenticationResult = .approved
-        print("✅ User marked as enrolled and authenticated")
-    }
-}
-
 // MARK: - EnrollView (biometric-first wiring)
 struct EnrollView: View {
     @Environment(\.dismiss) private var dismiss
@@ -586,35 +575,3 @@ struct VerificationResult {
 }
 
 enum TestType { case lower, upper }
-
-// MARK: - Missing AuthenticationResult Definition
-enum AuthenticationResult: String, Codable, CaseIterable {
-    case pending = "pending"
-    case approved = "approved"
-    case failed = "failed"
-    case retryRequired = "retry_required"
-    case systemUnavailable = "system_unavailable"
-    
-    var isSuccessful: Bool {
-        return self == .approved
-    }
-    
-    var requiresRetry: Bool {
-        return self == .retryRequired
-    }
-    
-    var message: String {
-        switch self {
-        case .pending:
-            return "Authentication in progress"
-        case .approved:
-            return "Authentication successful"
-        case .failed:
-            return "Authentication failed"
-        case .retryRequired:
-            return "Please try again"
-        case .systemUnavailable:
-            return "System temporarily unavailable"
-        }
-    }
-}

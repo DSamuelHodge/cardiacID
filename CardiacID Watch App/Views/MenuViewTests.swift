@@ -150,14 +150,5 @@ struct MenuViewTests {
     }
 }
 
-// Extension for testing AuthenticationService
-extension AuthenticationService {
-    /// Test helper to mark user as enrolled and authenticated
-    func markEnrolledAndAuthenticated() {
-        self.isUserEnrolled = true
-        self.isAuthenticated = true
-        self.lastAuthenticationResult = .approved
-    }
-}
-
 #endif
+

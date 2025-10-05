@@ -43,7 +43,9 @@ class AuthenticationManager: ObservableObject {
     private func setupBindings() {
         // Bind authentication service state
         authenticationService.$isAuthenticated
-            .assign(to: \.isAuthenticated, on: self)
+            .sink { [weak self] value in
+                self?.isAuthenticated = value
+            }
             .store(in: &cancellables)
         
         authenticationService.$isUserEnrolled
@@ -54,7 +56,9 @@ class AuthenticationManager: ObservableObject {
         
         // Bind error messages
         authenticationService.$errorMessage
-            .assign(to: \.errorMessage, on: self)
+            .sink { [weak self] value in
+                self?.errorMessage = value
+            }
             .store(in: &cancellables)
         
         healthKitService.$errorMessage

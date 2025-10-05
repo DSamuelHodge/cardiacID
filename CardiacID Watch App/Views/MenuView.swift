@@ -304,7 +304,7 @@ struct CalibrateView: View {
     @State private var progress: Double = 0
     @State private var errorMessage: String?
     
-    enum CalibrationState {
+    enum CalibrationState: Equatable {
         case ready, inProgress, completed, error(String)
     }
     
@@ -603,5 +603,4 @@ struct AlarmNotificationView: View {
         .environmentObject(AuthenticationService())
         .environmentObject(DataManager())
 }
-
 
