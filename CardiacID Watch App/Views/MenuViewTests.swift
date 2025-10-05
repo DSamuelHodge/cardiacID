@@ -1,4 +1,5 @@
-import Testing
+#if canImport(Testing)
+
 import Testing
 import SwiftUI
 
@@ -158,3 +159,5 @@ extension AuthenticationService {
         self.lastAuthenticationResult = .approved
     }
 }
+
+#endif
