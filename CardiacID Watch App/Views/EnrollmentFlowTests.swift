@@ -1,11 +1,12 @@
 import Testing
+import Testing
 import Foundation
 @testable import CardiacID
 
 @Suite("Enrollment Flow Tests")
 struct EnrollmentFlowTests {
     
-    @Test("Heart template creation with valid data")
+    @Test("Heart template creation")
     func testHeartTemplateCreation() async throws {
         let validHeartRateData = [72.0, 74.0, 73.0, 75.0, 71.0, 76.0, 74.0, 72.0, 73.0]
         
@@ -51,7 +52,7 @@ struct EnrollmentFlowTests {
         #expect(!AuthenticationResult.failed.message.isEmpty, "All results should have messages")
     }
     
-    @Test("Template store save and load cycle")
+    @Test("Template store save load cycle")
     func testTemplateStoreSaveLoadCycle() async throws {
         let testData = [72.0, 74.0, 73.0, 75.0, 71.0, 76.0, 74.0, 72.0, 73.0]
         let template = try #require(FeatureExtractor.features(from: testData))

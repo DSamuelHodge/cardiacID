@@ -1,7 +1,8 @@
 import Testing
+import Testing
 import SwiftUI
 
-@testable import HeartID  // Replace with actual module name
+@testable import CardiacID  // Changed from HeartID to match project module name
 
 @Suite("MenuView Integration Tests")
 struct MenuViewTests {

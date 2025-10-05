@@ -192,7 +192,6 @@ struct MenuView: View {
         }
     }
 }
-}
 
 // MARK: - Enhanced Component Views
 
