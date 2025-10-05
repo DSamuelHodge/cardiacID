@@ -174,7 +174,7 @@ enum AuthenticationFrequency: String, CaseIterable, Codable {
     }
 }
 
-/// Authentication result enum
+/// Authentication result enum (consolidated from duplicates)
 enum AuthenticationResult: String, CaseIterable, Codable {
     case success = "success"
     case failure = "failure"

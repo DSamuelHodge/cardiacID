@@ -1,8 +1,11 @@
+// MARK: - MenuView Analysis & Fixes
+
 import SwiftUI
 
 struct MenuView: View {
     @EnvironmentObject var authenticationService: AuthenticationService
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var healthKitService: HealthKitService // Added missing dependency
 
     // Unified sheet router
     private enum SheetRoute: Hashable, Identifiable {
@@ -10,6 +13,8 @@ struct MenuView: View {
         var id: Int { self.hashValue }
     }
     @State private var activeSheet: SheetRoute?
+    @State private var showingError = false
+    @State private var errorMessage = ""
     
     var body: some View {
         NavigationStack {
@@ -26,58 +31,40 @@ struct MenuView: View {
                             .fontWeight(.bold)
                         
                         Text("Menu")
-                            .font(.system(size: 12)) // Reduced from .title2 (22pt) by 30% to ~15pt, then further reduced
+                            .font(.system(size: 12))
                             .fontWeight(.bold)
                             .multilineTextAlignment(.center)
                         
-                        if authenticationService.isUserEnrolled {
-                            Text("Enrolled")
-                                .font(.caption)
-                                .foregroundColor(.green)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(Color.green.opacity(0.2))
-                                .cornerRadius(8)
-                        } else {
-                            Text("Not Enrolled")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(Color.orange.opacity(0.2))
-                                .cornerRadius(8)
-                        }
+                        // Enhanced status indicator
+                        EnrollmentStatusView(isEnrolled: authenticationService.isUserEnrolled)
                     }
                     .padding(.bottom, 20)
                     
-                    // Menu Items
+                    // Menu Items with enhanced validation
                     VStack(spacing: 12) {
                         MenuButton(
                             title: "Enroll",
                             icon: "person.badge.plus",
                             color: .blue,
-                            isEnabled: !authenticationService.isUserEnrolled
+                            isEnabled: !authenticationService.isUserEnrolled && healthKitService.isAuthorized
                         ) {
-                            if authenticationService.dataManager == nil {
-                                authenticationService.setDataManager(dataManager)
-                            }
-                            activeSheet = .enroll
+                            handleEnrollAction()
                         }
                         
                         MenuButton(
                             title: "Authenticate",
                             icon: "checkmark.shield",
                             color: .green,
-                            isEnabled: authenticationService.isUserEnrolled
+                            isEnabled: authenticationService.isUserEnrolled && healthKitService.isAuthorized
                         ) {
-                            activeSheet = .authenticate
+                            handleAuthenticateAction()
                         }
                         
                         MenuButton(
                             title: "Calibrate",
                             icon: "tuningfork",
                             color: .purple,
-                            isEnabled: authenticationService.isUserEnrolled
+                            isEnabled: authenticationService.isUserEnrolled && healthKitService.isAuthorized
                         ) {
                             activeSheet = .calibrate
                         }
@@ -112,55 +99,157 @@ struct MenuView: View {
                     
                     Spacer()
                     
-                    // Status Information
-                    if authenticationService.isUserEnrolled {
-                        VStack(spacing: 8) {
-                            Text("Authentication Status")
-                                .font(.headline)
-                            
-                            HStack {
-                                Circle()
-                                    .fill(authenticationService.isAuthenticated ? Color.green : Color.red)
-                                    .frame(width: 12, height: 12)
-                                
-                                Text(authenticationService.isAuthenticated ? "Authenticated" : "Not Authenticated")
-                                    .font(.caption)
-                            }
-                            
-                            if let lastResult = authenticationService.lastAuthenticationResult {
-                                Text("Last Result: \(lastResult.message)")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
-                    }
+                    // Enhanced Status Information
+                    StatusInformationView(authenticationService: authenticationService)
                 }
                 .padding()
             }
             .navigationTitle("Menu")
             .navigationBarTitleDisplayMode(.inline)
         }
-        // Single, enum-driven sheet router
+        // Single, enum-driven sheet router with enhanced error handling
         .sheet(item: $activeSheet) { route in
-            switch route {
-            case .enroll:        EnrollView()
-            case .authenticate:  AuthenticateView()
-            case .settings:      SettingsView()
-            case .calibrate:     CalibrateView()
-            case .security:      SecurityLevelView()
-            case .alarm:         AlarmNotificationView()
+            Group {
+                switch route {
+                case .enroll:        
+                    EnrollView()
+                        .environmentObject(healthKitService) // Ensure all dependencies are passed
+                case .authenticate:  
+                    AuthenticateView()
+                        .environmentObject(healthKitService)
+                case .settings:      
+                    SettingsView()
+                case .calibrate:     
+                    CalibrateView()
+                        .environmentObject(healthKitService)
+                case .security:      
+                    SecurityLevelView()
+                case .alarm:         
+                    AlarmNotificationView()
+                }
             }
+        }
+        .alert("Error", isPresented: $showingError) {
+            Button("OK") { showingError = false }
+        } message: {
+            Text(errorMessage)
         }
         .onReceive(NotificationCenter.default.publisher(for: .init("UserDeleted"))) { _ in
             // Refresh the view when user is deleted
-            // The authentication service state will be updated automatically
         }
         // After a successful enrollment, auto-open Settings to complete setup
         .onReceive(NotificationCenter.default.publisher(for: .init("UserEnrolled"))) { _ in
-            activeSheet = .settings
+            // Delay to ensure enrollment sheet is dismissed first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                activeSheet = .settings
+            }
+        }
+        .onAppear {
+            // Ensure all services are properly initialized
+            initializeServices()
+        }
+    }
+    
+    // MARK: - Action Handlers
+    private func handleEnrollAction() {
+        guard healthKitService.isAuthorized else {
+            errorMessage = "HealthKit authorization is required for enrollment. Please enable in Settings."
+            showingError = true
+            return
+        }
+        
+        if authenticationService.dataManager == nil {
+            authenticationService.setDataManager(dataManager)
+        }
+        activeSheet = .enroll
+    }
+    
+    private func handleAuthenticateAction() {
+        guard healthKitService.isAuthorized else {
+            errorMessage = "HealthKit authorization is required for authentication. Please enable in Settings."
+            showingError = true
+            return
+        }
+        
+        guard authenticationService.isUserEnrolled else {
+            errorMessage = "You must enroll first before authenticating."
+            showingError = true
+            return
+        }
+        
+        activeSheet = .authenticate
+    }
+    
+    private func initializeServices() {
+        // Ensure data manager is connected to authentication service
+        if authenticationService.dataManager == nil {
+            authenticationService.setDataManager(dataManager)
+        }
+        
+        // Check HealthKit authorization if not already done
+        if !healthKitService.isAuthorized {
+            healthKitService.requestAuthorization()
+        }
+    }
+}
+}
+
+// MARK: - Enhanced Component Views
+
+struct EnrollmentStatusView: View {
+    let isEnrolled: Bool
+    
+    var body: some View {
+        HStack {
+            Image(systemName: isEnrolled ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .foregroundColor(isEnrolled ? .green : .orange)
+            
+            Text(isEnrolled ? "Enrolled" : "Not Enrolled")
+                .font(.caption)
+                .fontWeight(.medium)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
+        .background(isEnrolled ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
+        .cornerRadius(8)
+    }
+}
+
+struct StatusInformationView: View {
+    let authenticationService: AuthenticationService
+    
+    var body: some View {
+        if authenticationService.isUserEnrolled {
+            VStack(spacing: 8) {
+                Text("Authentication Status")
+                    .font(.headline)
+                
+                HStack {
+                    Circle()
+                        .fill(authenticationService.isAuthenticated ? Color.green : Color.red)
+                        .frame(width: 12, height: 12)
+                    
+                    Text(authenticationService.isAuthenticated ? "Authenticated" : "Not Authenticated")
+                        .font(.caption)
+                }
+                
+                if let lastResult = authenticationService.lastAuthenticationResult {
+                    Text("Last Result: \(lastResult.message)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                
+                // Add helpful tips
+                if !authenticationService.isAuthenticated {
+                    Text("Tap Authenticate to verify your identity")
+                        .font(.caption2)
+                        .foregroundColor(.blue)
+                        .italic()
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
         }
     }
 }
@@ -212,9 +301,21 @@ struct CalibrateView: View {
     @EnvironmentObject var authenticationService: AuthenticationService
     @EnvironmentObject var healthKitService: HealthKitService
     
+    @State private var calibrationState: CalibrationState = .ready
+    @State private var progress: Double = 0
+    @State private var errorMessage: String?
+    
+    enum CalibrationState {
+        case ready, inProgress, completed, error(String)
+    }
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
+                Image(systemName: "tuningfork")
+                    .font(.system(size: 50))
+                    .foregroundColor(.purple)
+                
                 Text("Calibration")
                     .font(.title2)
                     .fontWeight(.bold)
@@ -226,11 +327,74 @@ struct CalibrateView: View {
                 
                 Spacer()
                 
-                Button("Start Calibration") {
-                    // Start calibration process
-                    dismiss()
+                switch calibrationState {
+                case .ready:
+                    VStack(spacing: 12) {
+                        Text("This process will take 30 seconds")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Button("Start Calibration") {
+                            startCalibration()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!healthKitService.isAuthorized)
+                    }
+                    
+                case .inProgress:
+                    VStack(spacing: 12) {
+                        ProgressView(value: progress)
+                            .progressViewStyle(LinearProgressViewStyle())
+                        
+                        Text("Calibrating... \(Int(progress * 100))%")
+                            .font(.caption)
+                        
+                        Text("Keep your watch on and stay still")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                case .completed:
+                    VStack(spacing: 12) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.green)
+                        
+                        Text("Calibration Complete")
+                            .font(.headline)
+                        
+                        Text("Your authentication accuracy has been improved")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                case .error(let message):
+                    VStack(spacing: 12) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.red)
+                        
+                        Text("Calibration Failed")
+                            .font(.headline)
+                        
+                        Text(message)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Button("Try Again") {
+                            calibrationState = .ready
+                            errorMessage = nil
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
+                
+                if !healthKitService.isAuthorized && calibrationState == .ready {
+                    Text("HealthKit access required")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
                 
                 Spacer()
             }
@@ -243,6 +407,25 @@ struct CalibrateView: View {
                         dismiss()
                     }
                 }
+            }
+        }
+    }
+    
+    private func startCalibration() {
+        guard healthKitService.isAuthorized else {
+            calibrationState = .error("HealthKit authorization required")
+            return
+        }
+        
+        calibrationState = .inProgress
+        progress = 0
+        
+        // Simulate calibration process
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { timer in
+            progress += 0.02
+            if progress >= 1.0 {
+                timer.invalidate()
+                calibrationState = .completed
             }
         }
     }

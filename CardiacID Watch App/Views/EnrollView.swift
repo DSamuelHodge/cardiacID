@@ -132,6 +132,17 @@ extension EnrollView {
     }
 }
 
+// MARK: - AuthenticationService Extension
+extension AuthenticationService {
+    /// Mark user as enrolled and authenticated (missing method)
+    func markEnrolledAndAuthenticated() {
+        self.isUserEnrolled = true
+        self.isAuthenticated = true
+        self.lastAuthenticationResult = .approved
+        print("✅ User marked as enrolled and authenticated")
+    }
+}
+
 // MARK: - EnrollView (biometric-first wiring)
 struct EnrollView: View {
     @Environment(\.dismiss) private var dismiss
@@ -330,6 +341,9 @@ struct EnrollView: View {
                 return
             }
             
+            // Clear any existing samples before starting new capture
+            healthKitService.heartRateSamples.removeAll()
+            
             // Use the HealthKitService from Services
             healthKitService.startHeartRateCapture(duration: duration)
             
@@ -347,23 +361,45 @@ struct EnrollView: View {
             if healthKitService.isCapturing {
                 print("⚠️ Capture still running after timeout, forcing stop")
                 healthKitService.stopHeartRateCapture()
+                // Give a moment for the stop to take effect
+                try await Task.sleep(nanoseconds: 500_000_000)
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
-            print("✅ Captured \(values.count) heart rate samples")
+            print("✅ Captured \(values.count) heart rate samples: \(values.prefix(5))...")
             
-            // Validate captured data
+            // Enhanced validation with more detailed error messages
+            guard !values.isEmpty else {
+                enrollmentState = .error("No heart rate data captured. Ensure watch is properly fitted and try again.")
+                return
+            }
+            
             guard values.count >= 8 else {
-                enrollmentState = .error("Insufficient heart rate data captured. Please try again.")
+                enrollmentState = .error("Insufficient heart rate data (\(values.count) samples). Need at least 8 samples. Please try again.")
+                return
+            }
+            
+            // Validate data quality - check for reasonable heart rate values
+            let validValues = values.filter { $0 > 30 && $0 < 220 }
+            guard validValues.count >= 8 else {
+                enrollmentState = .error("Invalid heart rate values detected. Please ensure proper sensor contact.")
                 return
             }
             
             baselinePattern = values
             if let tpl = makeTemplate(from: values) { 
                 storeBaseline(tpl)
-                print("✅ Heart template created and stored")
+                print("✅ Heart template created and stored successfully")
+                
+                // Verify template was actually saved
+                if loadBaseline() != nil {
+                    print("✅ Template verification successful")
+                } else {
+                    enrollmentState = .error("Template saved but verification failed")
+                    return
+                }
             } else {
-                enrollmentState = .error("Failed to create heart template from captured data")
+                enrollmentState = .error("Failed to create heart template from captured data. Please try again.")
                 return
             }
             
@@ -421,11 +457,14 @@ struct EnrollView: View {
                 return
             }
             
+            // Clear any existing samples before starting new capture
+            healthKitService.heartRateSamples.removeAll()
+            
             // Use the HealthKitService from Services
             healthKitService.startHeartRateCapture(duration: duration)
             
             // Wait for capture to complete
-            try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            try await Task.sleep(nanoseconds: UInt64((duration + 1.0) * 1_000_000_000))
             
             // Wait for capture to stop with timeout
             var waitCount = 0
@@ -438,14 +477,28 @@ struct EnrollView: View {
             if healthKitService.isCapturing {
                 print("⚠️ Verification capture still running after timeout, forcing stop")
                 healthKitService.stopHeartRateCapture()
+                // Give a moment for the stop to take effect
+                try await Task.sleep(nanoseconds: 500_000_000)
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
-            print("✅ Verification captured \(values.count) heart rate samples")
+            print("✅ Verification captured \(values.count) heart rate samples: \(values.prefix(5))...")
             
-            // Validate verification data
+            // Enhanced validation for verification data
+            guard !values.isEmpty else {
+                enrollmentState = .error("No verification data captured. Please try again.")
+                return
+            }
+            
             guard values.count >= 5 else {
-                enrollmentState = .error("Insufficient verification data. Please try again.")
+                enrollmentState = .error("Insufficient verification data (\(values.count) samples). Please try again.")
+                return
+            }
+            
+            // Validate data quality
+            let validValues = values.filter { $0 > 30 && $0 < 220 }
+            guard validValues.count >= 3 else {
+                enrollmentState = .error("Invalid heart rate values in verification data.")
                 return
             }
             
@@ -519,7 +572,49 @@ struct ResultStateView: View {
     }
 }
 
-// MARK: - Your existing types unchanged
-enum EnrollmentState: Equatable { case ready, initializing, countdown(Int), capturing, processing, completed, verification, verificationComplete, rangeOptions, relaxation, exercise, rangeTest, finalComplete, error(String) }
-struct VerificationResult { let passed: Bool; let message: String; let testType: TestType?; let heartRate: Double?; let difference: Double? }
+// MARK: - Supporting Types
+enum EnrollmentState: Equatable { 
+    case ready, initializing, countdown(Int), capturing, processing, completed, verification, verificationComplete, rangeOptions, relaxation, exercise, rangeTest, finalComplete, error(String) 
+}
+
+struct VerificationResult { 
+    let passed: Bool
+    let message: String
+    let testType: TestType?
+    let heartRate: Double?
+    let difference: Double? 
+}
+
 enum TestType { case lower, upper }
+
+// MARK: - Missing AuthenticationResult Definition
+enum AuthenticationResult: String, Codable, CaseIterable {
+    case pending = "pending"
+    case approved = "approved"
+    case failed = "failed"
+    case retryRequired = "retry_required"
+    case systemUnavailable = "system_unavailable"
+    
+    var isSuccessful: Bool {
+        return self == .approved
+    }
+    
+    var requiresRetry: Bool {
+        return self == .retryRequired
+    }
+    
+    var message: String {
+        switch self {
+        case .pending:
+            return "Authentication in progress"
+        case .approved:
+            return "Authentication successful"
+        case .failed:
+            return "Authentication failed"
+        case .retryRequired:
+            return "Please try again"
+        case .systemUnavailable:
+            return "System temporarily unavailable"
+        }
+    }
+}
