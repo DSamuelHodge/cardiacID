@@ -14,5 +14,7 @@
 	<string>HeartID uses Bluetooth to communicate with door locks and other security devices for authentication. This allows you to unlock doors and access secure areas using your heart pattern.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>HeartID uses Bluetooth to connect with door locks and security devices for biometric authentication.</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 </dict>
 </plist>
