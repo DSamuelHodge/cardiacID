@@ -47,7 +47,7 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
@@ -69,18 +69,18 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
-            BuildableName = "CardiacID Watch App.app"
-            BlueprintName = "CardiacID Watch App"
+            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
+            BuildableName = "CardiacID.app"
+            BlueprintName = "CardiacID"
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
-            BuildableName = "CardiacID.app"
-            BlueprintName = "CardiacID"
+            BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
+            BuildableName = "CardiacID Watch App.app"
+            BlueprintName = "CardiacID Watch App"
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -98,16 +98,16 @@
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = ""
+      savedToolIdentifier = "App Launch"
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
-            BuildableName = "CardiacID Watch App.app"
-            BlueprintName = "CardiacID Watch App"
+            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
+            BuildableName = "CardiacID.app"
+            BlueprintName = "CardiacID"
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

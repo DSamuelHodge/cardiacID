@@ -337,7 +337,7 @@ struct WearableCheckView: View {
                     .padding(.horizontal)
                 
                 // Progress bar
-                ProgressView(value: progress, total: 1.0)
+                ProgressView(value: min(progress, 1.0), total: 1.0)
                     .progressViewStyle(LinearProgressViewStyle())
                     .frame(height: 8)
                     .padding(.horizontal)
@@ -356,7 +356,7 @@ struct WearableCheckView: View {
     
     private func startProgress() {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            progress += 0.05
+            progress = min(progress + 0.05, 1.0)
             if progress >= 1.0 {
                 timer.invalidate()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
