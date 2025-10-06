@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import Foundation
+import Combine
 
 struct ContentView: View {
     @EnvironmentObject var authenticationService: AuthenticationService
@@ -122,13 +124,13 @@ struct LandingView: View {
         VStack(spacing: 20) {
             // HeartID Logo/Icon
             Image(systemName: "heart.fill")
-                .font(.system(size: 60))
+                .font(.system(size: 40))
                 .foregroundColor(.red)
                 .scaleEffect(showContent ? 1.0 : 0.8)
                 .animation(.easeInOut(duration: 0.5), value: showContent)
             
             Text("HeartID V0.3")
-                .font(.system(size: 28))
+                .font(.system(size: 24))
                 .fontWeight(.bold)
                 .opacity(showContent ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
@@ -186,7 +188,7 @@ struct EnrollmentFlowView: View {
         ScrollView {
             VStack(spacing: 20) {
                 // Progress indicator
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     Text("Initial Enrollment")
                         .font(.headline)
                         .fontWeight(.bold)
@@ -324,13 +326,13 @@ struct EnrollmentFlowView: View {
 // MARK: - Enrollment Step Views
 struct WelcomeStepView: View {
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 18) {
             Image(systemName: "heart.fill")
-                .font(.system(size: 60))
+                .font(.system(size: 30))
                 .foregroundColor(.red)
             
             Text("Welcome to HeartID")
-                .font(.title2)
+                .font(.system(size: 24))
                 .fontWeight(.bold)
             
             Text("Let's set up your biometric authentication. This process will take just a few minutes.")
@@ -343,13 +345,13 @@ struct WelcomeStepView: View {
 
 struct InstructionsStepView: View {
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 18) {
             Image(systemName: "hand.raised.fill")
                 .font(.system(size: 50))
                 .foregroundColor(.blue)
             
             Text("How it Works")
-                .font(.title2)
+                .font(.system(size: 24))
                 .fontWeight(.bold)
             
             VStack(alignment: .leading, spacing: 12) {
@@ -370,15 +372,15 @@ struct CaptureStepView: View {
     @State private var timeRemaining = 30
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 18) {
             Image(systemName: "heart.fill")
-                .font(.system(size: 60))
+                .font(.system(size: 30))
                 .foregroundColor(isCapturing ? .red : .gray)
                 .scaleEffect(isCapturing ? 1.2 : 1.0)
                 .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isCapturing)
             
             Text(isCapturing ? "Capturing Heart Pattern..." : "Ready to Capture")
-                .font(.title2)
+                .font(.system(size: 24))
                 .fontWeight(.bold)
             
             if isCapturing {
@@ -414,7 +416,7 @@ struct CompletionStepView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: showSuccess ? "checkmark.circle.fill" : "clock.fill")
-                .font(.system(size: 60))
+                .font(.system(size: 30))
                 .foregroundColor(showSuccess ? .green : .orange)
                 .scaleEffect(showSuccess ? 1.2 : 1.0)
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showSuccess)
@@ -475,6 +477,8 @@ struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
