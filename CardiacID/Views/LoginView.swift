@@ -28,12 +28,14 @@ struct LoginView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 60, height: 60)
                             .foregroundColor(colors.accent)
+                            .scaleEffect(1.2)
+                            .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isLoggingIn)
                         
                         Text("HeartID")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(colors.text)
                         
-                        Text("Secure your identity with your unique cardiac signature")
+                        Text("Secure your identity with your unique Cardiac signature")
                             .font(.subheadline)
                             .foregroundColor(colors.text.opacity(0.7))
                             .multilineTextAlignment(.center)
