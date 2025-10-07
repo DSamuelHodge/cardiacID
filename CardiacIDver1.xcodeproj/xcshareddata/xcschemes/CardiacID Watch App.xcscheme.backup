@@ -8,17 +8,31 @@
       buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForTesting = "NO"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
+               BuildableName = "CardiacID Watch App.app"
+               BlueprintName = "CardiacID Watch App"
+               ReferencedContainer = "container:CardiacID.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
                BuildableName = "CardiacID.app"
                BlueprintName = "CardiacID"
-               ReferencedContainer = "container:CardiacIDver1.xcodeproj">
+               ReferencedContainer = "container:CardiacID.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,37 +45,60 @@
             </AutocreatedTestPlanReference>
          </BuildActionEntry>
          <BuildActionEntry
-            buildForTesting = "NO"
-            buildForRunning = "NO"
+            buildForTesting = "YES"
+            buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
-            buildForAnalyzing = "NO">
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
-               BuildableName = "CardiacID_Watch_App.app"
-               BlueprintName = "CardiacID_Watch_App"
+               BuildableName = "CardiacID Watch App.app"
+               BlueprintName = "CardiacID Watch App"
                ReferencedContainer = "container:CardiacIDver1.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FBF0C0CA2E70DF27005C425B"
+               BuildableName = "CardiacID Watch AppTests.xctest"
+               BlueprintName = "CardiacID Watch AppTests"
+               ReferencedContainer = "container:CardiacID.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FBF0C0D42E70DF27005C425B"
+               BuildableName = "CardiacID Watch AppUITests.xctest"
+               BlueprintName = "CardiacID Watch AppUITests"
+               ReferencedContainer = "container:CardiacID.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = "en"
-      region = "US"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
+      enableGameKitDebugMode = "YES"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
@@ -69,22 +106,16 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
-            BuildableName = "CardiacID.app"
-            BlueprintName = "CardiacID"
+            BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
+            BuildableName = "CardiacID Watch App.app"
+            BlueprintName = "CardiacID Watch App"
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = ""
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = ""
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
+      <LocationScenarioReference
+         identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
+         referenceType = "1">
+      </LocationScenarioReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -96,9 +127,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
-            BuildableName = "CardiacID.app"
-            BlueprintName = "CardiacID"
+            BlueprintIdentifier = "FBF0C0BB2E70DF25005C425B"
+            BuildableName = "CardiacID Watch App.app"
+            BlueprintName = "CardiacID Watch App"
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

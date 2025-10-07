@@ -531,7 +531,7 @@ struct EnrollmentRequiredView: View {
     private func openWatchApp() {
         // Try to open the watch app
         // First try the specific HeartID watch app URL
-        if let watchAppURL = URL(string: "x-apple-watch://ARGOS.CardiacID") {
+        if let watchAppURL = URL(string: "x-apple-watch://ARGOS.CardiacID_Watch_App") {
             if UIApplication.shared.canOpenURL(watchAppURL) {
                 UIApplication.shared.open(watchAppURL)
                 return

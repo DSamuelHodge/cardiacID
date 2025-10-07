@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/jimlocke/Desktop/HeartID Mobile (Backup Sep 18 2230)/Cardiac ID/CardiacID/build/Release-iphoneos/CardiacID.app/CardiacID'
-relocations:     []
-...

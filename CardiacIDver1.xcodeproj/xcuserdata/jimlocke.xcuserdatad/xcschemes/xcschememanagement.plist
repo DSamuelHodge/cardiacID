@@ -4,12 +4,14 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>CardiacID Watch App 1.xcscheme_^#shared#^_</key>
+		<key>CardiacID_Watch_App_1.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>4</integer>
 		</dict>
-		<key>CardiacID Watch App.xcscheme_^#shared#^_</key>
+		<key>CardiacID_Watch_App.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -17,12 +19,12 @@
 		<key>CardiacID-iPhone-Watch.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>3</integer>
 		</dict>
 		<key>CardiacID-iPhone.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>2</integer>
 		</dict>
 		<key>CardiacID.xcscheme_^#shared#^_</key>
 		<dict>
@@ -42,22 +44,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FBF0C0AF2E70DF25005C425B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>FBF0C0BB2E70DF25005C425B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FBF0C0CA2E70DF27005C425B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FBF0C0D42E70DF27005C425B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

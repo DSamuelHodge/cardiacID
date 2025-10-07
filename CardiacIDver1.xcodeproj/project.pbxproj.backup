@@ -17,7 +17,7 @@
 		FB516C162E82E80F00387BA8 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5169892E7F439800387BA8 /* WatchKit.framework */; };
 		FBE7923E2E87000600489756 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923D2E87000600489756 /* HealthKit.framework */; };
 		FBE792402E87000D00489756 /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923F2E87000D00489756 /* HealthKitUI.framework */; };
-		FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FBF0C0BD2E70DF25005C425B /* CardiacID Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FBF0C0BC2E70DF25005C425B /* CardiacID Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,14 +40,14 @@
 			containerPortal = FBF0C0912E70DF23005C425B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FBF0C0BB2E70DF25005C425B;
-			remoteInfo = CardiacID_Watch_App;
+			remoteInfo = "CardiacID Watch App";
 		};
 		FBF0C0D62E70DF27005C425B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FBF0C0912E70DF23005C425B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FBF0C0BB2E70DF25005C425B;
-			remoteInfo = CardiacID_Watch_App;
+			remoteInfo = "CardiacID Watch App";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -57,7 +57,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolder = Product;
 			files = (
-				FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */,
+				FBF0C0BD2E70DF25005C425B /* CardiacID Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 		};
@@ -65,7 +65,7 @@
 
 /* Begin PBXFileReference section */
 		FB5169532E7F2EF800387BA8 /* CardiacID.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID.xctestplan; sourceTree = "<group>"; };
-		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "CardiacID_Watch_App_1.xctestplan"; sourceTree = "<group>"; };
+		FB5169812E7F383E00387BA8 /* CardiacID Watch App 1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "CardiacID Watch App 1.xctestplan"; sourceTree = "<group>"; };
 		FB5169832E7F41FC00387BA8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169842E7F41FC00387BA8 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKitUI.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169872E7F439000387BA8 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
@@ -78,9 +78,9 @@
 		FBF0C0992E70DF24005C425B /* CardiacID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardiacID.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBF0C0A62E70DF25005C425B /* CardiacIDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacIDTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBF0C0B02E70DF25005C425B /* CardiacIDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacIDUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardiacID_Watch_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacID_Watch_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacID_Watch_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0BC2E70DF25005C425B /* CardiacID Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CardiacID Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0CB2E70DF27005C425B /* CardiacID Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CardiacID Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0D52E70DF27005C425B /* CardiacID Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CardiacID Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -99,19 +99,19 @@
 			path = CardiacIDUITests;
 			sourceTree = "<group>";
 		};
-		FBF0C0C02E70DF25005C425B /* CardiacID_Watch_App */ = {
+		FBF0C0C02E70DF25005C425B /* CardiacID Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_App;
+			path = "CardiacID Watch App";
 			sourceTree = "<group>";
 		};
-		FBF0C0CE2E70DF27005C425B /* CardiacID_Watch_AppTests */ = {
+		FBF0C0CE2E70DF27005C425B /* CardiacID Watch AppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_AppTests;
+			path = "CardiacID Watch AppTests";
 			sourceTree = "<group>";
 		};
-		FBF0C0D82E70DF27005C425B /* CardiacID_Watch_AppUITests */ = {
+		FBF0C0D82E70DF27005C425B /* CardiacID Watch AppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_AppUITests;
+			path = "CardiacID Watch AppUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -176,14 +176,14 @@
 		FBF0C0902E70DF23005C425B = {
 			isa = PBXGroup;
 			children = (
-				FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */,
+				FB5169812E7F383E00387BA8 /* CardiacID Watch App 1.xctestplan */,
 				FB5169532E7F2EF800387BA8 /* CardiacID.xctestplan */,
 				FBF0C09B2E70DF24005C425B /* CardiacID */,
 				FBF0C0A92E70DF25005C425B /* CardiacIDTests */,
 				FBF0C0B32E70DF25005C425B /* CardiacIDUITests */,
-				FBF0C0C02E70DF25005C425B /* CardiacID_Watch_App */,
-				FBF0C0CE2E70DF27005C425B /* CardiacID_Watch_AppTests */,
-				FBF0C0D82E70DF27005C425B /* CardiacID_Watch_AppUITests */,
+				FBF0C0C02E70DF25005C425B /* CardiacID Watch App */,
+				FBF0C0CE2E70DF27005C425B /* CardiacID Watch AppTests */,
+				FBF0C0D82E70DF27005C425B /* CardiacID Watch AppUITests */,
 				FB5169822E7F41FC00387BA8 /* Frameworks */,
 				FBF0C09A2E70DF24005C425B /* Products */,
 				FB54B92C2E94CDE900F2D2E9 /* FIX_LSTAT_ERROR_GUIDE.md */,
@@ -198,9 +198,9 @@
 				FBF0C0992E70DF24005C425B /* CardiacID.app */,
 				FBF0C0A62E70DF25005C425B /* CardiacIDTests.xctest */,
 				FBF0C0B02E70DF25005C425B /* CardiacIDUITests.xctest */,
-				FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */,
-				FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */,
-				FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */,
+				FBF0C0BC2E70DF25005C425B /* CardiacID Watch App.app */,
+				FBF0C0CB2E70DF27005C425B /* CardiacID Watch AppTests.xctest */,
+				FBF0C0D52E70DF27005C425B /* CardiacID Watch AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -269,9 +269,9 @@
 			productReference = FBF0C0B02E70DF25005C425B /* CardiacIDUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		FBF0C0BB2E70DF25005C425B /* CardiacID_Watch_App */ = {
+		FBF0C0BB2E70DF25005C425B /* CardiacID Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FBF0C0DF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_App" */;
+			buildConfigurationList = FBF0C0DF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch App" */;
 			buildPhases = (
 				FBF0C0B82E70DF25005C425B /* Sources */,
 				FBF0C0B92E70DF25005C425B /* Frameworks */,
@@ -280,16 +280,16 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				FBF0C0C02E70DF25005C425B /* CardiacID_Watch_App */,
+				FBF0C0C02E70DF25005C425B /* CardiacID Watch App */,
 			);
-			name = CardiacID_Watch_App;
-			productName = CardiacID_Watch_App;
-			productReference = FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */;
+			name = "CardiacID Watch App";
+			productName = "CardiacID Watch App";
+			productReference = FBF0C0BC2E70DF25005C425B /* CardiacID Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
-		FBF0C0CA2E70DF27005C425B /* CardiacID_Watch_AppTests */ = {
+		FBF0C0CA2E70DF27005C425B /* CardiacID Watch AppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FBF0C0EC2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_AppTests" */;
+			buildConfigurationList = FBF0C0EC2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch AppTests" */;
 			buildPhases = (
 				FBF0C0C72E70DF27005C425B /* Sources */,
 				FBF0C0C82E70DF27005C425B /* Frameworks */,
@@ -301,16 +301,16 @@
 				FBF0C0CD2E70DF27005C425B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				FBF0C0CE2E70DF27005C425B /* CardiacID_Watch_AppTests */,
+				FBF0C0CE2E70DF27005C425B /* CardiacID Watch AppTests */,
 			);
-			name = CardiacID_Watch_AppTests;
-			productName = CardiacID_Watch_AppTests;
-			productReference = FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */;
+			name = "CardiacID Watch AppTests";
+			productName = "CardiacID Watch AppTests";
+			productReference = FBF0C0CB2E70DF27005C425B /* CardiacID Watch AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		FBF0C0D42E70DF27005C425B /* CardiacID_Watch_AppUITests */ = {
+		FBF0C0D42E70DF27005C425B /* CardiacID Watch AppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FBF0C0EF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_AppUITests" */;
+			buildConfigurationList = FBF0C0EF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch AppUITests" */;
 			buildPhases = (
 				FBF0C0D12E70DF27005C425B /* Sources */,
 				FBF0C0D22E70DF27005C425B /* Frameworks */,
@@ -322,11 +322,11 @@
 				FBF0C0D72E70DF27005C425B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				FBF0C0D82E70DF27005C425B /* CardiacID_Watch_AppUITests */,
+				FBF0C0D82E70DF27005C425B /* CardiacID Watch AppUITests */,
 			);
-			name = CardiacID_Watch_AppUITests;
-			productName = CardiacID_Watch_AppUITests;
-			productReference = FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */;
+			name = "CardiacID Watch AppUITests";
+			productName = "CardiacID Watch AppUITests";
+			productReference = FBF0C0D52E70DF27005C425B /* CardiacID Watch AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -384,9 +384,9 @@
 				FBF0C0982E70DF24005C425B /* CardiacID */,
 				FBF0C0A52E70DF25005C425B /* CardiacIDTests */,
 				FBF0C0AF2E70DF25005C425B /* CardiacIDUITests */,
-				FBF0C0BB2E70DF25005C425B /* CardiacID_Watch_App */,
-				FBF0C0CA2E70DF27005C425B /* CardiacID_Watch_AppTests */,
-				FBF0C0D42E70DF27005C425B /* CardiacID_Watch_AppUITests */,
+				FBF0C0BB2E70DF25005C425B /* CardiacID Watch App */,
+				FBF0C0CA2E70DF27005C425B /* CardiacID Watch AppTests */,
+				FBF0C0D42E70DF27005C425B /* CardiacID Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -470,12 +470,12 @@
 		};
 		FBF0C0CD2E70DF27005C425B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FBF0C0BB2E70DF25005C425B /* CardiacID_Watch_App */;
+			target = FBF0C0BB2E70DF25005C425B /* CardiacID Watch App */;
 			targetProxy = FBF0C0CC2E70DF27005C425B /* PBXContainerItemProxy */;
 		};
 		FBF0C0D72E70DF27005C425B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FBF0C0BB2E70DF25005C425B /* CardiacID_Watch_App */;
+			target = FBF0C0BB2E70DF25005C425B /* CardiacID Watch App */;
 			targetProxy = FBF0C0D62E70DF27005C425B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -597,13 +597,13 @@
 			};
 			name = Release;
 		};
-		FBF0C0E02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_App" */ = {
+		FBF0C0E02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch App" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = CardiacID_Watch_App/CardiacID_Watch_App.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "CardiacID Watch App/CardiacID Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
@@ -626,13 +626,13 @@
 			};
 			name = Debug;
 		};
-		FBF0C0E12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_App" */ = {
+		FBF0C0E12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch App" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = CardiacID_Watch_App/CardiacID_Watch_App.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "CardiacID Watch App/CardiacID Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
@@ -875,7 +875,7 @@
 			};
 			name = Release;
 		};
-		FBF0C0ED2E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_AppTests" */ = {
+		FBF0C0ED2E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch AppTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -901,12 +901,12 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID_Watch_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID_Watch_App";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID Watch App";
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
-		FBF0C0EE2E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_AppTests" */ = {
+		FBF0C0EE2E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch AppTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -932,13 +932,13 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID_Watch_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID_Watch_App";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID Watch App";
 				VALIDATE_PRODUCT = YES;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
-		FBF0C0F02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_AppUITests" */ = {
+		FBF0C0F02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch AppUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -963,12 +963,12 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = CardiacID_Watch_App;
+				TEST_TARGET_NAME = "CardiacID Watch App";
 				WATCHOS_DEPLOYMENT_TARGET = 11.5;
 			};
 			name = Debug;
 		};
-		FBF0C0F12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_AppUITests" */ = {
+		FBF0C0F12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch AppUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -993,7 +993,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = CardiacID_Watch_App;
+				TEST_TARGET_NAME = "CardiacID Watch App";
 				VALIDATE_PRODUCT = YES;
 				WATCHOS_DEPLOYMENT_TARGET = 11.5;
 			};
@@ -1010,11 +1010,11 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		FBF0C0DF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_App" */ = {
+		FBF0C0DF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FBF0C0E02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_App" */,
-				FBF0C0E12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_App" */,
+				FBF0C0E02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch App" */,
+				FBF0C0E12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch App" */,
 			);
 			defaultConfigurationName = Release;
 		};
@@ -1042,19 +1042,19 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		FBF0C0EC2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_AppTests" */ = {
+		FBF0C0EC2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch AppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FBF0C0ED2E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_AppTests" */,
-				FBF0C0EE2E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_AppTests" */,
+				FBF0C0ED2E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch AppTests" */,
+				FBF0C0EE2E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch AppTests" */,
 			);
 			defaultConfigurationName = Release;
 		};
-		FBF0C0EF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID_Watch_AppUITests" */ = {
+		FBF0C0EF2E70DF27005C425B /* Build configuration list for PBXNativeTarget "CardiacID Watch AppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FBF0C0F02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID_Watch_AppUITests" */,
-				FBF0C0F12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID_Watch_AppUITests" */,
+				FBF0C0F02E70DF27005C425B /* Debug configuration for PBXNativeTarget "CardiacID Watch AppUITests" */,
+				FBF0C0F12E70DF27005C425B /* Release configuration for PBXNativeTarget "CardiacID Watch AppUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};
