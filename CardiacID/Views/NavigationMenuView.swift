@@ -10,6 +10,7 @@ import SwiftUI
 struct NavigationMenuView: View {
     @Binding var isPresented: Bool
     @EnvironmentObject private var authViewModel: AuthViewModel
+    @State private var selectedDestination: ViewDestination?
     
     private let colors = HeartIDColors()
     
@@ -90,7 +91,9 @@ struct NavigationMenuView: View {
                                 
                                 LazyVStack(spacing: 8) {
                                     ForEach(category.views, id: \.title) { viewItem in
-                                        NavigationLink(destination: destinationView(for: viewItem.destination)) {
+                                        Button(action: {
+                                            selectedDestination = viewItem.destination
+                                        }) {
                                             HStack(spacing: 15) {
                                                 Image(systemName: viewItem.icon)
                                                     .font(.system(size: 20))
@@ -132,6 +135,37 @@ struct NavigationMenuView: View {
                     .foregroundColor(colors.accent)
                 }
             }
+        }
+        .sheet(item: $selectedDestination) { destination in
+            NavigationView {
+                destinationView(for: destination)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                selectedDestination = nil
+                            }
+                            .foregroundColor(colors.accent)
+                        }
+                    }
+            }
+        }
+    }
+    
+    private func viewDescription(for destination: ViewDestination) -> String {
+        switch destination {
+        case .login: return "Sign in to your account"
+        case .enterpriseAuth: return "Enterprise authentication"
+        case .passwordlessAuth: return "Passwordless authentication methods"
+        case .enrollment: return "Enroll your device"
+        case .dashboard: return "Main app dashboard"
+        case .profile: return "User profile settings"
+        case .activityLog: return "View activity history"
+        case .deviceManagement: return "Manage connected devices"
+        case .technologyManagement: return "Technology integrations"
+        case .settings: return "App settings"
+        case .securitySettings: return "Security preferences"
+        case .lockoutSettings: return "Lockout configuration"
+        case .debugPanel: return "Debug information"
         }
     }
     
@@ -183,7 +217,7 @@ struct ViewItem {
     let destination: ViewDestination
 }
 
-enum ViewDestination {
+enum ViewDestination: Identifiable {
     case login
     case enterpriseAuth
     case passwordlessAuth
@@ -197,6 +231,24 @@ enum ViewDestination {
     case securitySettings
     case lockoutSettings
     case debugPanel
+    
+    var id: String {
+        switch self {
+        case .login: return "login"
+        case .enterpriseAuth: return "enterpriseAuth"
+        case .passwordlessAuth: return "passwordlessAuth"
+        case .enrollment: return "enrollment"
+        case .dashboard: return "dashboard"
+        case .profile: return "profile"
+        case .activityLog: return "activityLog"
+        case .deviceManagement: return "deviceManagement"
+        case .technologyManagement: return "technologyManagement"
+        case .settings: return "settings"
+        case .securitySettings: return "securitySettings"
+        case .lockoutSettings: return "lockoutSettings"
+        case .debugPanel: return "debugPanel"
+        }
+    }
 }
 
 // MARK: - Preview

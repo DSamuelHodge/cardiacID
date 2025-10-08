@@ -56,6 +56,8 @@ struct TechnologyManagementView: View {
                 )
             }
             .background(colors.background)
+            .navigationTitle("Technology Management")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingSettings = true }) {
@@ -65,15 +67,19 @@ struct TechnologyManagementView: View {
                 }
             }
             .sheet(isPresented: $showingSettings) {
-                TechnologySettingsView(
-                    entraIDService: entraIDService,
-                    bluetoothService: bluetoothService,
-                    nfcService: nfcService
-                )
+                NavigationView {
+                    TechnologySettingsView(
+                        entraIDService: entraIDService,
+                        bluetoothService: bluetoothService,
+                        nfcService: nfcService
+                    )
+                }
             }
             .sheet(isPresented: $showingDeviceDetails) {
                 if let device = selectedDevice {
-                    DeviceDetailView(device: device)
+                    NavigationView {
+                        DeviceDetailView(device: device)
+                    }
                 }
             }
             .alert("Error", isPresented: $showingError) {
@@ -611,6 +617,13 @@ struct LegacySystemsManagementView: View {
 // MARK: - Passwordless Auth Management View
 struct PasswordlessAuthManagementView: View {
     @ObservedObject var passwordlessService: PasswordlessAuthService
+    @State private var selectedMethod: PasswordlessMethod?
+    @State private var showingEnrollmentSheet = false
+    @State private var showingTestSheet = false
+    @State private var showingAlert = false
+    @State private var alertMessage = ""
+    @State private var isProcessing = false
+    
     private let colors = HeartIDColors()
     
     var body: some View {
@@ -629,7 +642,14 @@ struct PasswordlessAuthManagementView: View {
                     .font(.headline)
                 
                 ForEach(passwordlessService.availableMethods) { method in
-                    TechnologyPasswordlessMethodRow(method: method)
+                    TechnologyPasswordlessMethodRow(method: method) { selectedMethod in
+                        self.selectedMethod = selectedMethod
+                        if selectedMethod.isEnrolled {
+                            showUnenrollAlert(for: selectedMethod)
+                        } else {
+                            showingEnrollmentSheet = true
+                        }
+                    }
                 }
             }
             .padding()
@@ -638,17 +658,79 @@ struct PasswordlessAuthManagementView: View {
             
             // Passwordless Actions
             VStack(spacing: 12) {
-                Button("Configure Methods") {
-                    // Navigate to method configuration
+                Button("Configure All Methods") {
+                    showingEnrollmentSheet = true
                 }
                 .buttonStyle(PrimaryButtonStyle())
+                .disabled(isProcessing)
                 
                 Button("Test Authentication") {
-                    // Test passwordless auth
+                    if !passwordlessService.getEnrolledMethods().isEmpty {
+                        showingTestSheet = true
+                    } else {
+                        alertMessage = "Please enroll at least one authentication method first."
+                        showingAlert = true
+                    }
                 }
                 .buttonStyle(SecondaryButtonStyle())
+                .disabled(isProcessing || passwordlessService.getEnrolledMethods().isEmpty)
+                
+                if isProcessing {
+                    ProgressView("Processing...")
+                        .font(.caption)
+                        .foregroundColor(colors.text.opacity(0.7))
+                }
             }
         }
+        .sheet(isPresented: $showingEnrollmentSheet) {
+            if let method = selectedMethod {
+                PasswordlessEnrollmentView(
+                    method: method,
+                    passwordlessService: passwordlessService,
+                    isPresented: $showingEnrollmentSheet
+                )
+            } else {
+                PasswordlessConfigurationView(
+                    passwordlessService: passwordlessService,
+                    isPresented: $showingEnrollmentSheet
+                )
+            }
+        }
+        .sheet(isPresented: $showingTestSheet) {
+            PasswordlessTestView(
+                passwordlessService: passwordlessService,
+                isPresented: $showingTestSheet
+            )
+        }
+        .alert("Passwordless Authentication", isPresented: $showingAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
+        }
+        .onReceive(passwordlessService.enrollmentPublisher) { result in
+            isProcessing = false
+            if result.success {
+                alertMessage = "Successfully enrolled \(result.method.name)"
+            } else {
+                alertMessage = result.error ?? "Enrollment failed"
+            }
+            showingAlert = true
+        }
+        .onReceive(passwordlessService.authResultPublisher) { result in
+            isProcessing = false
+            if result.success {
+                alertMessage = "Authentication successful with \(result.method.name)"
+            } else {
+                alertMessage = result.error ?? "Authentication failed"
+            }
+            showingAlert = true
+        }
+    }
+    
+    private func showUnenrollAlert(for method: PasswordlessMethod) {
+        alertMessage = "Do you want to unenroll \(method.name)?"
+        showingAlert = true
+        // Note: In a real implementation, you'd add a confirmation action here
     }
 }
 
@@ -1241,46 +1323,44 @@ struct DeviceDetailView: View {
     private let colors = HeartIDColors()
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Device Header
-                    VStack(spacing: 12) {
-                        Image(systemName: deviceIcon(for: device.type))
-                            .font(.system(size: 60))
-                            .foregroundColor(colors.accent)
-                        
-                        Text(device.name)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text(device.type.rawValue.capitalized)
-                            .font(.subheadline)
-                            .foregroundColor(colors.text.opacity(0.7))
-                    }
-                    .padding()
-                    .background(colors.surface)
-                    .cornerRadius(16)
+        ScrollView {
+            VStack(spacing: 20) {
+                // Device Header
+                VStack(spacing: 12) {
+                    Image(systemName: deviceIcon(for: device.type))
+                        .font(.system(size: 60))
+                        .foregroundColor(colors.accent)
                     
-                    // Device Information
-                    DeviceInfoSection(device: device)
+                    Text(device.name)
+                        .font(.title2)
+                        .fontWeight(.bold)
                     
-                    // Device Actions
-                    DeviceActionsSection(device: device)
-                    
-                    // Device Status
-                    DeviceStatusSection(device: device)
+                    Text(device.type.rawValue.capitalized)
+                        .font(.subheadline)
+                        .foregroundColor(colors.text.opacity(0.7))
                 }
                 .padding()
+                .background(colors.surface)
+                .cornerRadius(16)
+                
+                // Device Information
+                DeviceInfoSection(device: device)
+                
+                // Device Actions
+                DeviceActionsSection(device: device)
+                
+                // Device Status
+                DeviceStatusSection(device: device)
             }
-            .background(colors.background)
-            .navigationTitle("Device Details")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
+            .padding()
+        }
+        .background(colors.background)
+        .navigationTitle("Device Details")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Done") {
+                    dismiss()
                 }
             }
         }
@@ -1395,43 +1475,41 @@ struct TechnologySettingsView: View {
     private let colors = HeartIDColors()
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // EntraID Settings
-                    SettingsSection(
-                        title: "EntraID Configuration",
-                        icon: "building.2.crop.circle"
-                    ) {
-                        EntraIDSettingsView(service: entraIDService)
-                    }
-                    
-                    // Bluetooth Settings
-                    SettingsSection(
-                        title: "Bluetooth Configuration",
-                        icon: "bluetooth"
-                    ) {
-                        BluetoothSettingsView(service: bluetoothService)
-                    }
-                    
-                    // NFC Settings
-                    SettingsSection(
-                        title: "NFC Configuration",
-                        icon: "wave.3.right"
-                    ) {
-                        NFCSettingsView(service: nfcService)
-                    }
+        ScrollView {
+            VStack(spacing: 20) {
+                // EntraID Settings
+                SettingsSection(
+                    title: "EntraID Configuration",
+                    icon: "building.2.crop.circle"
+                ) {
+                    EntraIDSettingsView(service: entraIDService)
                 }
-                .padding()
+                
+                // Bluetooth Settings
+                SettingsSection(
+                    title: "Bluetooth Configuration",
+                    icon: "bluetooth"
+                ) {
+                    BluetoothSettingsView(service: bluetoothService)
+                }
+                
+                // NFC Settings
+                SettingsSection(
+                    title: "NFC Configuration",
+                    icon: "wave.3.right"
+                ) {
+                    NFCSettingsView(service: nfcService)
+                }
             }
-            .background(colors.background)
-            .navigationTitle("Technology Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
+            .padding()
+        }
+        .background(colors.background)
+        .navigationTitle("Technology Settings")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Done") {
+                    dismiss()
                 }
             }
         }
@@ -1568,28 +1646,37 @@ struct LegacySystemRow: View {
 
 struct TechnologyPasswordlessMethodRow: View {
     let method: PasswordlessMethod
+    let onTap: (PasswordlessMethod) -> Void
     private let colors = HeartIDColors()
     
     var body: some View {
-        HStack {
-            Image(systemName: methodIcon(for: method.type))
-                .foregroundColor(colors.accent)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(method.name)
-                    .font(.subheadline)
-                    .foregroundColor(colors.text)
-                Text(methodTypeDescription(for: method.type))
-                    .font(.caption)
-                    .foregroundColor(colors.text.opacity(0.7))
+        Button(action: {
+            onTap(method)
+        }) {
+            HStack {
+                Image(systemName: methodIcon(for: method.type))
+                    .foregroundColor(colors.accent)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(method.name)
+                        .font(.subheadline)
+                        .foregroundColor(colors.text)
+                    Text(methodTypeDescription(for: method.type))
+                        .font(.caption)
+                        .foregroundColor(colors.text.opacity(0.7))
+                }
+                
+                Spacer()
+                
+                Image(systemName: method.isEnrolled ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(method.isEnrolled ? colors.success : colors.text.opacity(0.5))
             }
-            
-            Spacer()
-            
-            Image(systemName: method.isEnrolled ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(method.isEnrolled ? colors.success : colors.text.opacity(0.5))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(colors.surface.opacity(0.5))
+            .cornerRadius(8)
         }
-        .padding(.vertical, 4)
+        .buttonStyle(PlainButtonStyle())
     }
     
     private func methodIcon(for type: PasswordlessMethodType) -> String {
@@ -1645,4 +1732,429 @@ struct KeychainItemRow: View {
         .environmentObject(AuthenticationManager())
         .environmentObject(WatchConnectivityService.shared)
         .environmentObject(AuthViewModel())
+}
+
+// MARK: - Passwordless Enrollment View
+struct PasswordlessEnrollmentView: View {
+    let method: PasswordlessMethod
+    @ObservedObject var passwordlessService: PasswordlessAuthService
+    @Binding var isPresented: Bool
+    @State private var isEnrolling = false
+    @State private var enrollmentStep = 0
+    @State private var heartPattern: HeartPattern?
+    
+    private let colors = HeartIDColors()
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                // Method Header
+                VStack(spacing: 16) {
+                    Image(systemName: methodIcon(for: method.type))
+                        .font(.system(size: 60))
+                        .foregroundColor(colors.accent)
+                    
+                    Text("Enroll \(method.name)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(colors.text)
+                    
+                    Text(methodTypeDescription(for: method.type))
+                        .font(.subheadline)
+                        .foregroundColor(colors.text.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 20)
+                
+                // Enrollment Steps
+                VStack(spacing: 20) {
+                    if enrollmentStep == 0 {
+                        VStack(spacing: 16) {
+                            Text("Step 1: Prepare for Enrollment")
+                                .font(.headline)
+                                .foregroundColor(colors.text)
+                            
+                            Text("Make sure you're in a quiet environment and ready to capture your heart pattern.")
+                                .font(.body)
+                                .foregroundColor(colors.text.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                            
+                            Button("Start Enrollment") {
+                                enrollmentStep = 1
+                            }
+                            .buttonStyle(PrimaryButtonStyle())
+                        }
+                    } else if enrollmentStep == 1 {
+                        VStack(spacing: 16) {
+                            Text("Step 2: Capture Heart Pattern")
+                                .font(.headline)
+                                .foregroundColor(colors.text)
+                            
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 80))
+                                .foregroundColor(colors.accent)
+                                .scaleEffect(isEnrolling ? 1.2 : 1.0)
+                                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isEnrolling)
+                            
+                            Text("Place your finger on the heart rate sensor and hold still...")
+                                .font(.body)
+                                .foregroundColor(colors.text.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                            
+                            if isEnrolling {
+                                ProgressView("Capturing pattern...")
+                                    .font(.caption)
+                                    .foregroundColor(colors.text.opacity(0.7))
+                            } else {
+                                Button("Start Capture") {
+                                    startEnrollment()
+                                }
+                                .buttonStyle(PrimaryButtonStyle())
+                            }
+                        }
+                    } else if enrollmentStep == 2 {
+                        VStack(spacing: 16) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(colors.success)
+                            
+                            Text("Enrollment Complete!")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(colors.text)
+                            
+                            Text("\(method.name) has been successfully enrolled.")
+                                .font(.body)
+                                .foregroundColor(colors.text.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                            
+                            Button("Done") {
+                                isPresented = false
+                            }
+                            .buttonStyle(PrimaryButtonStyle())
+                        }
+                    }
+                }
+                .padding()
+                .background(colors.surface)
+                .cornerRadius(16)
+                
+                Spacer()
+            }
+            .padding()
+            .background(colors.background)
+            .navigationTitle("Enroll Method")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        isPresented = false
+                    }
+                    .foregroundColor(colors.accent)
+                }
+            }
+        }
+    }
+    
+    private func startEnrollment() {
+        isEnrolling = true
+        
+        // Simulate heart pattern capture
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            isEnrolling = false
+            enrollmentStep = 2
+            
+            // Create a mock heart pattern and enroll the method
+            let mockPattern = HeartPattern(
+                heartRateData: [70, 72, 68, 75, 73, 71, 74, 69, 76, 72],
+                qualityScore: 0.9,
+                confidence: 0.85,
+                deviceId: "mock-device"
+            )
+            
+            passwordlessService.enroll(method: method, with: mockPattern)
+        }
+    }
+    
+    private func methodIcon(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "faceid"
+        case .fido2: return "key.horizontal"
+        case .nfc: return "wave.3.right"
+        case .bluetooth: return "bluetooth"
+        case .heartID: return "heart.fill"
+        }
+    }
+    
+    private func methodTypeDescription(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "Biometric authentication"
+        case .fido2: return "FIDO2 security key"
+        case .nfc: return "NFC authentication"
+        case .bluetooth: return "Bluetooth authentication"
+        case .heartID: return "Heart pattern authentication"
+        }
+    }
+}
+
+// MARK: - Passwordless Configuration View
+struct PasswordlessConfigurationView: View {
+    @ObservedObject var passwordlessService: PasswordlessAuthService
+    @Binding var isPresented: Bool
+    
+    private let colors = HeartIDColors()
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Configuration Header
+                    VStack(spacing: 16) {
+                        Image(systemName: "person.badge.key")
+                            .font(.system(size: 60))
+                            .foregroundColor(colors.accent)
+                        
+                        Text("Configure Passwordless Methods")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(colors.text)
+                        
+                        Text("Manage your passwordless authentication methods")
+                            .font(.subheadline)
+                            .foregroundColor(colors.text.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 20)
+                    
+                    // Available Methods
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Available Methods")
+                            .font(.headline)
+                            .foregroundColor(colors.text)
+                        
+                        ForEach(passwordlessService.availableMethods) { method in
+                            HStack {
+                                Image(systemName: methodIcon(for: method.type))
+                                    .foregroundColor(colors.accent)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(method.name)
+                                        .font(.subheadline)
+                                        .foregroundColor(colors.text)
+                                    Text(methodTypeDescription(for: method.type))
+                                        .font(.caption)
+                                        .foregroundColor(colors.text.opacity(0.7))
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: method.isEnrolled ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(method.isEnrolled ? colors.success : colors.text.opacity(0.5))
+                            }
+                            .padding()
+                            .background(colors.surface)
+                            .cornerRadius(8)
+                        }
+                    }
+                    
+                    // Configuration Actions
+                    VStack(spacing: 12) {
+                        Button("Enroll All Methods") {
+                            // In a real implementation, this would enroll all available methods
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        
+                        Button("Reset All Methods") {
+                            // In a real implementation, this would reset all methods
+                        }
+                        .buttonStyle(SecondaryButtonStyle())
+                    }
+                }
+                .padding()
+            }
+            .background(colors.background)
+            .navigationTitle("Configuration")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        isPresented = false
+                    }
+                    .foregroundColor(colors.accent)
+                }
+            }
+        }
+    }
+    
+    private func methodIcon(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "faceid"
+        case .fido2: return "key.horizontal"
+        case .nfc: return "wave.3.right"
+        case .bluetooth: return "bluetooth"
+        case .heartID: return "heart.fill"
+        }
+    }
+    
+    private func methodTypeDescription(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "Biometric authentication"
+        case .fido2: return "FIDO2 security key"
+        case .nfc: return "NFC authentication"
+        case .bluetooth: return "Bluetooth authentication"
+        case .heartID: return "Heart pattern authentication"
+        }
+    }
+}
+
+// MARK: - Passwordless Test View
+struct PasswordlessTestView: View {
+    @ObservedObject var passwordlessService: PasswordlessAuthService
+    @Binding var isPresented: Bool
+    @State private var selectedMethod: PasswordlessMethod?
+    @State private var isTesting = false
+    @State private var testResult: String?
+    
+    private let colors = HeartIDColors()
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                // Test Header
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.shield")
+                        .font(.system(size: 60))
+                        .foregroundColor(colors.accent)
+                    
+                    Text("Test Authentication")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(colors.text)
+                    
+                    Text("Test your enrolled passwordless methods")
+                        .font(.subheadline)
+                        .foregroundColor(colors.text.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 20)
+                
+                // Enrolled Methods
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Enrolled Methods")
+                        .font(.headline)
+                        .foregroundColor(colors.text)
+                    
+                    ForEach(passwordlessService.getEnrolledMethods()) { method in
+                        Button(action: {
+                            selectedMethod = method
+                            startTest(for: method)
+                        }) {
+                            HStack {
+                                Image(systemName: methodIcon(for: method.type))
+                                    .foregroundColor(colors.accent)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(method.name)
+                                        .font(.subheadline)
+                                        .foregroundColor(colors.text)
+                                    Text(methodTypeDescription(for: method.type))
+                                        .font(.caption)
+                                        .foregroundColor(colors.text.opacity(0.7))
+                                }
+                                
+                                Spacer()
+                                
+                                if isTesting && selectedMethod?.id == method.id {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "play.circle")
+                                        .foregroundColor(colors.accent)
+                                }
+                            }
+                            .padding()
+                            .background(colors.surface)
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(isTesting)
+                    }
+                }
+                
+                // Test Result
+                if let result = testResult {
+                    VStack(spacing: 12) {
+                        Image(systemName: result.contains("successful") ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(result.contains("successful") ? colors.success : .red)
+                        
+                        Text(result)
+                            .font(.body)
+                            .foregroundColor(colors.text)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                    .background(colors.surface)
+                    .cornerRadius(12)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .background(colors.background)
+            .navigationTitle("Test Authentication")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        isPresented = false
+                    }
+                    .foregroundColor(colors.accent)
+                }
+            }
+        }
+        .onReceive(passwordlessService.authResultPublisher) { result in
+            isTesting = false
+            if result.success {
+                testResult = "Authentication successful with \(result.method.name)"
+            } else {
+                testResult = "Authentication failed: \(result.error ?? "Unknown error")"
+            }
+        }
+    }
+    
+    private func startTest(for method: PasswordlessMethod) {
+        isTesting = true
+        testResult = nil
+        
+        // Create a mock heart pattern for testing
+        let mockPattern = HeartPattern(
+            heartRateData: [70, 72, 68, 75, 73, 71, 74, 69, 76, 72],
+            qualityScore: 0.9,
+            confidence: 0.85,
+            deviceId: "mock-device"
+        )
+        
+        passwordlessService.authenticate(method: method, with: mockPattern)
+    }
+    
+    private func methodIcon(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "faceid"
+        case .fido2: return "key.horizontal"
+        case .nfc: return "wave.3.right"
+        case .bluetooth: return "bluetooth"
+        case .heartID: return "heart.fill"
+        }
+    }
+    
+    private func methodTypeDescription(for type: PasswordlessMethodType) -> String {
+        switch type {
+        case .biometric: return "Biometric authentication"
+        case .fido2: return "FIDO2 security key"
+        case .nfc: return "NFC authentication"
+        case .bluetooth: return "Bluetooth authentication"
+        case .heartID: return "Heart pattern authentication"
+        }
+    }
 }

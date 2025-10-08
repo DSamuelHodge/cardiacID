@@ -12,7 +12,8 @@ struct PasswordlessAuthView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
+            ScrollView {
+                VStack(spacing: 20) {
                 // Header
                 VStack(spacing: 8) {
                     Image(systemName: "key.horizontal")
@@ -86,6 +87,8 @@ struct PasswordlessAuthView: View {
                 }
                 
                 Spacer()
+                }
+                .padding(.horizontal)
             }
             .navigationTitle("Passwordless")
             .navigationBarTitleDisplayMode(.inline)
