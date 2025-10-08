@@ -9,6 +9,7 @@ struct LoginView: View {
     @State private var showError = false
     @State private var isAuthenticated = false
     @State private var lockoutTimer: Timer?
+    @State private var heartPulse: Bool = false
     
     @StateObject private var authViewModel = AuthViewModel()
     private let colors = HeartIDColors()
@@ -28,8 +29,8 @@ struct LoginView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 60, height: 60)
                             .foregroundColor(colors.accent)
-                            .scaleEffect(1.2)
-                            .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isLoggingIn)
+                            .scaleEffect(heartPulse ? 1.2 : 1.0)
+                            .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: heartPulse)
                         
                         Text("HeartID")
                             .font(.system(size: 36, weight: .bold))
@@ -195,6 +196,7 @@ struct LoginView: View {
         }
         .onAppear {
             startLockoutTimer()
+            startHeartPulse()
         }
         .onDisappear {
             stopLockoutTimer()
@@ -223,6 +225,11 @@ struct LoginView: View {
     private func stopLockoutTimer() {
         lockoutTimer?.invalidate()
         lockoutTimer = nil
+    }
+    
+    private func startHeartPulse() {
+        // Start the heart pulsing animation
+        heartPulse = true
     }
 }
 

@@ -65,7 +65,7 @@
 
 /* Begin PBXFileReference section */
 		FB5169532E7F2EF800387BA8 /* CardiacID.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID.xctestplan; sourceTree = "<group>"; };
-		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "CardiacID_Watch_App_1.xctestplan"; sourceTree = "<group>"; };
+		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID_Watch_App_1.xctestplan; sourceTree = "<group>"; };
 		FB5169832E7F41FC00387BA8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169842E7F41FC00387BA8 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKitUI.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169872E7F439000387BA8 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
@@ -83,9 +83,36 @@
 		FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacID_Watch_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FB54BE212E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "CardiacID" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Utils/HeartIDColors.swift,
+			);
+			target = FBF0C0982E70DF24005C425B /* CardiacID */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		FB54BE222E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "Compile Sources" phase from "CardiacID" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = FBF0C0952E70DF24005C425B /* Sources */;
+			membershipExceptions = (
+				Utils/HeartIDColors.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FBF0C09B2E70DF24005C425B /* CardiacID */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FB54BE212E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "CardiacID" target */,
+				FB54BE222E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "Compile Sources" phase from "CardiacID" target */,
+			);
+			explicitFileTypes = {
+				Utils/HeartIDColors.swift = "compiled.mach-o";
+			};
 			path = CardiacID;
 			sourceTree = "<group>";
 		};

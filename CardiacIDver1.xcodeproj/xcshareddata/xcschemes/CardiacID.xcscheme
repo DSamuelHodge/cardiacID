@@ -110,15 +110,6 @@
             ReferencedContainer = "container:CardiacIDver1.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FBF0C0982E70DF24005C425B"
-            BuildableName = "CardiacID.app"
-            BlueprintName = "CardiacID"
-            ReferencedContainer = "container:CardiacIDver1.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
