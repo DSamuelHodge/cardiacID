@@ -132,22 +132,7 @@ class NFCService: NSObject, ObservableObject {
     
     /// Send authentication request via NFC
     private func sendAuthenticationRequest(_ payload: NFCAuthPayload, via nfcTag: NFCTagData) async throws -> NFCAuthResult {
-        // In a real implementation, this would send the authentication request via NFC
-        // For now, we'll simulate the authentication process
-        
-        // Simulate network delay
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-        
-        // Simulate authentication success based on pattern quality
-        let success = payload.heartPattern.count > 0
-        
-        return NFCAuthResult(
-            success: success,
-            token: success ? encryptionService.generateRandomString(length: 32) ?? "" : nil,
-            expiresAt: success ? Date().addingTimeInterval(300) : nil, // 5 minutes
-            permissions: success ? [.read, .write, .authenticate] : [],
-            error: success ? nil : "Authentication failed"
-        )
+        throw NFCError.notAvailable
     }
     
     // MARK: - NFC Data Exchange
@@ -155,36 +140,13 @@ class NFCService: NSObject, ObservableObject {
     /// Exchange data with NFC tag
     func exchangeData(_ data: Data, with nfcTag: NFCTagData) -> AnyPublisher<Data?, NFCError> {
         return Future<Data?, NFCError> { promise in
-            Task {
-                do {
-                    // Encrypt data before sending
-                    guard let encryptedData = self.encryptionService.encrypt(data: data) else {
-                        promise(.failure(.encryptionFailed))
-                        return
-                    }
-                    
-                    // Send data via NFC
-                    let response = try await self.sendData(encryptedData, via: nfcTag)
-                    
-                    // Decrypt response
-                    let decryptedResponse = response != nil ? self.encryptionService.decrypt(data: response!) : nil
-                    promise(.success(decryptedResponse))
-                } catch {
-                    promise(.failure(error as? NFCError ?? .unknown))
-                }
-            }
+            promise(.failure(.notAvailable))
         }
         .eraseToAnyPublisher()
     }
     
     private func sendData(_ data: Data, via nfcTag: NFCTagData) async throws -> Data? {
-        // In a real implementation, this would send data via NFC
-        // For now, we'll simulate the data exchange
-        
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-        
-        // Simulate response data
-        return encryptionService.generateRandomData(length: 32)
+        throw NFCError.notAvailable
     }
     
     // MARK: - NFC Tag Management
@@ -243,28 +205,11 @@ class NFCService: NSObject, ObservableObject {
     }
     
     private func readTagData() async throws -> NFCTagData {
-        // In a real implementation, this would read data from NFC tag
-        // For now, we'll simulate reading tag data
-        
-        try await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
-        
-        // Simulate tag data
-        return NFCTagData(
-            type: .heartID,
-            data: Data(),
-            timestamp: Date(),
-            deviceId: getDeviceId()
-        )
+        throw NFCError.notAvailable
     }
     
     private func writeTagData(_ tagData: NFCTagData) async throws -> Bool {
-        // In a real implementation, this would write data to NFC tag
-        // For now, we'll simulate writing tag data
-        
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-        
-        // Simulate successful write
-        return true
+        throw NFCError.notAvailable
     }
     
     // MARK: - Device Management
@@ -409,3 +354,4 @@ enum NFCError: Error, LocalizedError {
         }
     }
 }
+

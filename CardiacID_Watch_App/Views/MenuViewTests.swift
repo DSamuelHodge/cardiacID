@@ -3,7 +3,7 @@
 import Testing
 import SwiftUI
 
-@testable import CardiacID  // Changed from HeartID to match project module name
+// @testable import CardiacID  // Commented out - module name conflict
 
 @Suite("MenuView Integration Tests")
 struct MenuViewTests {

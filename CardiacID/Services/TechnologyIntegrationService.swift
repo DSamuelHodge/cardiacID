@@ -278,25 +278,7 @@ class TechnologyIntegrationService: NSObject, ObservableObject {
     /// Sync enterprise devices from EntraID
     func syncEnterpriseDevices() {
         guard entraIDService.isAuthenticated else { return }
-        
-        logActivity(.enterpriseSync, "Syncing enterprise devices")
-        
-        // This would fetch enterprise devices from EntraID
-        // For now, we'll simulate it
-        let enterpriseDevice = IntegratedDevice(
-            id: UUID(),
-            name: "Enterprise Device",
-            type: .enterpriseDevice,
-            status: .connected,
-            capabilities: [.authenticate, .unlock, .status],
-            lastSeen: Date()
-        )
-        
-        if !connectedDevices.contains(where: { $0.id == enterpriseDevice.id }) {
-            connectedDevices.append(enterpriseDevice)
-        }
-        
-        logActivity(.enterpriseSynced, "Enterprise devices synced")
+        // TODO: Implement enterprise device sync with real backend. No simulated devices.
     }
     
     // MARK: - Private Methods
@@ -371,16 +353,7 @@ class TechnologyIntegrationService: NSObject, ObservableObject {
             devices.append(device)
         }
         
-        // Add Apple Watch
-        let watchDevice = IntegratedDevice(
-            id: UUID(),
-            name: "Apple Watch",
-            type: .appleWatch,
-            status: .connected,
-            capabilities: [.authenticate],
-            lastSeen: Date()
-        )
-        devices.append(watchDevice)
+        // Removed the unconditional addition of an Apple Watch device
         
         connectedDevices = devices
         updateIntegrationStatus()
@@ -624,3 +597,4 @@ enum IntegrationError: Error, LocalizedError {
         }
     }
 }
+

@@ -598,9 +598,24 @@ struct AlarmNotificationView: View {
     }
 }
 
+struct MenuProcessingStateView: View {
+    let progress: Double
+    let title: String
+    
+    var body: some View {
+        VStack {
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+    }
+}
+
 #Preview {
     MenuView()
         .environmentObject(AuthenticationService())
         .environmentObject(DataManager())
 }
-

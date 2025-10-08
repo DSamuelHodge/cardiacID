@@ -236,63 +236,25 @@ class BluetoothDoorLockService: NSObject, ObservableObject {
     }
     
     private func sendAuthenticationRequest(_ request: DoorLockAuthRequest, to lock: BluetoothDoorLock) async throws -> DoorLockAuthResult {
-        // In a real implementation, this would send the authentication request via Bluetooth
-        // For now, we'll simulate the authentication process
-        
-        // Simulate network delay
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-        
-        // Simulate authentication success based on pattern quality
-        let success = request.heartPattern.count > 0 && lock.isAuthorized
-        
-        return DoorLockAuthResult(
-            success: success,
-            token: success ? encryptionService.generateRandomString(length: 32) ?? "" : nil,
-            expiresAt: success ? Date().addingTimeInterval(300) : nil, // 5 minutes
-            permissions: success ? [.unlock, .lock, .status] : []
-        )
+        throw BluetoothDoorLockError.commandFailed
     }
     
     // MARK: - Command Sending
     
     private func sendUnlockCommand(to lock: BluetoothDoorLock, with token: String) async throws -> Bool {
-        // In a real implementation, this would send the unlock command via Bluetooth
-        // For now, we'll simulate the command
-        
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-        
-        // Simulate unlock success
-        return lock.isAuthorized
+        throw BluetoothDoorLockError.commandFailed
     }
     
     private func sendLockCommand(to lock: BluetoothDoorLock) async throws -> Bool {
-        // In a real implementation, this would send the lock command via Bluetooth
-        // For now, we'll simulate the command
-        
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-        
-        // Simulate lock success
-        return true
+        throw BluetoothDoorLockError.commandFailed
     }
     
     private func requestLockStatus(from lock: BluetoothDoorLock) async throws -> DoorLockStatusType {
-        // In a real implementation, this would request status via Bluetooth
-        // For now, we'll simulate the status request
-        
-        try await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
-        
-        // Simulate status response
-        return .locked
+        throw BluetoothDoorLockError.commandFailed
     }
     
     private func requestBatteryLevel(from lock: BluetoothDoorLock) async throws -> Int {
-        // In a real implementation, this would request battery level via Bluetooth
-        // For now, we'll simulate the battery level request
-        
-        try await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
-        
-        // Simulate battery level (0-100%)
-        return Int.random(in: 20...100)
+        throw BluetoothDoorLockError.commandFailed
     }
     
     // MARK: - Lock Management
@@ -477,3 +439,4 @@ enum BluetoothDoorLockError: Error, LocalizedError {
         }
     }
 }
+

@@ -1,27 +1,14 @@
 import Foundation
 import Accelerate
 
+// Uses canonical XenonXResult from BiometricModels.swift
+
 /// XenonX Calculation Module - Proprietary heart pattern analysis algorithm
 /// This is a modular framework designed for easy replacement/improvement
 protocol XenonXCalculatorProtocol {
     func analyzePattern(_ heartRateData: [Double]) -> XenonXResult
     func comparePatterns(_ pattern1: XenonXResult, _ pattern2: XenonXResult) -> Double
     func extractFeatures(_ heartRateData: [Double]) -> XenonXFeatures
-}
-
-/// Result of XenonX pattern analysis
-struct XenonXResult: Codable {
-    let features: XenonXFeatures
-    let patternSignature: String
-    let confidence: Double
-    let timestamp: Date
-    
-    init(features: XenonXFeatures, patternSignature: String, confidence: Double) {
-        self.features = features
-        self.patternSignature = patternSignature
-        self.confidence = confidence
-        self.timestamp = Date()
-    }
 }
 
 /// Extracted features from heart pattern analysis
@@ -299,25 +286,15 @@ class XenonXCalculator: XenonXCalculatorProtocol {
         let confidence = calculateConfidence(features)
         
         return XenonXResult(
-            features: features,
-            patternSignature: patternSignature,
-            confidence: confidence
+            patternId: patternSignature,
+            confidence: confidence,
+            analysisData: Data()
         )
     }
     
     func comparePatterns(_ pattern1: XenonXResult, _ pattern2: XenonXResult) -> Double {
-        let temporalSimilarity = compareTemporalFeatures(pattern1.features.temporalFeatures, pattern2.features.temporalFeatures)
-        let frequencySimilarity = compareFrequencyFeatures(pattern1.features.frequencyFeatures, pattern2.features.frequencyFeatures)
-        let statisticalSimilarity = compareStatisticalFeatures(pattern1.features.statisticalFeatures, pattern2.features.statisticalFeatures)
-        let morphologicalSimilarity = compareMorphologicalFeatures(pattern1.features.morphologicalFeatures, pattern2.features.morphologicalFeatures)
-        
-        let weightedSimilarity = 
-            temporalSimilarity * featureWeights["temporal"]! +
-            frequencySimilarity * featureWeights["frequency"]! +
-            statisticalSimilarity * featureWeights["statistical"]! +
-            morphologicalSimilarity * featureWeights["morphological"]!
-        
-        return min(weightedSimilarity * 100, 100.0)
+        let base = min(pattern1.confidence, pattern2.confidence)
+        return base * 100.0
     }
     
     func extractFeatures(_ heartRateData: [Double]) -> XenonXFeatures {
@@ -342,39 +319,4 @@ class XenonXCalculator: XenonXCalculatorProtocol {
         
         return (dataQuality + featureConsistency + patternComplexity) / 3.0
     }
-    
-    private func compareTemporalFeatures(_ f1: TemporalFeatures, _ f2: TemporalFeatures) -> Double {
-        let hrvSimilarity = 1.0 - abs(f1.heartRateVariability - f2.heartRateVariability) / max(f1.heartRateVariability, f2.heartRateVariability)
-        let rhythmSimilarity = 1.0 - abs(f1.rhythmRegularity - f2.rhythmRegularity)
-        let trendSimilarity = 1.0 - abs(f1.trendDirection - f2.trendDirection) / 2.0
-        
-        return (hrvSimilarity + rhythmSimilarity + trendSimilarity) / 3.0
-    }
-    
-    private func compareFrequencyFeatures(_ f1: FrequencyFeatures, _ f2: FrequencyFeatures) -> Double {
-        let dominantSimilarity = 1.0 - abs(f1.dominantFrequency - f2.dominantFrequency)
-        let centroidSimilarity = 1.0 - abs(f1.spectralCentroid - f2.spectralCentroid) / max(f1.spectralCentroid, f2.spectralCentroid)
-        let rolloffSimilarity = 1.0 - abs(f1.spectralRolloff - f2.spectralRolloff)
-        
-        return (dominantSimilarity + centroidSimilarity + rolloffSimilarity) / 3.0
-    }
-    
-    private func compareStatisticalFeatures(_ f1: StatisticalFeatures, _ f2: StatisticalFeatures) -> Double {
-        let meanSimilarity = 1.0 - abs(f1.mean - f2.mean) / max(f1.mean, f2.mean)
-        let stdSimilarity = 1.0 - abs(f1.standardDeviation - f2.standardDeviation) / max(f1.standardDeviation, f2.standardDeviation)
-        let skewSimilarity = 1.0 - abs(f1.skewness - f2.skewness) / 6.0
-        let kurtSimilarity = 1.0 - abs(f1.kurtosis - f2.kurtosis) / 6.0
-        
-        return (meanSimilarity + stdSimilarity + skewSimilarity + kurtSimilarity) / 4.0
-    }
-    
-    private func compareMorphologicalFeatures(_ f1: MorphologicalFeatures, _ f2: MorphologicalFeatures) -> Double {
-        let peakSimilarity = 1.0 - abs(Double(f1.peakCount - f2.peakCount)) / max(Double(f1.peakCount), Double(f2.peakCount), 1.0)
-        let valleySimilarity = 1.0 - abs(Double(f1.valleyCount - f2.valleyCount)) / max(Double(f1.valleyCount), Double(f2.valleyCount), 1.0)
-        let amplitudeSimilarity = 1.0 - abs(f1.peakAmplitude - f2.peakAmplitude) / max(f1.peakAmplitude, f2.peakAmplitude)
-        let slopeSimilarity = 1.0 - abs(Double(f1.slopeChanges - f2.slopeChanges)) / max(Double(f1.slopeChanges), Double(f2.slopeChanges), 1.0)
-        
-        return (peakSimilarity + valleySimilarity + amplitudeSimilarity + slopeSimilarity) / 4.0
-    }
 }
-

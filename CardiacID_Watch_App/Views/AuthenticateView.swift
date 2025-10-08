@@ -577,4 +577,55 @@ struct CountdownStateView: View {
         .environmentObject(HealthKitService())
 }
 
+// MARK: - Missing State Views
+
+struct CapturingStateView: View {
+    let progress: Double
+    let heartRate: Double
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+                .frame(height: 8)
+            
+            Text("Capturing...")
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            HStack {
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.red)
+                Text("\(Int(heartRate)) BPM")
+                    .font(.body)
+            }
+            
+            Text("Hold still, \(Int((1.0 - progress) * 12)) seconds remaining")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct ProcessingStateView: View {
+    let progress: Double
+    let title: String
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+                .frame(height: 8)
+            
+            Text(title)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text("Processing biometric data...")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
 

@@ -187,7 +187,7 @@ struct EnrollView: View {
                             Text("Get Ready").font(.caption)
                         }
                     case .capturing:
-                        CapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
+                        EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
                     case .processing:
                         ProcessingStateView(progress: processingProgress, title: "Creating Template")
                     case .verification:
@@ -528,7 +528,7 @@ struct EnrollView: View {
 }
 
 // MARK: - Supporting Views
-struct CapturingStateView: View {
+struct EnrollCapturingStateView: View {
     let progress: Double
     let heartRate: Double
     

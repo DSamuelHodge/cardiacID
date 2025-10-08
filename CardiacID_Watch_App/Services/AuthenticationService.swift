@@ -174,8 +174,12 @@ class AuthenticationService: ObservableObject {
         // Compare patterns
         let similarity = xenonXCalculator.comparePatterns(storedPattern, currentPattern)
         
-        // Determine result based on thresholds
-        let result = determineAuthenticationResult(similarity: similarity)
+        // The similarity returned by comparePatterns is on a 0..100 scale.
+        // We normalize it to 0..1 scale before passing to determineAuthenticationResult.
+        let normalizedSimilarity = similarity / 100.0
+        
+        // Determine result based on thresholds (thresholds are on 0..1 scale)
+        let result = determineAuthenticationResult(similarity: normalizedSimilarity)
         
         // Record attempt
         let attempt = AuthenticationAttempt(
