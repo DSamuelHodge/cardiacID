@@ -17,6 +17,7 @@
 		FB516C162E82E80F00387BA8 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5169892E7F439800387BA8 /* WatchKit.framework */; };
 		FBE7923E2E87000600489756 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923D2E87000600489756 /* HealthKit.framework */; };
 		FBE792402E87000D00489756 /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923F2E87000D00489756 /* HealthKitUI.framework */; };
+		FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,22 +40,24 @@
 			containerPortal = FBF0C0912E70DF23005C425B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FBF0C0BB2E70DF25005C425B;
-			remoteInfo = CardiacID_Watch_App;
+			remoteInfo = "CardiacID_Watch_App";
 		};
 		FBF0C0D62E70DF27005C425B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FBF0C0912E70DF23005C425B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FBF0C0BB2E70DF25005C425B;
-			remoteInfo = CardiacID_Watch_App;
+			remoteInfo = "CardiacID_Watch_App";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		FBF0C0E22E70DF27005C425B /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolder = Product;
 			files = (
+				FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 		};
@@ -62,7 +65,7 @@
 
 /* Begin PBXFileReference section */
 		FB5169532E7F2EF800387BA8 /* CardiacID.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID.xctestplan; sourceTree = "<group>"; };
-		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID_Watch_App_1.xctestplan; sourceTree = "<group>"; };
+		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "CardiacID_Watch_App_1.xctestplan"; sourceTree = "<group>"; };
 		FB5169832E7F41FC00387BA8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169842E7F41FC00387BA8 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKitUI.framework; sourceTree = DEVELOPER_DIR; };
 		FB5169872E7F439000387BA8 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
@@ -75,41 +78,14 @@
 		FBF0C0992E70DF24005C425B /* CardiacID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardiacID.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBF0C0A62E70DF25005C425B /* CardiacIDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacIDTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBF0C0B02E70DF25005C425B /* CardiacIDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacIDUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardiacID_Watch_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacID_Watch_AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardiacID_Watch_AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CardiacID_Watch_App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CardiacID_Watch_AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CardiacID_Watch_AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		FB54BE212E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "CardiacID" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Utils/HeartIDColors.swift,
-			);
-			target = FBF0C0982E70DF24005C425B /* CardiacID */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		FB54BE222E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "Compile Sources" phase from "CardiacID" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = FBF0C0952E70DF24005C425B /* Sources */;
-			membershipExceptions = (
-				Utils/HeartIDColors.swift,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FBF0C09B2E70DF24005C425B /* CardiacID */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FB54BE212E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "CardiacID" target */,
-				FB54BE222E956F0900F2D2E9 /* Exceptions for "CardiacID" folder in "Compile Sources" phase from "CardiacID" target */,
-			);
-			explicitFileTypes = {
-				Utils/HeartIDColors.swift = "compiled.mach-o";
-			};
 			path = CardiacID;
 			sourceTree = "<group>";
 		};
@@ -125,17 +101,17 @@
 		};
 		FBF0C0C02E70DF25005C425B /* CardiacID_Watch_App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_App;
+			path = "CardiacID_Watch_App";
 			sourceTree = "<group>";
 		};
 		FBF0C0CE2E70DF27005C425B /* CardiacID_Watch_AppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_AppTests;
+			path = "CardiacID_Watch_AppTests";
 			sourceTree = "<group>";
 		};
 		FBF0C0D82E70DF27005C425B /* CardiacID_Watch_AppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CardiacID_Watch_AppUITests;
+			path = "CardiacID_Watch_AppUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -239,6 +215,7 @@
 				FBF0C0952E70DF24005C425B /* Sources */,
 				FBF0C0962E70DF24005C425B /* Frameworks */,
 				FBF0C0972E70DF24005C425B /* Resources */,
+				FBF0C0E22E70DF27005C425B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
@@ -305,8 +282,8 @@
 			fileSystemSynchronizedGroups = (
 				FBF0C0C02E70DF25005C425B /* CardiacID_Watch_App */,
 			);
-			name = CardiacID_Watch_App;
-			productName = CardiacID_Watch_App;
+			name = "CardiacID_Watch_App";
+			productName = "CardiacID_Watch_App";
 			productReference = FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -326,8 +303,8 @@
 			fileSystemSynchronizedGroups = (
 				FBF0C0CE2E70DF27005C425B /* CardiacID_Watch_AppTests */,
 			);
-			name = CardiacID_Watch_AppTests;
-			productName = CardiacID_Watch_AppTests;
+			name = "CardiacID_Watch_AppTests";
+			productName = "CardiacID_Watch_AppTests";
 			productReference = FBF0C0CB2E70DF27005C425B /* CardiacID_Watch_AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -347,8 +324,8 @@
 			fileSystemSynchronizedGroups = (
 				FBF0C0D82E70DF27005C425B /* CardiacID_Watch_AppUITests */,
 			);
-			name = CardiacID_Watch_AppUITests;
-			productName = CardiacID_Watch_AppUITests;
+			name = "CardiacID_Watch_AppUITests";
+			productName = "CardiacID_Watch_AppUITests";
 			productReference = FBF0C0D52E70DF27005C425B /* CardiacID_Watch_AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
@@ -626,7 +603,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = CardiacID_Watch_App/CardiacID_Watch_App.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "CardiacID_Watch_App/CardiacID_Watch_App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
@@ -637,7 +614,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacID.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -645,7 +622,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -655,7 +632,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = CardiacID_Watch_App/CardiacID_Watch_App.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "CardiacID_Watch_App/CardiacID_Watch_App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
@@ -666,7 +643,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacID.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -675,7 +652,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -687,7 +664,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = CardiacID/CardiacID.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0.4;
+				CURRENT_PROJECT_VERSION = 0.2;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -703,12 +680,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.44;
+				MARKETING_VERSION = 0.22;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -730,7 +707,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = CardiacID/CardiacID.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0.4;
+				CURRENT_PROJECT_VERSION = 0.2;
 				DEVELOPMENT_TEAM = PYGGR5786Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -746,12 +723,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.44;
+				MARKETING_VERSION = 0.22;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -785,7 +762,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacIDTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -818,7 +795,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacIDTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -851,7 +828,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacIDUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -883,7 +860,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ARGOS.CardiacIDUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -925,7 +902,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID_Watch_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID_Watch_App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -957,7 +934,7 @@
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CardiacID_Watch_App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CardiacID_Watch_App";
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -986,7 +963,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = CardiacID_Watch_App;
+				TEST_TARGET_NAME = "CardiacID_Watch_App";
 				WATCHOS_DEPLOYMENT_TARGET = 11.5;
 			};
 			name = Debug;
@@ -1016,7 +993,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = CardiacID_Watch_App;
+				TEST_TARGET_NAME = "CardiacID_Watch_App";
 				VALIDATE_PRODUCT = YES;
 				WATCHOS_DEPLOYMENT_TARGET = 11.5;
 			};
