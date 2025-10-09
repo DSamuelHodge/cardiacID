@@ -92,17 +92,4 @@ struct PatternCharacteristics: Codable {
     }
 }
 
-/// Heart rate sample from HealthKit
-struct HeartRateSample: Identifiable {
-    let id = UUID()
-    let value: Double
-    let timestamp: Date
-    let source: String
-    
-    init(from hkSample: HKQuantitySample) {
-        self.value = hkSample.quantity.doubleValue(for: HKUnit(from: "count/min"))
-        self.timestamp = hkSample.startDate
-        self.source = hkSample.sourceRevision.source.name
-    }
-}
 

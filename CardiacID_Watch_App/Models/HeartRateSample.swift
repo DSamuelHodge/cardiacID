@@ -10,13 +10,14 @@ import HealthKit
 
 /// Represents a single heart rate measurement
 struct HeartRateSample: Codable, Identifiable {
-    let id = UUID()
+    let id: UUID
     let value: Double // Heart rate in BPM
     let timestamp: Date
     let source: String
     let quality: Double // Data quality score (0.0 to 1.0)
     
     init(value: Double, timestamp: Date = Date(), source: String = "Apple Watch", quality: Double = 1.0) {
+        self.id = UUID()
         self.value = value
         self.timestamp = timestamp
         self.source = source
@@ -25,6 +26,7 @@ struct HeartRateSample: Codable, Identifiable {
     
     /// Create HeartRateSample from HealthKit HKQuantitySample
     init(from hkSample: HKQuantitySample) {
+        self.id = UUID()
         let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
         self.value = hkSample.quantity.doubleValue(for: heartRateUnit)
         self.timestamp = hkSample.startDate

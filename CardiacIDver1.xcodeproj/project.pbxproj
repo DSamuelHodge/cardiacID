@@ -17,7 +17,6 @@
 		FB516C162E82E80F00387BA8 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5169892E7F439800387BA8 /* WatchKit.framework */; };
 		FBE7923E2E87000600489756 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923D2E87000600489756 /* HealthKit.framework */; };
 		FBE792402E87000D00489756 /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBE7923F2E87000D00489756 /* HealthKitUI.framework */; };
-		FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FBF0C0BC2E70DF25005C425B /* CardiacID_Watch_App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,12 +51,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		FBF0C0E22E70DF27005C425B /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolder = Product;
 			files = (
-				FBF0C0BD2E70DF25005C425B /* CardiacID_Watch_App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 		};
@@ -242,7 +239,6 @@
 				FBF0C0952E70DF24005C425B /* Sources */,
 				FBF0C0962E70DF24005C425B /* Frameworks */,
 				FBF0C0972E70DF24005C425B /* Resources */,
-				FBF0C0E22E70DF27005C425B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
