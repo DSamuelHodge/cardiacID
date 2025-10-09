@@ -10,11 +10,25 @@ import Foundation
 // MARK: - Authentication Results
 
 /// Result of an authentication attempt
-enum AuthenticationResult {
+enum AuthenticationResult: Codable {
     case approved(confidence: Double)
     case denied(reason: String)
     case retry(message: String)
     case error(message: String)
+    
+    private enum CodingKeys: String, CodingKey {
+        case type
+        case confidence
+        case reason
+        case message
+    }
+    
+    private enum CaseType: String, Codable {
+        case approved
+        case denied
+        case retry
+        case error
+    }
     
     var isSuccessful: Bool {
         if case .approved = self { return true }
@@ -31,6 +45,43 @@ enum AuthenticationResult {
             return message
         case .error(let message):
             return "Error: \(message)"
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(CaseType.self, forKey: .type)
+        switch type {
+        case .approved:
+            let confidence = try container.decode(Double.self, forKey: .confidence)
+            self = .approved(confidence: confidence)
+        case .denied:
+            let reason = try container.decode(String.self, forKey: .reason)
+            self = .denied(reason: reason)
+        case .retry:
+            let message = try container.decode(String.self, forKey: .message)
+            self = .retry(message: message)
+        case .error:
+            let message = try container.decode(String.self, forKey: .message)
+            self = .error(message: message)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+            case .approved(let confidence):
+                try container.encode(CaseType.approved, forKey: .type)
+                try container.encode(confidence, forKey: .confidence)
+            case .denied(let reason):
+                try container.encode(CaseType.denied, forKey: .type)
+                try container.encode(reason, forKey: .reason)
+            case .retry(let message):
+                try container.encode(CaseType.retry, forKey: .type)
+                try container.encode(message, forKey: .message)
+            case .error(let message):
+                try container.encode(CaseType.error, forKey: .type)
+                try container.encode(message, forKey: .message)
         }
     }
 }
@@ -109,7 +160,7 @@ class AuthenticationSession: ObservableObject {
             sessionResult = result
             endSession()
         } else if attempts.count >= maxAttempts {
-            sessionResult = .failed
+            sessionResult = .denied(reason: "Maximum attempts reached")
             endSession()
         }
     }
@@ -139,18 +190,49 @@ class AuthenticationSession: ObservableObject {
 
 /// Records details of a single authentication attempt
 struct AuthenticationAttempt: Codable {
-    let id = UUID()
-    let timestamp = Date()
+    let id: UUID
+    let timestamp: Date
     let result: AuthenticationResult
     let confidenceScore: Double
     let patternMatch: Double
     let duration: TimeInterval
     
     init(result: AuthenticationResult, confidenceScore: Double, patternMatch: Double, duration: TimeInterval) {
+        self.id = UUID()
+        self.timestamp = Date()
         self.result = result
         self.confidenceScore = confidenceScore
         self.patternMatch = patternMatch
         self.duration = duration
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case timestamp
+        case result
+        case confidenceScore
+        case patternMatch
+        case duration
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        self.timestamp = try container.decodeIfPresent(Date.self, forKey: .timestamp) ?? Date()
+        self.result = try container.decode(AuthenticationResult.self, forKey: .result)
+        self.confidenceScore = try container.decode(Double.self, forKey: .confidenceScore)
+        self.patternMatch = try container.decode(Double.self, forKey: .patternMatch)
+        self.duration = try container.decode(TimeInterval.self, forKey: .duration)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(result, forKey: .result)
+        try container.encode(confidenceScore, forKey: .confidenceScore)
+        try container.encode(patternMatch, forKey: .patternMatch)
+        try container.encode(duration, forKey: .duration)
     }
 }
 
@@ -401,3 +483,4 @@ enum AppConfiguration {
     static let maxRetryAttempts: Int = 3
     static let sessionTimeoutMinutes: Int = 5
 }
+
