@@ -36,7 +36,7 @@ class AuthenticationManager: ObservableObject {
         // Supabase service not available in watch app
         
         // Load current user
-        currentUser = dataManager.userProfile
+        currentUser = dataManager.getUserProfile()
         isAuthenticated = currentUser?.isEnrolled ?? false
     }
     
@@ -76,21 +76,20 @@ class AuthenticationManager: ObservableObject {
     func startEnrollment() {
         authenticationState = .enrolling
         
-        // Start heart rate capture
-        healthKitService.startHeartRateCapture()
-        
-        // Listen for completion
-        healthKitService.heartRatePublisher
-            .sink { [weak self] samples in
-                self?.completeEnrollment(with: samples)
+        // Start heart rate capture using duration and completion handler
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] values, error in
+            guard let self = self else { return }
+            if let error = error {
+                self.authenticationState = .error(error.localizedDescription)
+                return
             }
-            .store(in: &cancellables)
+            self.completeEnrollment(with: values)
+        }
     }
     
     /// Complete enrollment with heart rate samples
-    private func completeEnrollment(with samples: [HeartRateSample]) {
-        let heartRateData = samples.map { $0.value }
-        
+    private func completeEnrollment(with samples: [Double]) {
+        let heartRateData = samples
         // Validate data
         guard healthKitService.validateHeartRateData(samples) else {
             authenticationState = .error("Invalid heart rate data")
@@ -102,7 +101,7 @@ class AuthenticationManager: ObservableObject {
         
         if success {
             authenticationState = .enrolled
-            currentUser = dataManager.userProfile
+            currentUser = dataManager.getUserProfile()
         } else {
             authenticationState = .error(authenticationService.errorMessage ?? "Enrollment failed")
         }
@@ -117,21 +116,20 @@ class AuthenticationManager: ObservableObject {
         
         authenticationState = .authenticating
         
-        // Start heart rate capture
-        healthKitService.startHeartRateCapture()
-        
-        // Listen for completion
-        healthKitService.heartRatePublisher
-            .sink { [weak self] samples in
-                self?.completeAuthentication(with: samples)
+        // Start heart rate capture using duration and completion handler
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] values, error in
+            guard let self = self else { return }
+            if let error = error {
+                self.authenticationState = .error(error.localizedDescription)
+                return
             }
-            .store(in: &cancellables)
+            self.completeAuthentication(with: values)
+        }
     }
     
     /// Complete authentication with heart rate samples
-    private func completeAuthentication(with samples: [HeartRateSample]) {
-        let heartRateData = samples.map { $0.value }
-        
+    private func completeAuthentication(with samples: [Double]) {
+        let heartRateData = samples
         // Validate data
         guard healthKitService.validateHeartRateData(samples) else {
             authenticationState = .error("Invalid heart rate data")
@@ -142,18 +140,14 @@ class AuthenticationManager: ObservableObject {
         let result = authenticationService.completeAuthentication(with: heartRateData)
         
         switch result {
-        case .success, .approved:
+        case .approved:
             authenticationState = .authenticated
-        case .retryRequired:
+        case .retry:
             authenticationState = .retryRequired
-        case .failure, .failed:
+        case .denied:
             authenticationState = .error("Authentication failed")
-        case .pending:
-            authenticationState = .error("Authentication pending")
-        case .cancelled:
-            authenticationState = .error("Authentication cancelled")
-        case .systemUnavailable:
-            authenticationState = .error("System unavailable")
+        case .error(let message):
+            authenticationState = .error(message)
         }
     }
     
@@ -179,9 +173,9 @@ class AuthenticationManager: ObservableObject {
         let result = authenticationService.performBackgroundAuthentication()
         
         switch result {
-        case .success, .approved:
+        case .approved:
             isAuthenticated = true
-        case .retryRequired, .failure, .failed, .pending, .cancelled, .systemUnavailable:
+        case .retry, .denied, .error:
             isAuthenticated = false
         }
     }
@@ -246,3 +240,4 @@ enum AuthenticationState {
         }
     }
 }
+

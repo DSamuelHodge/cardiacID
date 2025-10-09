@@ -28,9 +28,17 @@ class DataManager: ObservableObject {
     
     // MARK: - Published Properties
     @Published var isUserEnrolled: Bool = false
+    @Published var userPreferences: UserPreferences = UserPreferences()
+    
+    var currentSecurityLevel: SecurityLevel { userPreferences.securityLevel }
+    
+    var enrollmentDate: Date? { userDefaults.object(forKey: Keys.enrollmentDate) as? Date }
+    var lastAuthenticationDate: Date? { userDefaults.object(forKey: Keys.lastAuthDate) as? Date }
+    var authenticationCount: Int { 0 }
     
     init() {
         self.isUserEnrolled = userDefaults.bool(forKey: Keys.isUserEnrolled)
+        loadUserPreferences()
     }
     
     // MARK: - User Profile Management
@@ -146,5 +154,38 @@ class DataManager: ObservableObject {
         
         let status = SecItemDelete(query as CFDictionary)
         return status == errSecSuccess || status == errSecItemNotFound
+    }
+    
+    // MARK: - User Preferences and Data Reset
+    
+    func saveUserPreferences(_ preferences: UserPreferences) {
+        self.userPreferences = preferences
+        // Persist to UserDefaults
+        if let data = try? JSONEncoder().encode(preferences) {
+            userDefaults.set(data, forKey: "userPreferencesData")
+        }
+    }
+    
+    func loadUserPreferences() {
+        if let data = userDefaults.data(forKey: "userPreferencesData"),
+           let prefs = try? JSONDecoder().decode(UserPreferences.self, from: data) {
+            self.userPreferences = prefs
+        } else {
+            self.userPreferences = UserPreferences()
+        }
+    }
+    
+    func clearAllData() {
+        _ = deleteUserProfile()
+        userDefaults.removeObject(forKey: Keys.isUserEnrolled)
+        userDefaults.removeObject(forKey: Keys.enrollmentDate)
+        userDefaults.removeObject(forKey: Keys.lastAuthDate)
+        userDefaults.removeObject(forKey: "userPreferencesData")
+        DispatchQueue.main.async { self.isUserEnrolled = false }
+    }
+    
+    func resetToDefaults() {
+        self.userPreferences = UserPreferences()
+        saveUserPreferences(self.userPreferences)
     }
 }

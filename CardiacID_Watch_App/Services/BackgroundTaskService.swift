@@ -1,3 +1,4 @@
+#if os(watchOS)
 //
 //  BackgroundTaskService.swift
 //  HeartID Watch App
@@ -114,41 +115,37 @@ class BackgroundTaskService: NSObject, ObservableObject {
     // MARK: - WatchKit Background Tasks
     
     private func scheduleBackgroundTask() {
-        // Schedule background refresh task
-        WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval)) { [weak self] _ in
-            self?.handleBackgroundRefresh()
-        }
-        
-        // Schedule background processing task
-        WKExtension.shared().scheduleBackgroundProcessing(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval * 2)) { [weak self] _ in
-            self?.handleBackgroundProcessing()
+        // Schedule background refresh task using correct WatchKit API
+        WKExtension.shared().scheduleBackgroundRefresh(
+            withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval),
+            userInfo: nil
+        ) { error in
+            // The system has scheduled the task or returned an error
+            if let error = error {
+                print("⚠️ Failed to schedule background refresh: \(error.localizedDescription)")
+            }
+            self.handleBackgroundRefresh()
         }
     }
     
     private func cancelBackgroundTask() {
-        // Cancel scheduled background tasks
-        WKExtension.shared().cancelAllPendingTasks()
+        // WatchKit does not provide an API to cancel scheduled background refresh tasks.
+        // You can choose to schedule a new refresh far in the future if needed.
     }
     
     private func handleBackgroundRefresh() {
         print("🔄 Handling background refresh")
         performBackgroundAuthenticationCheck()
         
-        // Schedule next background refresh
-        WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval)) { [weak self] _ in
-            self?.handleBackgroundRefresh()
-        }
-    }
-    
-    private func handleBackgroundProcessing() {
-        print("⚙️ Handling background processing")
-        
-        // Perform any necessary data cleanup or synchronization
-        cleanupExpiredData()
-        
-        // Schedule next background processing
-        WKExtension.shared().scheduleBackgroundProcessing(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval * 2)) { [weak self] _ in
-            self?.handleBackgroundProcessing()
+        // Schedule next background refresh using correct API
+        WKExtension.shared().scheduleBackgroundRefresh(
+            withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval),
+            userInfo: nil
+        ) { error in
+            if let error = error {
+                print("⚠️ Failed to schedule next background refresh: \(error.localizedDescription)")
+            }
+            self.handleBackgroundRefresh()
         }
     }
     
@@ -279,3 +276,4 @@ enum BackgroundTaskStatus: String, CaseIterable {
         }
     }
 }
+#endif

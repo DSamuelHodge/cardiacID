@@ -48,6 +48,20 @@ enum AuthenticationResult: Codable {
         }
     }
     
+    var requiresRetry: Bool {
+        if case .retry = self { return true }
+        return false
+    }
+    
+    var rawValue: String {
+        switch self {
+        case .approved: return "approved"
+        case .denied: return "denied"
+        case .retry: return "retry"
+        case .error: return "error"
+        }
+    }
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(CaseType.self, forKey: .type)
@@ -431,7 +445,7 @@ struct XenonXResult: Codable {
 // MARK: - Mock Services for Development
 
 /// Mock XenonX calculator for pattern analysis
-class XenonXCalculator {
+class MockXenonXCalculator {
     func analyzePattern(_ heartRateData: [Double]) -> XenonXResult {
         // Mock implementation - in real app this would be sophisticated biometric analysis
         let confidence = Double.random(in: 0.6...0.95)
@@ -460,7 +474,7 @@ class XenonXCalculator {
 // MARK: - Encryption Service
 
 /// Service for encrypting/decrypting biometric templates
-class EncryptionService {
+class HeartIDEncryptionService {
     func encryptXenonXResult(_ result: XenonXResult) -> Data? {
         // Mock implementation - in real app this would use proper encryption
         return try? JSONEncoder().encode(result)
@@ -474,13 +488,4 @@ class EncryptionService {
 
 // MARK: - App Configuration
 
-/// Configuration constants for the biometric system
-enum AppConfiguration {
-    static let defaultCaptureDuration: TimeInterval = 12.0
-    static let minCaptureDuration: TimeInterval = 9.0
-    static let maxCaptureDuration: TimeInterval = 16.0
-    static let minPatternSamples: Int = 8
-    static let maxRetryAttempts: Int = 3
-    static let sessionTimeoutMinutes: Int = 5
-}
 

@@ -606,26 +606,3 @@ struct CapturingStateView: View {
         }
     }
 }
-
-struct ProcessingStateView: View {
-    let progress: Double
-    let title: String
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            ProgressView(value: progress)
-                .progressViewStyle(LinearProgressViewStyle())
-                .frame(height: 8)
-            
-            Text(title)
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text("Processing biometric data...")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
-}
-
-

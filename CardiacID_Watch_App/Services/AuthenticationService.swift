@@ -4,6 +4,12 @@ import Combine
 // MARK: - DataManager Import
 // Using the real DataManager from the Models directory
 
+/// Selection for heart pattern assessment approach
+enum HeartPatternAssessmentMode: String, Codable {
+    case standard
+    case proprietaryXenonX
+}
+
 /// Main authentication service managing enrollment and verification
 class AuthenticationService: ObservableObject {
     @Published var isUserEnrolled = false
@@ -13,8 +19,10 @@ class AuthenticationService: ObservableObject {
     @Published var errorMessage: String?
     var healthKitService: HealthKitService?
     
-    private let xenonXCalculator = XenonXCalculator()
-    private let encryptionService = EncryptionService()
+    /// Select which calculation path to use for heart pattern assessment
+    @Published var assessmentMode: HeartPatternAssessmentMode = .standard
+    
+    // Note: Removed unused XenonXCalculator and HeartIDEncryptionService instances to avoid ambiguous init issues. Reintroduce if needed with explicit module qualification.
     private(set) var dataManager: DataManager?
     
     private var enrollmentPattern: XenonXResult?
@@ -27,6 +35,16 @@ class AuthenticationService: ObservableObject {
     /// Set the HealthKit service
     func setHealthKitService(_ service: HealthKitService) {
         self.healthKitService = service
+    }
+    
+    /// Inject DataManager dependency
+    func setDataManager(_ manager: DataManager) {
+        self.dataManager = manager
+    }
+    
+    /// Set the assessment mode (standard vs proprietary XenonX)
+    func setAssessmentMode(_ mode: HeartPatternAssessmentMode) {
+        self.assessmentMode = mode
     }
     
     // MARK: - Enrollment Process
@@ -62,6 +80,15 @@ class AuthenticationService: ObservableObject {
             print("❌ Enrollment validation failed: \(validation.errorMessage ?? "Unknown error")")
             self.errorMessage = validation.errorMessage
             return false
+        }
+        
+        // If proprietary mode is selected, compute and stash XenonX analysis for later comparisons
+        if assessmentMode == .proprietaryXenonX {
+            let xenon = XenonXCalculator()
+            let analysis = xenon.analyzePattern(heartRateValues)
+            self.enrollmentPattern = analysis
+        } else {
+            self.enrollmentPattern = nil
         }
         
         // Create biometric template
@@ -138,9 +165,18 @@ class AuthenticationService: ObservableObject {
             return .retry(message: validation.errorMessage ?? "Please try again")
         }
         
-        // Compare patterns
-        let storedPattern = profile.biometricTemplate.heartRatePattern
-        let confidence = comparePatterns(stored: storedPattern, captured: heartRateValues)
+        // Compare patterns according to selected assessment mode
+        let confidence: Double
+        if assessmentMode == .proprietaryXenonX, let storedX = self.enrollmentPattern {
+            // Use XenonX proprietary comparison
+            let xenon = XenonXCalculator()
+            let currentX = xenon.analyzePattern(heartRateValues)
+            confidence = xenon.comparePatterns(storedX, currentX)
+        } else {
+            // Use standard direct pattern comparison
+            let storedPattern = profile.biometricTemplate.heartRatePattern
+            confidence = comparePatterns(stored: storedPattern, captured: heartRateValues)
+        }
         
         // Decision threshold
         if confidence >= 0.75 {
@@ -216,14 +252,13 @@ class AuthenticationService: ObservableObject {
     // MARK: - Pattern Management
     
     private func loadStoredPattern() -> XenonXResult? {
-        guard let userProfile = dataManager?.userProfile,
-              let encryptedData = Data(base64Encoded: userProfile.encryptedHeartPattern) else { return nil }
-        
-        return encryptionService.decryptXenonXResult(encryptedData)
+        // Encrypted pattern storage is not used in the current model.
+        // BiometricTemplate is stored within UserProfile; XenonXResult is not persisted.
+        return nil
     }
     
     private func determineAuthenticationResult(similarity: Double) -> AuthenticationResult {
-        let securityLevel = dataManager?.userProfile?.securityLevel ?? .medium
+        let securityLevel = dataManager?.userPreferences.securityLevel ?? .medium
         let threshold = securityLevel.threshold
         let retryThreshold = securityLevel.retryThreshold
         
@@ -269,7 +304,7 @@ class AuthenticationService: ObservableObject {
     // MARK: - Data Management
     
     private func loadUserProfile() {
-        if let profile = dataManager?.userProfile {
+        if let profile = dataManager?.getUserProfile() {
             isUserEnrolled = profile.isEnrolled
             if isUserEnrolled {
                 enrollmentPattern = loadStoredPattern()
