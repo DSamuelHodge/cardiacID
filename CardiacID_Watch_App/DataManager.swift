@@ -1,308 +1,150 @@
 //
 //  DataManager.swift
-//  HeartID Watch App & iOS App
+//  HeartID
 //
-//  Comprehensive data management for user profiles and preferences
+//  Handles secure storage and retrieval of biometric data
 //
 
 import Foundation
-import Combine
+import Security
 
-/// Main data manager for user profiles, preferences, and biometric data
 class DataManager: ObservableObject {
-    @Published var userProfile: UserProfile?
-    @Published var userPreferences: UserPreferences = UserPreferences()
-    @Published var isDataLoaded: Bool = false
-    @Published var errorMessage: String?
+    static let shared = DataManager()
     
-    private let userDefaults = UserDefaults.standard
-    private let keychain = KeychainService.shared
-    
-    // Keys for UserDefaults
+    // UserDefaults keys
     private enum Keys {
-        static let userPreferences = "com.heartid.userPreferences"
-        static let isUserEnrolled = "com.heartid.isUserEnrolled"
-        static let lastSyncDate = "com.heartid.lastSyncDate"
+        static let isUserEnrolled = "isUserEnrolled"
+        static let enrollmentDate = "enrollmentDate"
+        static let lastAuthDate = "lastAuthenticationDate"
     }
     
-    // Keys for Keychain (secure storage)
+    // Keychain keys
     private enum SecureKeys {
         static let userProfile = "com.heartid.userProfile"
-        static let encryptedPattern = "com.heartid.encryptedPattern"
+        static let biometricTemplate = "com.heartid.biometricTemplate"
     }
+    
+    private let userDefaults = UserDefaults.standard
+    
+    // MARK: - Published Properties
+    @Published var isUserEnrolled: Bool = false
     
     init() {
-        loadAllData()
+        self.isUserEnrolled = userDefaults.bool(forKey: Keys.isUserEnrolled)
     }
     
-    // MARK: - Data Loading
+    // MARK: - User Profile Management
     
-    private func loadAllData() {
-        loadUserPreferences()
-        loadUserProfile()
-        isDataLoaded = true
-        print("📊 DataManager: All data loaded successfully")
-    }
-    
-    private func loadUserPreferences() {
-        if let data = userDefaults.data(forKey: Keys.userPreferences),
-           let preferences = try? JSONDecoder().decode(UserPreferences.self, from: data) {
-            userPreferences = preferences
-            print("✅ DataManager: User preferences loaded")
-        } else {
-            // Use default preferences
-            userPreferences = UserPreferences()
-            saveUserPreferences(userPreferences)
-            print("📝 DataManager: Using default preferences")
-        }
-    }
-    
-    private func loadUserProfile() {
-        if let profileData = keychain.load(key: SecureKeys.userProfile),
-           let profile = try? JSONDecoder().decode(UserProfile.self, from: profileData) {
-            userProfile = profile
-            print("✅ DataManager: User profile loaded from secure storage")
-        } else {
-            userProfile = nil
-            print("📝 DataManager: No user profile found")
-        }
-    }
-    
-    // MARK: - Data Saving
-    
-    func saveUserPreferences(_ preferences: UserPreferences) {
-        userPreferences = preferences
-        
-        if let data = try? JSONEncoder().encode(preferences) {
-            userDefaults.set(data, forKey: Keys.userPreferences)
-            print("✅ DataManager: User preferences saved")
-        } else {
-            errorMessage = "Failed to save user preferences"
-            print("❌ DataManager: Failed to save user preferences")
-        }
-    }
-    
-    func saveUserProfile(_ profile: UserProfile) {
-        userProfile = profile
-        
-        if let data = try? JSONEncoder().encode(profile) {
-            let success = keychain.save(data: data, key: SecureKeys.userProfile)
-            if success {
-                // Also save enrollment status to UserDefaults for quick access
-                userDefaults.set(true, forKey: Keys.isUserEnrolled)
-                print("✅ DataManager: User profile saved to secure storage")
-            } else {
-                errorMessage = "Failed to save user profile to secure storage"
-                print("❌ DataManager: Failed to save user profile to keychain")
-            }
-        } else {
-            errorMessage = "Failed to encode user profile"
-            print("❌ DataManager: Failed to encode user profile")
-        }
-    }
-    
-    // MARK: - Data Queries
-    
-    var isUserEnrolled: Bool {
-        return userProfile?.isEnrolled ?? false
-    }
-    
-    var enrollmentDate: Date? {
-        return userProfile?.enrollmentDate
-    }
-    
-    var lastAuthenticationDate: Date? {
-        return userProfile?.lastAuthenticationDate
-    }
-    
-    var authenticationCount: Int {
-        return userProfile?.authenticationCount ?? 0
-    }
-    
-    var currentSecurityLevel: SecurityLevel {
-        return userProfile?.securityLevel ?? userPreferences.securityLevel
-    }
-    
-    // MARK: - Data Management
-    
-    func updateProfileAfterAuthentication(successful: Bool = true) {
-        guard var profile = userProfile else {
-            errorMessage = "No user profile to update"
-            return
-        }
-        
-        profile = profile.updateAfterAuthentication(successful: successful)
-        saveUserProfile(profile)
-    }
-    
-    func clearAllData() {
-        // Remove from UserDefaults
-        userDefaults.removeObject(forKey: Keys.userPreferences)
-        userDefaults.removeObject(forKey: Keys.isUserEnrolled)
-        userDefaults.removeObject(forKey: Keys.lastSyncDate)
-        
-        // Remove from Keychain
-        keychain.delete(key: SecureKeys.userProfile)
-        keychain.delete(key: SecureKeys.encryptedPattern)
-        
-        // Reset in-memory data
-        userProfile = nil
-        userPreferences = UserPreferences()
-        
-        // Post notification for UI updates
-        NotificationCenter.default.post(name: .init("UserDeleted"), object: nil)
-        
-        print("🗑️ DataManager: All data cleared")
-    }
-    
-    func resetToDefaults() {
-        userPreferences = UserPreferences()
-        saveUserPreferences(userPreferences)
-        print("🔄 DataManager: Reset to default preferences")
-    }
-    
-    // MARK: - Export/Import (for debugging or data transfer)
-    
-    func exportUserData() -> [String: Any]? {
-        var data: [String: Any] = [:]
-        
-        // Add preferences
-        if let preferencesData = try? JSONEncoder().encode(userPreferences) {
-            data["preferences"] = preferencesData.base64EncodedString()
-        }
-        
-        // Add profile metadata (not the actual biometric data)
-        if let profile = userProfile {
-            data["profileMetadata"] = [
-                "enrollmentDate": profile.enrollmentDate.timeIntervalSince1970,
-                "securityLevel": profile.securityLevel.rawValue,
-                "authenticationCount": profile.authenticationCount,
-                "isEnrolled": profile.isEnrolled
-            ]
-        }
-        
-        data["exportDate"] = Date().timeIntervalSince1970
-        
-        return data.isEmpty ? nil : data
-    }
-    
-    // MARK: - Validation
-    
-    func validateDataIntegrity() -> Bool {
-        // Check if enrolled user has valid profile
-        if userDefaults.bool(forKey: Keys.isUserEnrolled) {
-            guard let profile = userProfile,
-                  profile.isEnrolled,
-                  !profile.encryptedHeartPattern.isEmpty else {
-                errorMessage = "Data integrity check failed: Enrolled user missing valid profile"
-                return false
-            }
-        }
-        
-        print("✅ DataManager: Data integrity check passed")
-        return true
-    }
-    
-    // MARK: - Statistics
-    
-    var userStatistics: UserStatistics {
-        return UserStatistics(
-            enrollmentDate: userProfile?.enrollmentDate,
-            totalAuthentications: userProfile?.authenticationCount ?? 0,
-            lastAuthentication: userProfile?.lastAuthenticationDate,
-            securityLevel: currentSecurityLevel,
-            failedAttempts: userProfile?.failedAttempts ?? 0
-        )
-    }
-}
-
-// MARK: - Supporting Types
-
-struct UserStatistics {
-    let enrollmentDate: Date?
-    let totalAuthentications: Int
-    let lastAuthentication: Date?
-    let securityLevel: SecurityLevel
-    let failedAttempts: Int
-    
-    var daysSinceEnrollment: Int? {
-        guard let enrollmentDate = enrollmentDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: enrollmentDate, to: Date()).day
-    }
-    
-    var daysSinceLastAuth: Int? {
-        guard let lastAuth = lastAuthentication else { return nil }
-        return Calendar.current.dateComponents([.day], from: lastAuth, to: Date()).day
-    }
-}
-
-// MARK: - Keychain Service
-
-class KeychainService {
-    static let shared = KeychainService()
-    private init() {}
-    
-    func save(data: Data, key: String) -> Bool {
-        // Delete any existing item first
-        delete(key: key)
-        
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-            kSecValueData as String: data
-        ]
-        
-        let status = SecItemAdd(query as CFDictionary, nil)
-        
-        if status == errSecSuccess {
-            print("✅ Keychain: Successfully saved data for key: \(key)")
-            return true
-        } else {
-            print("❌ Keychain: Failed to save data for key: \(key), status: \(status)")
+    func saveUserProfile(_ profile: UserProfile) -> Bool {
+        // Save to Keychain
+        guard let profileData = try? JSONEncoder().encode(profile) else {
+            print("❌ Failed to encode user profile")
             return false
         }
+        
+        let saveSuccess = saveToKeychain(data: profileData, key: SecureKeys.userProfile)
+        
+        if saveSuccess {
+            // Update UserDefaults flags
+            userDefaults.set(true, forKey: Keys.isUserEnrolled)
+            userDefaults.set(profile.enrollmentDate, forKey: Keys.enrollmentDate)
+            
+            DispatchQueue.main.async {
+                self.isUserEnrolled = true
+            }
+            
+            print("✅ User profile saved successfully")
+            return true
+        }
+        
+        print("❌ Failed to save user profile to Keychain")
+        return false
     }
     
-    func load(key: String) -> Data? {
+    func getUserProfile() -> UserProfile? {
+        guard let profileData = loadFromKeychain(key: SecureKeys.userProfile),
+              let profile = try? JSONDecoder().decode(UserProfile.self, from: profileData) else {
+            print("⚠️ No user profile found or decode failed")
+            return nil
+        }
+        
+        return profile
+    }
+    
+    func deleteUserProfile() -> Bool {
+        let deleteSuccess = deleteFromKeychain(key: SecureKeys.userProfile)
+        
+        if deleteSuccess {
+            userDefaults.set(false, forKey: Keys.isUserEnrolled)
+            userDefaults.removeObject(forKey: Keys.enrollmentDate)
+            userDefaults.removeObject(forKey: Keys.lastAuthDate)
+            
+            DispatchQueue.main.async {
+                self.isUserEnrolled = false
+            }
+            
+            // Post notification
+            NotificationCenter.default.post(name: .init("UserDeleted"), object: nil)
+            
+            print("✅ User profile deleted successfully")
+            return true
+        }
+        
+        print("❌ Failed to delete user profile")
+        return false
+    }
+    
+    func updateLastAuthenticationDate() {
+        userDefaults.set(Date(), forKey: Keys.lastAuthDate)
+    }
+    
+    // MARK: - Keychain Operations
+    
+    private func saveToKeychain(data: Data, key: String) -> Bool {
+        // Delete any existing item
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+        
+        // Add new item
+        let addQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
+        return status == errSecSuccess
+    }
+    
+    private func loadFromKeychain(key: String) -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecReturnData as String: true
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
         
         if status == errSecSuccess {
-            if let data = item as? Data {
-                print("✅ Keychain: Successfully loaded data for key: \(key)")
-                return data
-            } else {
-                print("⚠️ Keychain: Data format error for key: \(key)")
-                return nil
-            }
-        } else if status == errSecItemNotFound {
-            print("📝 Keychain: No data found for key: \(key)")
-            return nil
-        } else {
-            print("❌ Keychain: Failed to load data for key: \(key), status: \(status)")
-            return nil
+            return result as? Data
         }
+        
+        return nil
     }
     
-    func delete(key: String) {
+    private func deleteFromKeychain(key: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
         
         let status = SecItemDelete(query as CFDictionary)
-        
-        if status == errSecSuccess || status == errSecItemNotFound {
-            print("✅ Keychain: Successfully deleted data for key: \(key)")
-        } else {
-            print("❌ Keychain: Failed to delete data for key: \(key), status: \(status)")
-        }
+        return status == errSecSuccess || status == errSecItemNotFound
     }
 }

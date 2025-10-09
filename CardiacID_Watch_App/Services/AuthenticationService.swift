@@ -11,6 +11,7 @@ class AuthenticationService: ObservableObject {
     @Published var currentSession: AuthenticationSession?
     @Published var lastAuthenticationResult: AuthenticationResult?
     @Published var errorMessage: String?
+    var healthKitService: HealthKitService?
     
     private let xenonXCalculator = XenonXCalculator()
     private let encryptionService = EncryptionService()
@@ -23,13 +24,10 @@ class AuthenticationService: ObservableObject {
         // DataManager will be injected via environment object
     }
     
-    /// Set the data manager (called from the app)
-    func setDataManager(_ dataManager: DataManager) {
-        self.dataManager = dataManager
-        loadUserProfile()
+    /// Set the HealthKit service
+    func setHealthKitService(_ service: HealthKitService) {
+        self.healthKitService = service
     }
-    
-    // Supabase service not available in watch app
     
     // MARK: - Enrollment Process
     
@@ -53,65 +51,45 @@ class AuthenticationService: ObservableObject {
         .eraseToAnyPublisher()
     }
     
-    /// Complete enrollment with captured heart rate data using enhanced multi-algorithm approach
-    func completeEnrollment(with heartRateData: [Double]) -> Bool {
-        guard !heartRateData.isEmpty else {
-            errorMessage = "No heart rate data provided for enrollment"
+    /// Complete enrollment with captured heart rate data
+    func completeEnrollment(with heartRateValues: [Double]) -> Bool {
+        print("🔄 Processing enrollment with \(heartRateValues.count) samples")
+        
+        // Validate the captured data
+        let validation = EnrollmentValidation.validate(heartRateValues)
+        
+        guard validation.isValid else {
+            print("❌ Enrollment validation failed: \(validation.errorMessage ?? "Unknown error")")
+            self.errorMessage = validation.errorMessage
             return false
         }
         
-        // Check if dataManager is available
-        guard let dataManager = dataManager else {
-            errorMessage = "Data manager not available. Please restart the app."
-            return false
-        }
-        
-        // Temporarily disabled - Use enhanced calculator for analysis
-        // let enhancedResult = enhancedCalculator.analyzeHeartPattern(heartRateData)
-        
-        // Check pattern quality using enhanced metrics
-        // guard enhancedResult.qualityScore > 0.6 && enhancedResult.fusedConfidence > 0.5 else {
-        //     errorMessage = "Heart pattern quality too low for enrollment. Quality: \(String(format: "%.1f%%", enhancedResult.qualityScore * 100)). Please try again."
-        //     return false
-        // }
-        
-        // Analyze pattern using XenonX calculator for backward compatibility
-        let xenonXResult = xenonXCalculator.analyzePattern(heartRateData)
-        
-        // Check pattern quality
-        guard xenonXResult.confidence > 0.7 else {
-            errorMessage = "Heart pattern quality too low for enrollment. Please try again."
-            return false
-        }
-        
-        // Encrypt the pattern
-        guard let encryptedPattern = encryptionService.encryptXenonXResult(xenonXResult) else {
-            errorMessage = "Failed to encrypt heart pattern"
-            return false
-        }
+        // Create biometric template
+        let template = BiometricTemplate(heartRatePattern: heartRateValues)
         
         // Create user profile
-        let userProfile = UserProfile(
-            encryptedHeartPattern: encryptedPattern.base64EncodedString(),
-            securityLevel: dataManager.userPreferences.securityLevel
-        )
+        let profile = UserProfile(template: template)
         
-        // Save profile locally
-        dataManager.saveUserProfile(userProfile)
+        // Save to secure storage
+        guard let dataManager = dataManager else {
+            print("❌ DataManager not initialized")
+            self.errorMessage = "Storage system not available"
+            return false
+        }
         
-        // Store enrollment pattern for immediate verification
-        enrollmentPattern = xenonXResult
+        let saveSuccess = dataManager.saveUserProfile(profile)
         
-        // Temporarily disabled - Store NASA enrollment model
-        // nasaEnrollmentModel = enhancedResult.nasaModel
-        
-        isUserEnrolled = true
-        
-        // Send enrollment status to iOS app via Watch Connectivity
-        sendEnrollmentStatusToiOS()
-        
-        errorMessage = nil
-        return true
+        if saveSuccess {
+            DispatchQueue.main.async {
+                self.isUserEnrolled = true
+            }
+            print("✅ Enrollment completed successfully")
+            print("📊 Quality score: \(Int(validation.qualityScore * 100))%")
+            return true
+        } else {
+            self.errorMessage = "Failed to save enrollment data"
+            return false
+        }
     }
     
     // MARK: - Authentication Process
@@ -141,77 +119,61 @@ class AuthenticationService: ObservableObject {
         .eraseToAnyPublisher()
     }
     
-    /// Complete authentication with captured heart rate data using enhanced multi-algorithm approach
-    func completeAuthentication(with heartRateData: [Double]) -> AuthenticationResult {
-        guard isUserEnrolled else {
-            errorMessage = "User not enrolled. Please complete enrollment first."
-            return .failed
+    /// Complete authentication with captured heart rate data
+    func completeAuthentication(with heartRateValues: [Double]) -> AuthenticationResult {
+        print("🔄 Processing authentication with \(heartRateValues.count) samples")
+        
+        // Get stored profile
+        guard let dataManager = dataManager else {
+            return .error(message: "Storage system not available")
         }
         
-        guard !heartRateData.isEmpty else {
-            errorMessage = "No heart rate data provided for authentication"
-            return .failed
+        guard let profile = dataManager.getUserProfile() else {
+            return .error(message: "No enrollment found")
         }
         
-        // Check if dataManager is available
-        guard dataManager != nil else {
-            errorMessage = "Data manager not available. Please restart the app."
-            return .failed
-        }
-        
-        // Temporarily disabled - Use enhanced calculator for analysis
-        // let enhancedResult = enhancedCalculator.analyzeHeartPattern(heartRateData)
-        
-        // Analyze current pattern
-        let currentPattern = xenonXCalculator.analyzePattern(heartRateData)
-        
-        // Load stored pattern
-        guard let storedPattern = loadStoredPattern() else {
-            errorMessage = "Failed to load stored heart pattern"
-            return .failed
+        // Validate capture quality
+        let validation = EnrollmentValidation.validate(heartRateValues)
+        guard validation.isValid else {
+            return .retry(message: validation.errorMessage ?? "Please try again")
         }
         
         // Compare patterns
-        let similarity = xenonXCalculator.comparePatterns(storedPattern, currentPattern)
+        let storedPattern = profile.biometricTemplate.heartRatePattern
+        let confidence = comparePatterns(stored: storedPattern, captured: heartRateValues)
         
-        // The similarity returned by comparePatterns is on a 0..100 scale.
-        // We normalize it to 0..1 scale before passing to determineAuthenticationResult.
-        let normalizedSimilarity = similarity / 100.0
-        
-        // Determine result based on thresholds (thresholds are on 0..1 scale)
-        let result = determineAuthenticationResult(similarity: normalizedSimilarity)
-        
-        // Record attempt
-        let attempt = AuthenticationAttempt(
-            result: result,
-            confidenceScore: currentPattern.confidence,
-            patternMatch: similarity,
-            duration: 0 // This would be calculated from actual capture time
-        )
-        
-        authenticationAttempts.append(attempt)
-        
-        // Update session
-        if currentSession == nil {
-            currentSession = AuthenticationSession()
+        // Decision threshold
+        if confidence >= 0.75 {
+            dataManager.updateLastAuthenticationDate()
+            return .approved(confidence: confidence)
+        } else if confidence >= 0.60 {
+            return .retry(message: "Partial match. Please try again.")
+        } else {
+            return .denied(reason: "Pattern does not match")
         }
-        currentSession?.recordAttempt(result)
+    }
+    
+    /// Compare heart rate patterns and return confidence score
+    private func comparePatterns(stored: [Double], captured: [Double]) -> Double {
+        // Normalize both patterns to same length
+        let minLength = min(stored.count, captured.count)
+        let storedSlice = Array(stored.prefix(minLength))
+        let capturedSlice = Array(captured.prefix(minLength))
         
-        // Update authentication status
-        isAuthenticated = result.isSuccessful
-        lastAuthenticationResult = result
-        
-        // Update user profile if successful
-        if result.isSuccessful {
-            // updateUserProfileAfterAuthentication()  // Temporarily disabled
+        // Calculate average absolute difference
+        var totalDifference: Double = 0
+        for i in 0..<minLength {
+            totalDifference += abs(storedSlice[i] - capturedSlice[i])
         }
+        let avgDifference = totalDifference / Double(minLength)
         
-        // Supabase service not available in watch app
+        // Convert to confidence score (0.0 to 1.0)
+        // Lower difference = higher confidence
+        let maxAllowedDifference: Double = 30.0
+        let confidence = max(0.0, 1.0 - (avgDifference / maxAllowedDifference))
         
-        // Send authentication result to iOS app via Watch Connectivity
-        sendAuthenticationResultToiOS(result)
-        
-        return result
+        print("📊 Pattern comparison: \(Int(confidence * 100))% match")
+        return confidence
     }
     
     // Temporarily disabled - NASA specific helper method

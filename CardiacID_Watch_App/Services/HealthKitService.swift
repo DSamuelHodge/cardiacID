@@ -91,38 +91,64 @@ class HealthKitService: NSObject, ObservableObject {
         }
     }
     
-    /// Start capturing heart rate data for pattern analysis
-    func startHeartRateCapture(duration: TimeInterval = AppConfiguration.defaultCaptureDuration) {
+    /// Start capturing heart rate data for pattern analysis with completion handler
+    func startHeartRateCapture(duration: TimeInterval, completion: @escaping ([Double], Error?) -> Void) {
         guard isAuthorized else {
-            errorMessage = "HealthKit authorization required"
+            completion([], NSError(domain: "HealthKit", code: 1, userInfo: [NSLocalizedDescriptionKey: "HealthKit not authorized"]))
             return
         }
         
-        guard !isCapturing else {
-            errorMessage = "Heart rate capture already in progress"
-            return
+        var samples: [Double] = []
+        let startTime = Date()
+        let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+        
+        let query = HKAnchoredObjectQuery(
+            type: heartRateType,
+            predicate: HKQuery.predicateForSamples(withStart: startTime, end: nil, options: .strictStartDate),
+            anchor: nil,
+            limit: HKObjectQueryNoLimit
+        ) { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
+            
+            guard let samples = samplesOrNil as? [HKQuantitySample] else {
+                if let error = errorOrNil {
+                    completion([], error)
+                }
+                return
+            }
+            
+            for sample in samples {
+                let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
+                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                samples.append(heartRate)
+            }
         }
         
-        // Validate duration
-        guard duration >= AppConfiguration.minCaptureDuration && duration <= AppConfiguration.maxCaptureDuration else {
-            errorMessage = "Invalid capture duration. Must be between 9-16 seconds"
-            return
+        query.updateHandler = { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
+            guard let samples = samplesOrNil as? [HKQuantitySample] else { return }
+            
+            for sample in samples {
+                let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
+                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                samples.append(heartRate)
+            }
+            
+            // Check if duration has elapsed
+            if Date().timeIntervalSince(startTime) >= duration {
+                self.healthStore.stop(query)
+                completion(samples, nil)
+            }
         }
         
-        captureDuration = duration
-        captureStartTime = Date()
-        isCapturing = true
-        heartRateSamples.removeAll()
-        captureProgress = 0
-        errorMessage = nil
-        
-        // Start real-time heart rate monitoring
-        startRealTimeHeartRateQuery()
-        
-        // Set up capture timer
-        captureTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.updateCaptureProgress()
+        healthStore.execute(query)
+    }
+    
+    /// Validate heart rate data using EnrollmentValidation
+    func validateHeartRateData(_ samples: [Double]) -> Bool {
+        let validation = EnrollmentValidation.validate(samples)
+        if !validation.isValid {
+            self.errorMessage = validation.errorMessage
         }
+        return validation.isValid
     }
     
     /// Stop capturing heart rate data

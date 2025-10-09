@@ -24,9 +24,9 @@ struct ContentView: View {
     var body: some View {
         Group {
             if showLandingScreen {
-                // Show landing screen for 2 seconds
+                // Show landing screen briefly
                 LandingView()
-            } else if !isUserEnrolled || showEnrollmentFlow {
+            } else if !isUserEnrolled {
                 // Show enrollment flow if user is not enrolled
                 EnrollmentFlowView(
                     isEnrolled: $isUserEnrolled,
@@ -37,14 +37,11 @@ struct ContentView: View {
                         showEnrollmentFlow = false
                         selectedTab = 1 // Go to menu screen
                         
-                        // Persist enrollment status
-                        UserDefaults.standard.set(true, forKey: "isUserEnrolled")
-                        
-                        // The authentication service should already be updated by the enrollment process
                         print("✅ Enrollment completed - User can now authenticate")
                     }
                 )
             } else {
+                // Show main app tabs for enrolled users
                 TabView(selection: $selectedTab) {
                     // Landing Screen
                     LandingView()
@@ -63,7 +60,7 @@ struct ContentView: View {
                         .tag(3)
                     
                     // Settings Screen
-                    WatchSettingsView()
+                    SettingsView()
                         .tag(4)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -80,7 +77,7 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .init("UserDeleted"))) { _ in
             // Reset app state when user is deleted
             isUserEnrolled = false
-            showEnrollmentFlow = true
+            showEnrollmentFlow = false
             selectedTab = 0
             showLandingScreen = true
             startLandingTimer()
@@ -96,9 +93,11 @@ struct ContentView: View {
         // Clear any existing timer
         landingTimer?.invalidate()
         
-        // Start 2-second timer (optimal for watchOS)
-        landingTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+        // Reduced to 0.5 seconds - minimal branding display
+        landingTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             DispatchQueue.main.async {
+                // Ensure enrollment status is set before hiding landing screen
+                self.checkEnrollmentStatus()
                 self.showLandingScreen = false
                 print("⏰ Landing screen timer completed - transitioning to main app")
             }
@@ -106,11 +105,8 @@ struct ContentView: View {
     }
     
     private func checkEnrollmentStatus() {
-        // Check enrollment status from UserDefaults for persistence
-        let isEnrolledInStorage = UserDefaults.standard.bool(forKey: "isUserEnrolled")
-        
-        // Also check authentication service
-        isUserEnrolled = isEnrolledInStorage && authenticationService.isUserEnrolled
+        // Check enrollment status from DataManager
+        isUserEnrolled = dataManager.isUserEnrolled
         
         if !isUserEnrolled {
             print("📝 User not enrolled - will show enrollment flow after landing screen")
@@ -192,6 +188,7 @@ struct EnrollmentFlowView: View {
     @State private var showSuccess = false
     @State private var enrollmentError: String?
     @State private var showRetryAlert = false
+    @EnvironmentObject var authenticationService: AuthenticationService
     
     private let totalSteps = 4
     
@@ -276,18 +273,15 @@ struct EnrollmentFlowView: View {
             updateProgress()
         }
         .alert("Enrollment Failed", isPresented: $showRetryAlert) {
-            Button("Retry") {
-                // Reset and retry capture
-                currentStep = 2
-                updateProgress()
+            Button("Try Again") {
+                resetCapture()
             }
             Button("Cancel") {
-                // Go back to previous step
-                currentStep = 1
-                updateProgress()
+                currentStep = 0
+                resetCapture()
             }
         } message: {
-            Text(enrollmentError ?? "Unable to capture sufficient heart rate data. Please try again.")
+            Text(enrollmentError ?? "Unknown error occurred")
         }
     }
     
@@ -302,40 +296,70 @@ struct EnrollmentFlowView: View {
     }
     
     private func startCaptureProcess() {
-        // Check HealthKit authorization first
-        guard healthKitService.isAuthorized else {
-            enrollmentError = "HealthKit access required for enrollment"
-            showRetryAlert = true
+        print("🎬 Starting real HealthKit capture process")
+        
+        // Get HealthKit service from environment
+        guard let healthKitService = authenticationService.healthKitService else {
+            enrollmentError = "HealthKit service not available"
+            isCapturing = false
             return
         }
         
-        // Clear previous data
-        heartRateSamples.removeAll()
-        enrollmentError = nil
+        // Check authorization
+        guard healthKitService.isAuthorized else {
+            enrollmentError = "HealthKit access required. Please authorize in Settings."
+            isCapturing = false
+            return
+        }
         
-        // Start actual HealthKit capture
-        healthKitService.startHeartRateCapture(duration: 30.0)
-        
-        // Monitor capture progress
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            captureProgress = healthKitService.captureProgress
-            
-            // Check if capture is complete
-            if !healthKitService.isCapturing && captureProgress >= 1.0 {
-                timer.invalidate()
-                isCapturing = false
+        // Start real heart rate capture
+        healthKitService.startHeartRateCapture(duration: 30.0) { samples, error in
+            DispatchQueue.main.async {
+                self.isCapturing = false
+                self.captureProgress = 1.0
                 
-                // Get captured samples
-                heartRateSamples = healthKitService.heartRateSamples
+                if let error = error {
+                    print("❌ Capture error: \(error.localizedDescription)")
+                    self.enrollmentError = "Capture failed: \(error.localizedDescription)"
+                    self.showRetryAlert = true
+                    return
+                }
+                
+                print("✅ Captured \(samples.count) heart rate samples")
+                self.heartRateSamples = samples.map { HeartRateSample(value: $0, timestamp: Date(), source: "HealthKit") }
                 
                 // Validate the captured data
-                if healthKitService.validateHeartRateData(heartRateSamples) {
-                    // Try to enroll with authentication service
-                    enrollWithCapturedData()
+                if healthKitService.validateHeartRateData(samples) {
+                    print("✅ Data validation passed")
+                    // Move to next step
+                    withAnimation {
+                        self.currentStep += 1
+                        self.updateProgress()
+                    }
                 } else {
-                    enrollmentError = healthKitService.errorMessage ?? "Invalid heart rate data captured"
-                    showEnrollmentError()
+                    print("❌ Data validation failed")
+                    self.enrollmentError = healthKitService.errorMessage ?? "Invalid capture. Please try again."
+                    self.showRetryAlert = true
+                    self.captureProgress = 0.0
+                    self.heartRateSamples.removeAll()
                 }
+            }
+        }
+        
+        // Update UI with progress indicator
+        let startTime = Date()
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            let elapsed = Date().timeIntervalSince(startTime)
+            let progress = min(elapsed / 30.0, 1.0)
+            
+            DispatchQueue.main.async {
+                if progress.isFinite && !progress.isNaN {
+                    self.captureProgress = progress
+                }
+            }
+            
+            if progress >= 1.0 || !self.isCapturing {
+                timer.invalidate()
             }
         }
     }
@@ -371,15 +395,45 @@ struct EnrollmentFlowView: View {
     }
     
     private func completeEnrollment() {
-        // Show success animation
-        withAnimation(.easeInOut(duration: 1.0)) {
-            showSuccess = true
+        print("🔄 Attempting to complete enrollment with \(heartRateSamples.count) samples")
+        
+        // Validate we have captured data
+        guard !heartRateSamples.isEmpty else {
+            enrollmentError = "No heart rate data captured"
+            showRetryAlert = true
+            return
         }
         
-        // Complete enrollment after delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            onEnrollmentComplete()
+        // Convert HeartRateSample to Double array
+        let heartRateValues = heartRateSamples.map { $0.value }
+        
+        // Use AuthenticationService to process and save enrollment
+        let success = authenticationService.completeEnrollment(with: heartRateValues)
+        
+        if success {
+            // Show success animation
+            withAnimation(.easeInOut(duration: 1.0)) {
+                showSuccess = true
+            }
+            
+            // Complete enrollment after delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                print("✅ Enrollment fully completed")
+                onEnrollmentComplete()
+            }
+        } else {
+            // Show error with retry option
+            enrollmentError = authenticationService.errorMessage ?? "Failed to save enrollment"
+            showRetryAlert = true
+            currentStep = 2 // Go back to capture step
         }
+    }
+    
+    private func resetCapture() {
+        isCapturing = false
+        captureProgress = 0.0
+        heartRateSamples.removeAll()
+        enrollmentError = nil
     }
 }
 

@@ -10,36 +10,27 @@ import Foundation
 // MARK: - Authentication Results
 
 /// Result of an authentication attempt
-enum AuthenticationResult: String, CaseIterable, Codable {
-    case approved = "approved"
-    case retryRequired = "retry_required" 
-    case failed = "failed"
-    case pending = "pending"
-    case systemUnavailable = "system_unavailable"
-    case enrollmentRequired = "enrollment_required"
+enum AuthenticationResult {
+    case approved(confidence: Double)
+    case denied(reason: String)
+    case retry(message: String)
+    case error(message: String)
     
     var isSuccessful: Bool {
-        return self == .approved
-    }
-    
-    var requiresRetry: Bool {
-        return self == .retryRequired
+        if case .approved = self { return true }
+        return false
     }
     
     var message: String {
         switch self {
-        case .approved:
-            return "Authentication successful"
-        case .retryRequired:
-            return "Authentication partially successful - please try again"
-        case .failed:
-            return "Authentication failed - pattern did not match"
-        case .pending:
-            return "Authentication in progress"
-        case .systemUnavailable:
-            return "Authentication system temporarily unavailable"
-        case .enrollmentRequired:
-            return "Enrollment required before authentication"
+        case .approved(let confidence):
+            return "Authentication successful (\(Int(confidence * 100))% match)"
+        case .denied(let reason):
+            return "Access denied: \(reason)"
+        case .retry(let message):
+            return message
+        case .error(let message):
+            return "Error: \(message)"
         }
     }
 }
@@ -167,32 +158,144 @@ struct AuthenticationAttempt: Codable {
 
 /// User's profile including biometric data and preferences
 struct UserProfile: Codable {
-    let id = UUID()
-    let encryptedHeartPattern: String
-    let securityLevel: SecurityLevel
-    let enrollmentDate = Date()
-    private(set) var lastAuthenticationDate: Date?
-    private(set) var authenticationCount: Int = 0
-    private(set) var failedAttempts: Int = 0
+    let id: UUID
+    let enrollmentDate: Date
+    let biometricTemplate: BiometricTemplate
+    var lastAuthenticationDate: Date?
+    var authenticationCount: Int = 0
     
-    init(encryptedHeartPattern: String, securityLevel: SecurityLevel) {
-        self.encryptedHeartPattern = encryptedHeartPattern
-        self.securityLevel = securityLevel
+    init(id: UUID = UUID(), template: BiometricTemplate) {
+        self.id = id
+        self.enrollmentDate = Date()
+        self.biometricTemplate = template
     }
     
     var isEnrolled: Bool {
-        return !encryptedHeartPattern.isEmpty
+        return true // Always enrolled if profile exists
     }
     
     mutating func updateAfterAuthentication(successful: Bool = true) -> UserProfile {
         if successful {
             lastAuthenticationDate = Date()
             authenticationCount += 1
-            failedAttempts = 0 // Reset failed attempts on success
-        } else {
-            failedAttempts += 1
         }
         return self
+    }
+}
+
+// MARK: - Biometric Template
+
+/// Biometric template containing heart rate pattern data
+struct BiometricTemplate: Codable {
+    let heartRatePattern: [Double]
+    let averageHeartRate: Double
+    let heartRateVariability: Double
+    let captureQuality: Double
+    let captureDate: Date
+    
+    init(heartRatePattern: [Double]) {
+        self.heartRatePattern = heartRatePattern
+        self.averageHeartRate = heartRatePattern.reduce(0, +) / Double(heartRatePattern.count)
+        self.heartRateVariability = Self.calculateHRV(heartRatePattern)
+        self.captureQuality = Self.assessQuality(heartRatePattern)
+        self.captureDate = Date()
+    }
+    
+    // Calculate Heart Rate Variability
+    private static func calculateHRV(_ samples: [Double]) -> Double {
+        guard samples.count > 1 else { return 0 }
+        
+        var differences: [Double] = []
+        for i in 1..<samples.count {
+            differences.append(abs(samples[i] - samples[i-1]))
+        }
+        
+        let mean = differences.reduce(0, +) / Double(differences.count)
+        return mean
+    }
+    
+    // Assess data quality (0.0 to 1.0)
+    private static func assessQuality(_ samples: [Double]) -> Double {
+        guard samples.count >= 100 else { return 0.0 }
+        
+        let avg = samples.reduce(0, +) / Double(samples.count)
+        let variance = samples.map { pow($0 - avg, 2) }.reduce(0, +) / Double(samples.count)
+        let stdDev = sqrt(variance)
+        
+        // Good quality: consistent but with natural variation
+        // Poor quality: too consistent (sensor not on skin) or too noisy
+        if stdDev < 2.0 { return 0.3 } // Too consistent
+        if stdDev > 30.0 { return 0.4 } // Too noisy
+        if avg < 40 || avg > 200 { return 0.2 } // Unrealistic
+        
+        return 0.95 // Good quality
+    }
+}
+
+// MARK: - Enrollment Validation
+
+/// Validation result for enrollment data
+struct EnrollmentValidation {
+    let isValid: Bool
+    let errorMessage: String?
+    let qualityScore: Double
+    
+    static func validate(_ samples: [Double]) -> EnrollmentValidation {
+        // Check sample count
+        guard samples.count >= 200 else {
+            return EnrollmentValidation(
+                isValid: false,
+                errorMessage: "Insufficient data captured. Please try again.",
+                qualityScore: 0.0
+            )
+        }
+        
+        // Check for realistic heart rate range
+        let avg = samples.reduce(0, +) / Double(samples.count)
+        guard avg >= 40 && avg <= 200 else {
+            return EnrollmentValidation(
+                isValid: false,
+                errorMessage: "Heart rate reading out of range. Ensure sensor contact.",
+                qualityScore: 0.0
+            )
+        }
+        
+        // Check for variation (not flat line)
+        let variance = samples.map { pow($0 - avg, 2) }.reduce(0, +) / Double(samples.count)
+        let stdDev = sqrt(variance)
+        
+        if stdDev < 2.0 {
+            return EnrollmentValidation(
+                isValid: false,
+                errorMessage: "No variation detected. Ensure finger is on sensor.",
+                qualityScore: 0.3
+            )
+        }
+        
+        if stdDev > 30.0 {
+            return EnrollmentValidation(
+                isValid: false,
+                errorMessage: "Too much noise. Hold still and try again.",
+                qualityScore: 0.4
+            )
+        }
+        
+        // Calculate quality score
+        let qualityScore = BiometricTemplate.init(heartRatePattern: samples).captureQuality
+        
+        if qualityScore < 0.7 {
+            return EnrollmentValidation(
+                isValid: false,
+                errorMessage: "Low quality capture. Please try again.",
+                qualityScore: qualityScore
+            )
+        }
+        
+        return EnrollmentValidation(
+            isValid: true,
+            errorMessage: nil,
+            qualityScore: qualityScore
+        )
     }
 }
 

@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct HeartIDWatchApp: App {
-    // Core Services (Singletons)
+@main
+struct HeartID_WatchApp: App {
     @StateObject private var authenticationService = AuthenticationService()
     @StateObject private var healthKitService = HealthKitService()
-    @StateObject private var dataManager = DataManager()
+    @StateObject private var dataManager = DataManager.shared
     @StateObject private var backgroundTaskService = BackgroundTaskService()
     
     var body: some Scene {
@@ -22,29 +22,14 @@ struct HeartIDWatchApp: App {
                 .environmentObject(dataManager)
                 .environmentObject(backgroundTaskService)
                 .onAppear {
-                    initializeApp()
+                    // Link services
+                    authenticationService.setDataManager(dataManager)
+                    authenticationService.setHealthKitService(healthKitService)
+                    
+                    // Request HealthKit authorization
+                    healthKitService.requestAuthorization()
                 }
         }
-    }
-    
-    private func initializeApp() {
-        print("🚀 HeartID Watch App initializing...")
-        
-        // Connect data manager to authentication service
-        authenticationService.setDataManager(dataManager)
-        
-        // Validate data integrity
-        if !dataManager.validateDataIntegrity() {
-            print("⚠️ Data integrity check failed - clearing corrupted data")
-            dataManager.clearAllData()
-        }
-        
-        // Request HealthKit authorization early if not already done
-        if !healthKitService.isAuthorized {
-            healthKitService.requestAuthorization()
-        }
-        
-        print("✅ HeartID Watch App initialization complete")
     }
 }
 
