@@ -228,11 +228,11 @@ class AuthenticationService: ObservableObject {
         let retryThreshold = securityLevel.retryThreshold
         
         if similarity >= threshold {
-            return .approved
+            return .approved(confidence: similarity)
         } else if similarity >= Double(retryThreshold) {
-            return .retryRequired
+            return .retry(message: "Please try again")
         } else {
-            return .failed
+            return .denied(reason: "Pattern does not match")
         }
     }
     
@@ -302,7 +302,7 @@ class AuthenticationService: ObservableObject {
     func markEnrolledAndAuthenticated() {
         self.isUserEnrolled = true
         self.isAuthenticated = true
-        self.lastAuthenticationResult = .approved
+        self.lastAuthenticationResult = .approved(confidence: 1.0)
     }
     
     // MARK: - Watch Connectivity Integration
@@ -391,7 +391,7 @@ extension AuthenticationService {
     func performBackgroundAuthentication() -> AuthenticationResult {
         // This would be called by the background task service
         // For now, return a placeholder result
-        return .systemUnavailable
+        return .error(message: "System unavailable")
     }
     
     /// Check if background authentication is due

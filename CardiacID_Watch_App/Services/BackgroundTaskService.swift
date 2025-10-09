@@ -1,169 +1,281 @@
+//
+//  BackgroundTaskService.swift
+//  HeartID Watch App
+//
+//  Service for managing background tasks and continuous authentication
+//
+
 import Foundation
 import Combine
 import WatchKit
 
-/// Service for managing background tasks and periodic authentication
+/// Service for managing background tasks and continuous authentication monitoring
 class BackgroundTaskService: NSObject, ObservableObject {
-    @Published var isBackgroundTaskRunning = false
-    @Published var lastBackgroundExecution: Date?
-    @Published var backgroundTaskCount = 0
+    @Published var isBackgroundTaskActive = false
+    @Published var backgroundTaskStatus: BackgroundTaskStatus = .idle
+    @Published var lastBackgroundCheck: Date?
+    @Published var errorMessage: String?
     
-    private var backgroundTaskIdentifier: WKRefreshBackgroundTask? = nil
-    private var timer: Timer?
+    private var backgroundTaskTimer: Timer?
+    private var authenticationService: AuthenticationService?
     private var cancellables = Set<AnyCancellable>()
+    
+    // Background task configuration
+    private let backgroundCheckInterval: TimeInterval = 300 // 5 minutes
+    private let maxBackgroundDuration: TimeInterval = 1800 // 30 minutes
     
     override init() {
         super.init()
-        setupBackgroundTasks()
+        setupBackgroundTaskMonitoring()
     }
     
-    // MARK: - Setup
-    
-    private func setupBackgroundTasks() {
-        // WatchOS doesn't support BGTaskScheduler, so we'll use a simpler approach
-        print("BackgroundTaskService initialized for watchOS")
+    /// Set the authentication service for background checks
+    func setAuthenticationService(_ service: AuthenticationService) {
+        self.authenticationService = service
     }
     
     // MARK: - Background Task Management
     
-    /// Start periodic authentication
-    func startPeriodicAuthentication() {
-        // In a real implementation, this would start a timer for periodic authentication
-        // For now, we'll simulate it
-        print("Starting periodic authentication")
+    /// Start background authentication monitoring
+    func startBackgroundMonitoring() {
+        guard !isBackgroundTaskActive else { return }
+        
+        print("🔄 Starting background authentication monitoring")
+        isBackgroundTaskActive = true
+        backgroundTaskStatus = .monitoring
+        
+        // Start periodic background checks
+        startBackgroundTaskTimer()
+        
+        // Schedule background task with WatchKit
+        scheduleBackgroundTask()
     }
     
-    /// Stop periodic authentication
-    func stopPeriodicAuthentication() {
-        timer?.invalidate()
-        timer = nil
-        print("Stopped periodic authentication")
+    /// Stop background authentication monitoring
+    func stopBackgroundMonitoring() {
+        guard isBackgroundTaskActive else { return }
+        
+        print("⏹️ Stopping background authentication monitoring")
+        isBackgroundTaskActive = false
+        backgroundTaskStatus = .idle
+        
+        // Stop timer
+        backgroundTaskTimer?.invalidate()
+        backgroundTaskTimer = nil
+        
+        // Cancel background task
+        cancelBackgroundTask()
     }
     
-    /// Schedule background task
-    private func scheduleBackgroundTask() {
-        // WatchOS doesn't support BGTaskScheduler
-        print("Background task scheduling not available on watchOS")
-    }
+    // MARK: - Background Task Timer
     
-    /// Handle background task execution
-    private func handleBackgroundTask(_ task: WKRefreshBackgroundTask?) {
-        // WatchOS background task handling
-        print("Handling background task on watchOS")
-        performBackgroundWork { success in
-            print("Background work completed: \(success)")
+    private func startBackgroundTaskTimer() {
+        backgroundTaskTimer = Timer.scheduledTimer(withTimeInterval: backgroundCheckInterval, repeats: true) { [weak self] _ in
+            self?.performBackgroundAuthenticationCheck()
         }
     }
     
-    /// Perform background work
-    private func performBackgroundWork(completion: @escaping (Bool) -> Void) {
-        DispatchQueue.main.async {
-            self.isBackgroundTaskRunning = true
-            self.backgroundTaskCount += 1
-            self.lastBackgroundExecution = Date()
+    private func performBackgroundAuthenticationCheck() {
+        guard let authService = authenticationService else {
+            print("⚠️ No authentication service available for background check")
+            return
         }
         
-        // Simulate background work
-        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 2) {
+        print("🔍 Performing background authentication check")
+        backgroundTaskStatus = .checking
+        lastBackgroundCheck = Date()
+        
+        // Check if background authentication is due
+        if authService.isBackgroundAuthenticationDue() {
+            let result = authService.performBackgroundAuthentication()
+            
             DispatchQueue.main.async {
-                self.isBackgroundTaskRunning = false
-                completion(true)
+                switch result {
+                case .approved:
+                    self.backgroundTaskStatus = .authenticated
+                    print("✅ Background authentication successful")
+                case .denied:
+                    self.backgroundTaskStatus = .failed
+                    print("❌ Background authentication failed")
+                case .retry:
+                    self.backgroundTaskStatus = .retry
+                    print("🔄 Background authentication requires retry")
+                case .error:
+                    self.backgroundTaskStatus = .error
+                    print("⚠️ Background authentication error")
+                }
             }
+        } else {
+            backgroundTaskStatus = .monitoring
+            print("ℹ️ Background authentication not due yet")
         }
     }
     
-    // MARK: - Background App Refresh
+    // MARK: - WatchKit Background Tasks
     
-    /// Start background app refresh
-    func startBackgroundAppRefresh() {
-        guard backgroundTaskIdentifier != nil else { return }
-        
-        #if os(iOS)
-        backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(withName: "HeartID_Background_Authentication") {
-            self.endBackgroundTask()
+    private func scheduleBackgroundTask() {
+        // Schedule background refresh task
+        WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval)) { [weak self] _ in
+            self?.handleBackgroundRefresh()
         }
-        #endif
         
-        print("Started background app refresh")
-    }
-    
-    /// End background app refresh
-    func endBackgroundTask() {
-        guard backgroundTaskIdentifier != nil else { return }
-        
-        #if os(iOS)
-        UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
-        #endif
-        backgroundTaskIdentifier = nil
-        
-        print("Ended background app refresh")
-    }
-    
-    // MARK: - Background Processing
-    
-    /// Process background authentication
-    func processBackgroundAuthentication() {
-        // This would be called by the background task
-        // For now, we'll simulate the process
-        print("Processing background authentication")
-        
-        DispatchQueue.main.async {
-            self.lastBackgroundExecution = Date()
+        // Schedule background processing task
+        WKExtension.shared().scheduleBackgroundProcessing(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval * 2)) { [weak self] _ in
+            self?.handleBackgroundProcessing()
         }
     }
     
-    // MARK: - Background Task Status
-    
-    /// Check if background app refresh is available
-    var isBackgroundAppRefreshAvailable: Bool {
-        #if os(iOS)
-        return UIApplication.shared.backgroundRefreshStatus == .available
-        #else
-        return false
-        #endif
+    private func cancelBackgroundTask() {
+        // Cancel scheduled background tasks
+        WKExtension.shared().cancelAllPendingTasks()
     }
     
-    /// Get background app refresh status
-    var backgroundRefreshStatus: String {
-        #if os(iOS)
-        return UIApplication.shared.backgroundRefreshStatus.rawValue.description
-        #else
-        return "denied" // WatchOS doesn't have background refresh status
-        #endif
+    private func handleBackgroundRefresh() {
+        print("🔄 Handling background refresh")
+        performBackgroundAuthenticationCheck()
+        
+        // Schedule next background refresh
+        WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval)) { [weak self] _ in
+            self?.handleBackgroundRefresh()
+        }
     }
     
-    /// Get remaining background time
-    var remainingBackgroundTime: TimeInterval {
-        #if os(iOS)
-        return UIApplication.shared.backgroundTimeRemaining
-        #else
-        return 0
-        #endif
+    private func handleBackgroundProcessing() {
+        print("⚙️ Handling background processing")
+        
+        // Perform any necessary data cleanup or synchronization
+        cleanupExpiredData()
+        
+        // Schedule next background processing
+        WKExtension.shared().scheduleBackgroundProcessing(withPreferredDate: Date().addingTimeInterval(backgroundCheckInterval * 2)) { [weak self] _ in
+            self?.handleBackgroundProcessing()
+        }
+    }
+    
+    // MARK: - Background Task Monitoring Setup
+    
+    private func setupBackgroundTaskMonitoring() {
+        // Monitor app state changes
+        NotificationCenter.default.publisher(for: .init("AppDidEnterBackground"))
+            .sink { [weak self] _ in
+                self?.handleAppDidEnterBackground()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .init("AppWillEnterForeground"))
+            .sink { [weak self] _ in
+                self?.handleAppWillEnterForeground()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleAppDidEnterBackground() {
+        print("📱 App entered background")
+        
+        // Continue background monitoring if it was active
+        if isBackgroundTaskActive {
+            backgroundTaskStatus = .background
+        }
+    }
+    
+    private func handleAppWillEnterForeground() {
+        print("📱 App will enter foreground")
+        
+        // Resume foreground monitoring
+        if isBackgroundTaskActive {
+            backgroundTaskStatus = .monitoring
+        }
+    }
+    
+    // MARK: - Data Cleanup
+    
+    private func cleanupExpiredData() {
+        // Clean up old authentication attempts
+        // This would be implemented based on your data retention policy
+        print("🧹 Cleaning up expired data")
+    }
+    
+    // MARK: - Status Information
+    
+    /// Get current background task status description
+    var statusDescription: String {
+        switch backgroundTaskStatus {
+        case .idle:
+            return "Background monitoring inactive"
+        case .monitoring:
+            return "Monitoring authentication status"
+        case .checking:
+            return "Performing background check"
+        case .authenticated:
+            return "Background authentication successful"
+        case .failed:
+            return "Background authentication failed"
+        case .retry:
+            return "Background authentication requires retry"
+        case .error:
+            return "Background authentication error"
+        case .background:
+            return "Running in background"
+        }
+    }
+    
+    /// Get time since last background check
+    var timeSinceLastCheck: String {
+        guard let lastCheck = lastBackgroundCheck else {
+            return "Never"
+        }
+        
+        let interval = Date().timeIntervalSince(lastCheck)
+        if interval < 60 {
+            return "\(Int(interval))s ago"
+        } else if interval < 3600 {
+            return "\(Int(interval / 60))m ago"
+        } else {
+            return "\(Int(interval / 3600))h ago"
+        }
+    }
+    
+    /// Clear error message
+    func clearError() {
+        errorMessage = nil
     }
 }
 
-// MARK: - Background Task Extensions
+// MARK: - Background Task Status
 
-extension BackgroundTaskService {
-    /// Request background app refresh permission
-    func requestBackgroundAppRefreshPermission() {
-        // In a real implementation, this would request permission
-        // For now, we'll just log it
-        print("Requesting background app refresh permission")
+enum BackgroundTaskStatus: String, CaseIterable {
+    case idle = "idle"
+    case monitoring = "monitoring"
+    case checking = "checking"
+    case authenticated = "authenticated"
+    case failed = "failed"
+    case retry = "retry"
+    case error = "error"
+    case background = "background"
+    
+    var displayName: String {
+        switch self {
+        case .idle: return "Idle"
+        case .monitoring: return "Monitoring"
+        case .checking: return "Checking"
+        case .authenticated: return "Authenticated"
+        case .failed: return "Failed"
+        case .retry: return "Retry Required"
+        case .error: return "Error"
+        case .background: return "Background"
+        }
     }
     
-    /// Check if background task is due
-    func isBackgroundTaskDue() -> Bool {
-        guard let lastExecution = lastBackgroundExecution else { return true }
-        
-        let timeSinceLastExecution = Date().timeIntervalSince(lastExecution)
-        return timeSinceLastExecution >= 600.0
-    }
-    
-    /// Get next background task execution time
-    var nextBackgroundTaskExecution: Date? {
-        guard let lastExecution = lastBackgroundExecution else { return Date() }
-        return lastExecution.addingTimeInterval(600.0)
+    var color: String {
+        switch self {
+        case .idle: return "gray"
+        case .monitoring: return "blue"
+        case .checking: return "orange"
+        case .authenticated: return "green"
+        case .failed: return "red"
+        case .retry: return "yellow"
+        case .error: return "red"
+        case .background: return "purple"
+        }
     }
 }
-
