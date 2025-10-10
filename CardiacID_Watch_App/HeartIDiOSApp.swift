@@ -616,7 +616,7 @@ struct AnalyticsView: View {
                         }
                         
                         // Usage Patterns
-                        UsagePatternsView(dataManager: dataManager)
+                        UsagePatternsView()
                         
                     } else {
                         NoDataView()

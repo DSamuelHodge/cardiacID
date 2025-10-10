@@ -130,6 +130,8 @@ class WatchConnectivityServiceWatch: NSObject, ObservableObject {
             return (status: "pending", message: message, confidence: nil, isSuccessful: false)
         case .error(let message):
             return (status: "error", message: message, confidence: nil, isSuccessful: false)
+        case .pending:
+            return (status: "pending", message: "Authentication pending", confidence: nil, isSuccessful: false)
         }
     }
     

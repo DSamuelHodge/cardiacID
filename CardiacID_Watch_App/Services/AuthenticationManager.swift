@@ -148,6 +148,8 @@ class AuthenticationManager: ObservableObject {
             authenticationState = .error("Authentication failed")
         case .error(let message):
             authenticationState = .error(message)
+        case .pending:
+            authenticationState = .retryRequired
         }
     }
     
@@ -175,7 +177,7 @@ class AuthenticationManager: ObservableObject {
         switch result {
         case .approved:
             isAuthenticated = true
-        case .retry, .denied, .error:
+        case .retry, .denied, .error, .pending:
             isAuthenticated = false
         }
     }
