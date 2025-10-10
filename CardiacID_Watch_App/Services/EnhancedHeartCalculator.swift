@@ -331,7 +331,7 @@ extension EnhancedHeartCalculator {
         if let xenonX = result.xenonXResult {
             report["xenonX"] = [
                 "confidence": xenonX.confidence,
-                "patternSignature": xenonX.patternSignature,
+                "patternId": xenonX.patternId,
                 "timestamp": xenonX.timestamp
             ]
         }
@@ -350,3 +350,4 @@ extension EnhancedHeartCalculator {
         return report
     }
 }
+

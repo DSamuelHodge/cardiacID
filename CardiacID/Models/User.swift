@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Authentication Result
 
-enum AuthenticationResult: String, CaseIterable, Codable {
+enum UserAuthStatus: String, CaseIterable, Codable {
     case pending = "pending"
     case approved = "approved"
     case denied = "denied"
@@ -71,3 +71,4 @@ struct User: Identifiable, Codable, Equatable {
         self.createdAt = createdAt
     }
 }
+

@@ -69,8 +69,8 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Set up the data manager in authentication service
-            authenticationService.dataManager = dataManager
+            // Inject DataManager into AuthenticationService
+            authenticationService.setDataManager(dataManager)
             // Check enrollment status
             checkEnrollmentStatus()
             // Start landing screen timer

@@ -3,7 +3,7 @@ import WatchConnectivity
 import Combine
 
 /// Service for handling communication between watchOS and iOS apps
-class WatchConnectivityService: NSObject, ObservableObject {
+class WatchConnectivityServiceWatch: NSObject, ObservableObject {
     @Published var isConnected = false
     @Published var lastMessage: [String: Any]?
     @Published var connectionStatus: String = "Not Connected"
@@ -54,18 +54,38 @@ class WatchConnectivityService: NSObject, ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            if let resultRawValue = notification.userInfo?["result"] as? String,
-               let result = AuthenticationResult(rawValue: resultRawValue) {
-                self?.sendAuthenticationResult(result) { success in
-                    if success {
-                        print("Authentication result sent to iOS app successfully")
-                    } else {
-                        print("Failed to send authentication result to iOS app")
-                    }
+            guard let userInfo = notification.userInfo,
+                  let raw = userInfo["result"] as? String else { return }
+
+            let message = userInfo["message"] as? String
+            let confidence = userInfo["confidence"] as? Double
+
+            let result: AuthenticationResult
+            switch raw {
+            case "approved":
+                result = .approved(confidence: confidence ?? 1.0)
+            case "denied":
+                result = .denied(reason: message ?? "Denied")
+            case "retry":
+                result = .retry(message: message ?? "Please try again")
+            case "error":
+                result = .error(message: message ?? "Unknown error")
+            default:
+                // Unknown result type; treat as error for integrity
+                result = .error(message: "Unknown result type: \(raw)")
+            }
+
+            self?.sendAuthenticationResult(result) { success in
+                if success {
+                    print("Authentication result sent to iOS app successfully")
+                } else {
+                    print("Failed to send authentication result to iOS app")
                 }
             }
         }
     }
+    // Note: AuthenticationResult(rawValue:) is not valid for associated-value enum.
+    // Mapping to UserAuthStatus and metadata is handled via mapAuthenticationResult(_:)
     
     /// Send message to iOS companion app
     func sendMessage(_ message: [String: Any], completion: @escaping (Bool) -> Void = { _ in }) {
@@ -98,13 +118,33 @@ class WatchConnectivityService: NSObject, ObservableObject {
         sendMessage(message, completion: completion)
     }
     
+    /// Map AuthenticationResult to a transport-friendly payload values
+    private func mapAuthenticationResult(_ result: AuthenticationResult) -> (status: String, message: String?, confidence: Double?, isSuccessful: Bool) {
+        switch result {
+        case .approved(let confidence):
+            return (status: "approved", message: nil, confidence: confidence, isSuccessful: true)
+        case .denied(let reason):
+            return (status: "denied", message: reason, confidence: nil, isSuccessful: false)
+        case .retry(let message):
+            // Represent retry as pending to reflect in-progress auth on iOS
+            return (status: "pending", message: message, confidence: nil, isSuccessful: false)
+        case .error(let message):
+            return (status: "error", message: message, confidence: nil, isSuccessful: false)
+        }
+    }
+    
     /// Send authentication result to iOS app
     func sendAuthenticationResult(_ result: AuthenticationResult, completion: @escaping (Bool) -> Void = { _ in }) {
-        let message: [String: Any] = [
+        // Map AuthenticationResult to UserAuthStatus and metadata
+        let mapped = mapAuthenticationResult(result)
+        var message: [String: Any] = [
             "type": "authenticationResult",
-            "result": result.rawValue,
-            "timestamp": Date().timeIntervalSince1970
+            "status": mapped.status, // UserAuthStatus raw value
+            "timestamp": Date().timeIntervalSince1970,
+            "isSuccessful": mapped.isSuccessful
         ]
+        if let confidence = mapped.confidence { message["confidence"] = confidence }
+        if let text = mapped.message { message["message"] = text }
         sendMessage(message, completion: completion)
     }
     
@@ -151,7 +191,7 @@ class WatchConnectivityService: NSObject, ObservableObject {
 
 // MARK: - WCSessionDelegate
 
-extension WatchConnectivityService: WCSessionDelegate {
+extension WatchConnectivityServiceWatch: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
             if let error = error {

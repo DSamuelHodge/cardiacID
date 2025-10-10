@@ -98,7 +98,7 @@ class HealthKitService: NSObject, ObservableObject {
             return
         }
         
-        var samples: [Double] = []
+        var collectedRates: [Double] = []
         let startTime = Date()
         let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
         
@@ -107,39 +107,43 @@ class HealthKitService: NSObject, ObservableObject {
             predicate: HKQuery.predicateForSamples(withStart: startTime, end: nil, options: .strictStartDate),
             anchor: nil,
             limit: HKObjectQueryNoLimit
-        ) { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
-            
-            guard let samples = samplesOrNil as? [HKQuantitySample] else {
-                if let error = errorOrNil {
-                    completion([], error)
+        ) { [weak self] (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
+            DispatchQueue.main.async {
+                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else {
+                    if let error = errorOrNil {
+                        completion([], error)
+                    }
+                    return
                 }
-                return
-            }
-            
-            for sample in samples {
-                let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
-                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
-                samples.append(heartRate)
+                for sample in hkSamples {
+                    let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
+                    let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                    collectedRates.append(heartRate)
+                }
+                if Date().timeIntervalSince(startTime) >= duration {
+                    self?.healthStore.stop(query)
+                    completion(collectedRates, nil)
+                }
             }
         }
         
-        query.updateHandler = { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
-            guard let samples = samplesOrNil as? [HKQuantitySample] else { return }
-            
-            for sample in samples {
-                let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
-                let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
-                samples.append(heartRate)
-            }
-            
-            // Check if duration has elapsed
-            if Date().timeIntervalSince(startTime) >= duration {
-                self.healthStore.stop(query)
-                completion(samples, nil)
+        query.updateHandler = { [weak self] (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
+            DispatchQueue.main.async {
+                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else { return }
+                for sample in hkSamples {
+                    let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
+                    let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
+                    collectedRates.append(heartRate)
+                }
+                if Date().timeIntervalSince(startTime) >= duration {
+                    self?.healthStore.stop(query)
+                    completion(collectedRates, nil)
+                }
             }
         }
         
         healthStore.execute(query)
+        self.heartRateQuery = query
     }
     
     /// Validate heart rate data using EnrollmentValidation

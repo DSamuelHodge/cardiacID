@@ -741,15 +741,27 @@ class WatchConnectivityService: NSObject, ObservableObject {
     @Published var isWatchConnected = false
     @Published var connectionStatus = "Checking connection..."
     @Published var lastSyncDate: Date?
+    @Published var lastAuthStatus: UserAuthStatus?
+    @Published var lastAuthConfidence: Double?
+    @Published var lastAuthMessage: String?
+    @Published var lastAuthSuccess: Bool?
     
-    private let session = WCSession.default
-    
-    override init() {
-        super.init()
-        
-        if WCSession.isSupported() {
-            session.delegate = self
+    /// Validate authentication result payload from watch
+    private func validateAuthPayload(_ payload: [String: Any]) -> Bool {
+        guard payload["type"] as? String == "authenticationResult" else { return false }
+        guard let status = payload["status"] as? String else { return false }
+        // status must be one of the known values
+        let allowed = ["approved", "denied", "pending", "error"]
+        guard allowed.contains(status) else { return false }
+        // confidence is optional but must be a number if present
+        if let confidence = payload["confidence"] as? Any {
+            if !(confidence is Double) && !(confidence is NSNumber) { return false }
         }
+        // isSuccessful is optional bool; tolerate absence
+        if let isSuccessful = payload["isSuccessful"] as? Any {
+            if !(isSuccessful is Bool) { return false }
+        }
+        return true
     }
     
     func startSession() {
@@ -826,20 +838,75 @@ extension WatchConnectivityService: WCSessionDelegate {
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         print("📱 Received message from watch: \(message)")
-        
-        // Handle messages from watch app
+
+        // Prefer new typed payloads
+        if let type = message["type"] as? String {
+            switch type {
+            case "authenticationResult":
+                // Validate payload
+                guard validateAuthPayload(message) else {
+                    DispatchQueue.main.async {
+                        self.connectionStatus = "Invalid auth payload"
+                    }
+                    return
+                }
+                let statusRaw = message["status"] as? String ?? "error"
+                let confidence = (message["confidence"] as? NSNumber)?.doubleValue
+                let msg = message["message"] as? String
+                let success = message["isSuccessful"] as? Bool
+
+                // Map to UserAuthStatus
+                let status = UserAuthStatus(rawValue: statusRaw) ?? .error
+
+                DispatchQueue.main.async {
+                    self.lastAuthStatus = status
+                    self.lastAuthConfidence = confidence
+                    self.lastAuthMessage = msg
+                    self.lastAuthSuccess = success ?? (status == .approved)
+                    self.lastSyncDate = Date()
+                    self.connectionStatus = "Auth: \(status.rawValue)"
+                }
+                return
+            case "enrollmentStatus":
+                // Handle enrollment status update
+                let isEnrolled = message["isEnrolled"] as? Bool ?? false
+                DispatchQueue.main.async {
+                    self.lastSyncDate = Date()
+                    self.connectionStatus = isEnrolled ? "Watch enrolled" : "Enrollment required"
+                }
+                return
+            default:
+                break
+            }
+        }
+
+        // Legacy fallback: action-based messages
         if let action = message["action"] as? String {
             switch action {
             case "enrollmentComplete":
                 print("📱 Enrollment completed on watch")
-                // Update local state if needed
             case "authenticationResult":
                 if let result = message["result"] as? String {
                     print("📱 Authentication result from watch: \(result)")
+                    let status = UserAuthStatus(rawValue: result) ?? .error
+                    DispatchQueue.main.async {
+                        self.lastAuthStatus = status
+                        self.connectionStatus = "Auth: \(status.rawValue)"
+                    }
                 }
             default:
                 print("📱 Unknown action from watch: \(action)")
             }
         }
+    }
+    
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        print("📱 Received message from watch (reply): \(message)")
+
+        // Reuse the non-reply handler for parsing
+        self.session(session, didReceiveMessage: message)
+
+        // Always acknowledge
+        replyHandler(["status": "received"])
     }
 }

@@ -100,6 +100,23 @@ enum AuthenticationResult: Codable {
     }
 }
 
+extension AuthenticationResult: Equatable {
+    public static func == (lhs: AuthenticationResult, rhs: AuthenticationResult) -> Bool {
+        switch (lhs, rhs) {
+        case (.approved(let lc), .approved(let rc)):
+            return lc == rc
+        case (.denied(let lr), .denied(let rr)):
+            return lr == rr
+        case (.retry(let lm), .retry(let rm)):
+            return lm == rm
+        case (.error(let lm), .error(let rm)):
+            return lm == rm
+        default:
+            return false
+        }
+    }
+}
+
 // MARK: - Security Levels
 
 /// Security level configuration for authentication
@@ -487,5 +504,6 @@ class HeartIDEncryptionService {
 }
 
 // MARK: - App Configuration
+
 
 
