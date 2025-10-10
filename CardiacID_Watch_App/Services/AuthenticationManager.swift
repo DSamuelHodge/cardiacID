@@ -77,12 +77,13 @@ class AuthenticationManager: ObservableObject {
         authenticationState = .enrolling
         
         // Start heart rate capture using duration and completion handler
-        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] values, error in
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] samples, error in
             guard let self = self else { return }
             if let error = error {
                 self.authenticationState = .error(error.localizedDescription)
                 return
             }
+            let values = samples.map { $0.value }
             self.completeEnrollment(with: values)
         }
     }
@@ -117,12 +118,13 @@ class AuthenticationManager: ObservableObject {
         authenticationState = .authenticating
         
         // Start heart rate capture using duration and completion handler
-        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] values, error in
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] samples, error in
             guard let self = self else { return }
             if let error = error {
                 self.authenticationState = .error(error.localizedDescription)
                 return
             }
+            let values = samples.map { $0.value }
             self.completeAuthentication(with: values)
         }
     }

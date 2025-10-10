@@ -223,7 +223,7 @@ struct CaptureStepView: View {
                     print("❌ Capture error: \(error.localizedDescription)")
                     isCapturing = false
                 } else {
-                    capturedSamples = samples
+                    capturedSamples = samples.map { $0.value }
                     onCaptureComplete(samples)
                 }
             }
