@@ -104,6 +104,8 @@ class BackgroundTaskService: NSObject, ObservableObject {
                 case .error:
                     self.backgroundTaskStatus = .error
                     print("⚠️ Background authentication error")
+                case .pending:
+                    <#code#>
                 }
             }
         } else {
