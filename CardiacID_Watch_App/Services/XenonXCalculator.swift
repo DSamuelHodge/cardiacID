@@ -271,7 +271,7 @@ struct MorphologicalFeatures: Codable {
     }
 }
 
-/// Main XenonX Calculator implementation
+/// Main XenonX Calculator implementation with performance optimizations
 class XenonXCalculator: XenonXCalculatorProtocol {
     private let featureWeights: [String: Double] = [
         "temporal": 0.3,
@@ -279,6 +279,10 @@ class XenonXCalculator: XenonXCalculatorProtocol {
         "statistical": 0.25,
         "morphological": 0.2
     ]
+    
+    // Cache for FFT setup to avoid recreation
+    private var fftSetupCache: [Int: FFTSetup] = [:]
+    private let fftCacheQueue = DispatchQueue(label: "fft.cache", attributes: .concurrent)
     
     func analyzePattern(_ heartRateData: [Double]) -> XenonXResult {
         let features = extractFeatures(heartRateData)
@@ -318,5 +322,31 @@ class XenonXCalculator: XenonXCalculatorProtocol {
         let patternComplexity = min(Double(features.morphologicalFeatures.peakCount) / 10.0, 1.0)
         
         return (dataQuality + featureConsistency + patternComplexity) / 3.0
+    }
+    
+    // MARK: - Performance Optimizations
+    
+    /// Get cached FFT setup or create new one
+    private func getFFTSetup(for count: Int) -> FFTSetup? {
+        return fftCacheQueue.sync {
+            if let cached = fftSetupCache[count] {
+                return cached
+            }
+            
+            let log2n = vDSP_Length(log2(Double(count)))
+            let setup = vDSP_create_fftsetup(log2n, Int32(kFFTRadix2))
+            fftSetupCache[count] = setup
+            return setup
+        }
+    }
+    
+    /// Clean up FFT cache
+    deinit {
+        fftCacheQueue.sync {
+            for setup in fftSetupCache.values {
+                vDSP_destroy_fftsetup(setup)
+            }
+            fftSetupCache.removeAll()
+        }
     }
 }

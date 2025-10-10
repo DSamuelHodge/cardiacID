@@ -177,15 +177,6 @@ struct EnrollView: View {
                     switch enrollmentState {
                     case .ready:
                         Text("Ready to start").font(.caption)
-                    case .initializing:
-                        ProgressView("Initializing...")
-                    case .countdown(let n):
-                        VStack {
-                            Text("\(n)")
-                                .font(.system(size: 48, weight: .bold))
-                                .foregroundColor(.orange)
-                            Text("Get Ready").font(.caption)
-                        }
                     case .capturing:
                         EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
                     case .processing:
@@ -194,7 +185,7 @@ struct EnrollView: View {
                         ProcessingStateView(progress: processingProgress, title: "Verifying")
                     case .verificationComplete:
                         ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
-                    case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
+                    case .completed:
                         Text("Complete").font(.caption)
                     case .error(let msg):
                         Text(msg).font(.caption).foregroundColor(.red)
@@ -252,13 +243,11 @@ struct EnrollView: View {
     private var helperSubtitle: String {
         switch enrollmentState {
         case .ready: return "We'll capture a short baseline, then verify it."
-        case .initializing: return "Preparing sensors"
-        case .countdown: return "Place your finger on the Digital Crown"
         case .capturing: return "Keep still during capture"
         case .processing: return "Analyzing pattern"
         case .verification: return "Verifying against baseline"
         case .verificationComplete: return "Reviewing result"
-        case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete: return ""
+        case .completed: return "Enrollment complete"
         case .error: return ""
         }
     }
@@ -292,19 +281,10 @@ struct EnrollView: View {
             return
         }
         
-        enrollmentState = .initializing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.startCountdown() }
+        // Start capture immediately - no countdown needed
+        startCapture()
     }
 
-    private func startCountdown() {
-        countdownValue = 3
-        enrollmentState = .countdown(countdownValue)
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            countdownValue -= 1
-            if countdownValue > 0 { enrollmentState = .countdown(countdownValue) }
-            else { timer.invalidate(); countdownTimer = nil; startCapture() }
-        }
-    }
 
     private func startCapture() {
         enrollmentState = .capturing
@@ -321,7 +301,7 @@ struct EnrollView: View {
         }
         
         do {
-            let duration: TimeInterval = 12.0 // Increased for better sensor engagement
+            let duration: TimeInterval = 10.0 // Reduced from 12 seconds to 10 seconds
             print("📊 Starting enrollment capture for \(duration) seconds")
             
             // Check HealthKit authorization again before capture
@@ -344,12 +324,12 @@ struct EnrollView: View {
             }
             
             // Wait for capture to complete with buffer time
-            try await Task.sleep(nanoseconds: UInt64((duration + 2.0) * 1_000_000_000))
+            try await Task.sleep(nanoseconds: UInt64((duration + 1.0) * 1_000_000_000))
             
             // Ensure capture has fully stopped (wait, don't early return)
             var waitCount = 0
-            while healthKitService.isCapturing && waitCount < 20 { // Max 6 seconds wait
-                print("⏳ Waiting for capture to stop… (\(waitCount + 1)/20)")
+            while healthKitService.isCapturing && waitCount < 15 { // Max 4.5 seconds wait
+                print("⏳ Waiting for capture to stop… (\(waitCount + 1)/15)")
                 try await Task.sleep(nanoseconds: 300_000_000)
                 waitCount += 1
             }
@@ -400,7 +380,7 @@ struct EnrollView: View {
             }
             
             // Give system time before completing enrollment
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            try await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
             completeEnrollment()
         } catch {
             print("❌ Enrollment capture error: \(error.localizedDescription)")
@@ -412,16 +392,16 @@ struct EnrollView: View {
         enrollmentState = .processing
         processingProgress = 0
         if processingTimer == nil { startProcessingTimer() }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.stopProcessingTimer()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.startAutomaticVerification() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.startAutomaticVerification() }
         }
     }
     
     private func startProcessingTimer() {
         processingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             withAnimation(.easeInOut(duration: 0.1)) {
-                processingProgress += 0.083 // Complete in 1.2 seconds (0.1 * 12 = 1.2)
+                processingProgress += 0.1 // Complete in 1.0 seconds (0.1 * 10 = 1.0)
                 if processingProgress >= 1.0 {
                     processingProgress = 1.0
                 }
@@ -444,7 +424,7 @@ struct EnrollView: View {
     @MainActor
     private func captureVerificationWindow() async {
         do {
-            let duration: TimeInterval = 10.0
+            let duration: TimeInterval = 8.0 // Reduced from 10 seconds to 8 seconds
             print("📊 Starting verification capture for \(duration) seconds")
             
             // Check HealthKit authorization before verification
@@ -467,12 +447,12 @@ struct EnrollView: View {
             }
             
             // Wait for capture to complete
-            try await Task.sleep(nanoseconds: UInt64((duration + 1.0) * 1_000_000_000))
+            try await Task.sleep(nanoseconds: UInt64((duration + 0.5) * 1_000_000_000))
             
             // Wait for capture to stop with timeout
             var waitCount = 0
-            while healthKitService.isCapturing && waitCount < 15 { // Max 4.5 seconds wait
-                print("⏳ Waiting for verification capture to stop… (\(waitCount + 1)/15)")
+            while healthKitService.isCapturing && waitCount < 10 { // Max 3 seconds wait
+                print("⏳ Waiting for verification capture to stop… (\(waitCount + 1)/10)")
                 try await Task.sleep(nanoseconds: 300_000_000)
                 waitCount += 1
             }
@@ -481,7 +461,7 @@ struct EnrollView: View {
                 print("⚠️ Verification capture still running after timeout, forcing stop")
                 healthKitService.stopHeartRateCapture()
                 // Give a moment for the stop to take effect
-                try await Task.sleep(nanoseconds: 500_000_000)
+                try await Task.sleep(nanoseconds: 300_000_000)
             }
             
             let values = healthKitService.heartRateSamples.map { $0.value }
@@ -531,7 +511,7 @@ struct EnrollView: View {
         if let vr = verificationResult, vr.passed {
             authenticationService.markEnrolledAndAuthenticated()
             NotificationCenter.default.post(name: .init("UserEnrolled"), object: nil)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { dismiss() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { dismiss() }
         }
 
         enrollmentState = .verificationComplete
@@ -577,7 +557,7 @@ struct ResultStateView: View {
 
 // MARK: - Supporting Types
 enum EnrollmentState: Equatable { 
-    case ready, initializing, countdown(Int), capturing, processing, completed, verification, verificationComplete, rangeOptions, relaxation, exercise, rangeTest, finalComplete, error(String) 
+    case ready, capturing, processing, completed, verification, verificationComplete, error(String) 
 }
 
 struct VerificationResult { 

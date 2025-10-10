@@ -760,11 +760,11 @@ class WatchConnectivityService: NSObject, ObservableObject {
         let allowed = ["approved", "denied", "pending", "error"]
         guard allowed.contains(status) else { return false }
         // confidence is optional but must be a number if present
-        if let confidence = payload["confidence"] as? Any {
+        if let confidence = payload["confidence"] {
             if !(confidence is Double) && !(confidence is NSNumber) { return false }
         }
         // isSuccessful is optional bool; tolerate absence
-        if let isSuccessful = payload["isSuccessful"] as? Any {
+        if let isSuccessful = payload["isSuccessful"] {
             if !(isSuccessful is Bool) { return false }
         }
         return true

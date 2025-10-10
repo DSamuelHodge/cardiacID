@@ -1,6 +1,7 @@
 // MARK: - MenuView Analysis & Fixes
 
 import SwiftUI
+import WatchKit
 
 struct MenuView: View {
     @EnvironmentObject var authenticationService: AuthenticationService
@@ -152,6 +153,9 @@ struct MenuView: View {
     
     // MARK: - Action Handlers
     private func handleEnrollAction() {
+        // Haptic feedback for button press
+        WKInterfaceDevice.current().play(.click)
+        
         guard healthKitService.isAuthorized else {
             errorMessage = "HealthKit authorization is required for enrollment. Please enable in Settings."
             showingError = true
@@ -165,6 +169,9 @@ struct MenuView: View {
     }
     
     private func handleAuthenticateAction() {
+        // Haptic feedback for button press
+        WKInterfaceDevice.current().play(.click)
+        
         guard healthKitService.isAuthorized else {
             errorMessage = "HealthKit authorization is required for authentication. Please enable in Settings."
             showingError = true
@@ -261,7 +268,11 @@ struct MenuButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            // Haptic feedback for button press
+            WKInterfaceDevice.current().play(.click)
+            action()
+        }) {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
@@ -290,6 +301,8 @@ struct MenuButton: View {
         }
         .disabled(!isEnabled)
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel("\(title) button")
+        .accessibilityHint(isEnabled ? "Tap to \(title.lowercased())" : "\(title) is not available")
     }
 }
 

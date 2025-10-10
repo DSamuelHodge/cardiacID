@@ -92,58 +92,133 @@ class HealthKitService: NSObject, ObservableObject {
     }
     
     /// Start capturing heart rate data for pattern analysis with completion handler
-    func startHeartRateCapture(duration: TimeInterval, completion: @escaping ([Double], Error?) -> Void) {
+    func startHeartRateCapture(duration: TimeInterval, completion: @escaping ([HeartRateSample], Error?) -> Void) {
         guard isAuthorized else {
             completion([], NSError(domain: "HealthKit", code: 1, userInfo: [NSLocalizedDescriptionKey: "HealthKit not authorized"]))
             return
         }
         
-        var collectedRates: [Double] = []
-        let startTime = Date()
+        guard !isCapturing else {
+            completion([], NSError(domain: "HealthKit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Heart rate capture already in progress"]))
+            return
+        }
+        
+        // Clean up any existing query
+        if let existingQuery = heartRateQuery {
+            healthStore.stop(existingQuery)
+            heartRateQuery = nil
+        }
+        
+        // Clear previous samples
+        heartRateSamples.removeAll()
+        
+        // Set up capture state
+        isCapturing = true
+        captureStartTime = Date()
+        captureDuration = duration
+        captureProgress = 0
+        
         let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
         
         let query = HKAnchoredObjectQuery(
             type: heartRateType,
-            predicate: HKQuery.predicateForSamples(withStart: startTime, end: nil, options: .strictStartDate),
+            predicate: HKQuery.predicateForSamples(withStart: captureStartTime!, end: nil, options: .strictStartDate),
             anchor: nil,
             limit: HKObjectQueryNoLimit
         ) { [weak self] (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
             DispatchQueue.main.async {
-                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else {
-                    if let error = errorOrNil {
-                        completion([], error)
-                    }
+                guard let self = self else { return }
+                
+                if let error = errorOrNil {
+                    self.isCapturing = false
+                    completion([], error)
                     return
                 }
-                for sample in hkSamples {
-                    let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
-                    let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
-                    collectedRates.append(heartRate)
+                
+                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else {
+                    return
                 }
-                if Date().timeIntervalSince(startTime) >= duration {
-                    self?.healthStore.stop(query)
-                    completion(collectedRates, nil)
+                
+                // Convert HKQuantitySample to HeartRateSample
+                let newSamples = hkSamples.map { HeartRateSample(from: $0) }
+                self.heartRateSamples.append(contentsOf: newSamples)
+                
+                // Update current heart rate
+                if let latestSample = newSamples.last {
+                    self.currentHeartRate = latestSample.value
+                }
+                
+                // Update progress
+                if let startTime = self.captureStartTime {
+                    let elapsed = Date().timeIntervalSince(startTime)
+                    self.captureProgress = min(elapsed / duration, 1.0)
+                }
+                
+                // Check if duration is complete
+                if let startTime = self.captureStartTime,
+                   Date().timeIntervalSince(startTime) >= duration {
+                    self.isCapturing = false
+                    self.healthStore.stop(query)
+                    self.heartRateQuery = nil
+                    completion(self.heartRateSamples, nil)
                 }
             }
         }
         
         query.updateHandler = { [weak self] (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
             DispatchQueue.main.async {
-                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else { return }
-                for sample in hkSamples {
-                    let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
-                    let heartRate = sample.quantity.doubleValue(for: heartRateUnit)
-                    collectedRates.append(heartRate)
+                guard let self = self else { return }
+                
+                if let error = errorOrNil {
+                    self.isCapturing = false
+                    completion([], error)
+                    return
                 }
-                if Date().timeIntervalSince(startTime) >= duration {
-                    self?.healthStore.stop(query)
-                    completion(collectedRates, nil)
+                
+                guard let hkSamples = samplesOrNil as? [HKQuantitySample] else {
+                    return
+                }
+                
+                // Convert HKQuantitySample to HeartRateSample
+                let newSamples = hkSamples.map { HeartRateSample(from: $0) }
+                self.heartRateSamples.append(contentsOf: newSamples)
+                
+                // Update current heart rate
+                if let latestSample = newSamples.last {
+                    self.currentHeartRate = latestSample.value
+                }
+                
+                // Update progress
+                if let startTime = self.captureStartTime {
+                    let elapsed = Date().timeIntervalSince(startTime)
+                    self.captureProgress = min(elapsed / duration, 1.0)
+                }
+                
+                // Check if duration is complete
+                if let startTime = self.captureStartTime,
+                   Date().timeIntervalSince(startTime) >= duration {
+                    self.isCapturing = false
+                    self.healthStore.stop(query)
+                    self.heartRateQuery = nil
+                    completion(self.heartRateSamples, nil)
                 }
             }
         }
         
+        heartRateQuery = query
         healthStore.execute(query)
-        self.heartRateQuery = query
+    }
+    
+    /// Convenience method for backward compatibility - returns Double values
+    func startHeartRateCaptureAsDoubles(duration: TimeInterval, completion: @escaping ([Double], Error?) -> Void) {
+        startHeartRateCapture(duration: duration) { samples, error in
+            if let error = error {
+                completion([], error)
+            } else {
+                let values = samples.map { $0.value }
+                completion(values, nil)
+            }
+        }
     }
     
     /// Validate heart rate data using EnrollmentValidation
@@ -165,6 +240,10 @@ class HealthKitService: NSObject, ObservableObject {
             healthStore.stop(query)
             heartRateQuery = nil
         }
+        
+        // Reset capture state
+        captureStartTime = nil
+        captureProgress = 0
         
         // Process captured samples
         if !heartRateSamples.isEmpty {
@@ -276,7 +355,7 @@ class HealthKitService: NSObject, ObservableObject {
         return heartRateSamples
     }
     
-    /// Validate heart rate data quality
+    /// Validate heart rate data quality with enhanced checks
     func validateHeartRateData(_ samples: [HeartRateSample]) -> Bool {
         guard samples.count >= AppConfiguration.minPatternSamples else {
             errorMessage = "Insufficient heart rate samples. Need at least \(AppConfiguration.minPatternSamples)"
@@ -300,12 +379,40 @@ class HealthKitService: NSObject, ObservableObject {
             return false
         }
         
+        // Check for quality score
+        let qualityScore = validSamples.map { $0.quality }.reduce(0, +) / Double(validSamples.count)
+        guard qualityScore >= 0.7 else {
+            errorMessage = "Low quality heart rate data detected"
+            return false
+        }
+        
         return true
     }
     
     /// Clear error message
     func clearError() {
         errorMessage = nil
+    }
+    
+    /// Retry heart rate capture with exponential backoff
+    func retryHeartRateCapture(duration: TimeInterval, maxRetries: Int = 3, completion: @escaping ([HeartRateSample], Error?) -> Void) {
+        var retryCount = 0
+        
+        func attemptCapture() {
+            startHeartRateCapture(duration: duration) { samples, error in
+                if let captureError = error, retryCount < maxRetries {
+                    retryCount += 1
+                    let delay = pow(2.0, Double(retryCount)) // Exponential backoff
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        attemptCapture()
+                    }
+                } else {
+                    completion(samples, error)
+                }
+            }
+        }
+        
+        attemptCapture()
     }
     
     /// Check if ECG is available on this device

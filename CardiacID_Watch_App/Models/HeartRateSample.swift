@@ -55,6 +55,41 @@ struct HeartRateSample: Codable, Identifiable {
             return "\(Int(interval / 3600))h ago"
         }
     }
+    
+    /// Check if this sample is recent (within last 5 minutes)
+    var isRecent: Bool {
+        return Date().timeIntervalSince(timestamp) < 300 // 5 minutes
+    }
+    
+    /// Get quality description
+    var qualityDescription: String {
+        switch quality {
+        case 0.9...1.0:
+            return "Excellent"
+        case 0.7..<0.9:
+            return "Good"
+        case 0.5..<0.7:
+            return "Fair"
+        case 0.3..<0.5:
+            return "Poor"
+        default:
+            return "Very Poor"
+        }
+    }
+    
+    /// Get source description
+    var sourceDescription: String {
+        switch source.lowercased() {
+        case "apple watch":
+            return "Apple Watch"
+        case "iphone":
+            return "iPhone"
+        case "ecg":
+            return "ECG"
+        default:
+            return source
+        }
+    }
 }
 
 // MARK: - Heart Rate Sample Collection
@@ -129,6 +164,65 @@ struct HeartRateSampleCollection: Codable {
     func recentSamples(seconds: TimeInterval) -> [HeartRateSample] {
         let cutoffTime = Date().addingTimeInterval(-seconds)
         return samples.filter { $0.timestamp >= cutoffTime }
+    }
+    
+    /// Get samples with quality above threshold
+    func highQualitySamples(threshold: Double = 0.7) -> [HeartRateSample] {
+        return samples.filter { $0.quality >= threshold }
+    }
+    
+    /// Calculate trend direction (-1: decreasing, 0: stable, 1: increasing)
+    var trendDirection: Int {
+        guard samples.count >= 3 else { return 0 }
+        
+        let firstThird = Array(samples.prefix(samples.count / 3))
+        let lastThird = Array(samples.suffix(samples.count / 3))
+        
+        let firstAvg = firstThird.map { $0.value }.reduce(0, +) / Double(firstThird.count)
+        let lastAvg = lastThird.map { $0.value }.reduce(0, +) / Double(lastThird.count)
+        
+        let difference = lastAvg - firstAvg
+        
+        if difference > 5 {
+            return 1 // Increasing
+        } else if difference < -5 {
+            return -1 // Decreasing
+        } else {
+            return 0 // Stable
+        }
+    }
+    
+    /// Get trend description
+    var trendDescription: String {
+        switch trendDirection {
+        case 1:
+            return "Increasing"
+        case -1:
+            return "Decreasing"
+        default:
+            return "Stable"
+        }
+    }
+    
+    /// Calculate data consistency score (0.0 to 1.0)
+    var consistencyScore: Double {
+        guard samples.count > 1 else { return 1.0 }
+        
+        let values = samples.map { $0.value }
+        let mean = values.reduce(0, +) / Double(values.count)
+        let variance = values.map { pow($0 - mean, 2) }.reduce(0, +) / Double(values.count)
+        let stdDev = sqrt(variance)
+        
+        // Lower standard deviation = higher consistency
+        let maxExpectedStdDev: Double = 15.0
+        return max(0.0, 1.0 - (stdDev / maxExpectedStdDev))
+    }
+    
+    /// Check if collection meets minimum requirements for analysis
+    func meetsMinimumRequirements(for securityLevel: SecurityLevel) -> Bool {
+        return samples.count >= securityLevel.minimumSamples && 
+               duration >= securityLevel.recommendedCaptureDuration &&
+               qualityScore >= 0.7
     }
 }
 

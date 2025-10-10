@@ -12,13 +12,9 @@ struct AuthenticateView: View {
     @State private var currentHeartRate: Double = 0
     @State private var retryCount = 0
     @State private var showingResult = false
-    @State private var showingSuccess = false
     @State private var lastResult: AuthenticationResult?
     @State private var processingProgress: Double = 0
     @State private var processingTimer: Timer?
-    @State private var countdownTimer: Timer?
-    @State private var countdownValue = 3
-    @State private var isInitializing = true
     
     private let maxRetries = 3
     
@@ -47,10 +43,6 @@ struct AuthenticateView: View {
             switch authenticationState {
             case .ready:
                 ReadyStateView()
-            case .initializing:
-                InitializingStateView()
-            case .countdown(let seconds):
-                CountdownStateView(seconds: seconds)
             case .capturing:
                 CapturingStateView(
                     progress: captureProgress,
@@ -72,8 +64,6 @@ struct AuthenticateView: View {
             switch authenticationState {
             case .ready:
                 readyButtonsView
-            case .initializing, .countdown:
-                EmptyView()
             case .capturing:
                 capturingButtonsView
             case .processing:
@@ -139,7 +129,7 @@ struct AuthenticateView: View {
                 Text("• Place your finger on the Digital Crown")
                 Text("• Keep your wrist stable")
                 Text("• Remain still during capture")
-                Text("• The process takes 9-16 seconds")
+                Text("• The process takes 6-8 seconds")
             }
             .font(.caption)
             .foregroundColor(.secondary)
@@ -190,18 +180,12 @@ struct AuthenticateView: View {
             healthKitService.stopHeartRateCapture()
         }
         
-        // Stop all timers
+        // Stop processing timer
         stopProcessingTimer()
-        stopCountdownTimer()
         
-        // Removed problematic WatchKit API call
         dismiss()
     }
     
-    private func stopCountdownTimer() {
-        countdownTimer?.invalidate()
-        countdownTimer = nil
-    }
     
     var body: some View {
         NavigationStack {
@@ -240,21 +224,9 @@ struct AuthenticateView: View {
             // Dismiss the view when user is deleted
             dismiss()
         }
-        .onAppear {
-            // Set initializing state when view appears
-            if isInitializing {
-                authenticationState = .initializing
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self.isInitializing = false
-                    self.authenticationState = .ready
-                }
-            }
-        }
         .onDisappear {
-            // Clean up all timers and resources
+            // Clean up processing timer
             stopProcessingTimer()
-            stopCountdownTimer()
-            // Removed problematic WatchKit API call
         }
     }
     
@@ -275,55 +247,15 @@ struct AuthenticateView: View {
         
         // Clean up any existing timers first
         stopProcessingTimer()
-        stopCountdownTimer()
         
         retryCount = 0
         
-        // Start with initialization phase
-        authenticationState = .initializing
-        
-        // Give HealthKit and sensors time to initialize properly (increased delay)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            print("✅ HealthKit initialization complete - starting countdown")
-            self.startCountdown()
-        }
+        // Start capture immediately - no countdown needed
+        startCapture()
     }
     
-    private func startCountdown() {
-        // Validate state before starting countdown
-        guard authenticationState == .initializing else {
-            print("❌ Invalid state for countdown start: \(authenticationState)")
-            return
-        }
-        
-        countdownValue = 3
-        authenticationState = .countdown(countdownValue)
-        
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            self.countdownValue -= 1
-            
-            if self.countdownValue > 0 {
-                self.authenticationState = .countdown(self.countdownValue)
-            } else {
-                timer.invalidate()
-                self.countdownTimer = nil
-                
-                // Add delay before starting capture to ensure countdown fully completes
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    print("✅ Countdown complete - starting capture")
-                    self.startCapture()
-                }
-            }
-        }
-    }
     
     private func startCapture() {
-        // Validate state before starting capture
-        guard authenticationState == .countdown(0) else {
-            print("❌ Invalid state for capture start: \(authenticationState)")
-            return
-        }
-        
         // Ensure HealthKit is ready
         guard healthKitService.isAuthorized && !healthKitService.isCapturing else {
             print("❌ HealthKit not ready for capture")
@@ -332,8 +264,8 @@ struct AuthenticateView: View {
         
         authenticationState = .capturing
         
-        // Start heart rate capture with proper duration
-        let captureDuration: TimeInterval = 12.0 // Increased for better sensor engagement
+        // Start heart rate capture with optimized duration
+        let captureDuration: TimeInterval = 8.0 // Reduced from 12 seconds to 8 seconds
         healthKitService.startHeartRateCapture(duration: captureDuration) { samples, error in
             // Completion handler - handle both success and error cases
             if let error = error {
@@ -345,8 +277,8 @@ struct AuthenticateView: View {
         
         print("📊 Starting heart rate capture for \(captureDuration) seconds")
         
-        // Listen for completion with buffer time for sensor stabilization
-        DispatchQueue.main.asyncAfter(deadline: .now() + captureDuration + 2.0) {
+        // Listen for completion with minimal buffer time
+        DispatchQueue.main.asyncAfter(deadline: .now() + captureDuration + 1.0) {
             if self.authenticationState == .capturing {
                 print("✅ Capture duration complete - starting processing")
                 self.completeAuthentication()
@@ -365,7 +297,7 @@ struct AuthenticateView: View {
         healthKitService.stopHeartRateCapture()
         
         // Give sensors time to properly close out before processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             print("✅ Sensor capture closed - starting processing")
             self.completeAuthentication()
         }
@@ -381,7 +313,7 @@ struct AuthenticateView: View {
         // Ensure HealthKit capture has fully stopped
         guard !healthKitService.isCapturing else {
             print("❌ HealthKit still capturing - waiting for completion")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.completeAuthentication()
             }
             return
@@ -390,9 +322,6 @@ struct AuthenticateView: View {
         print("🔬 Starting authentication processing...")
         authenticationState = .processing
         processingProgress = 0
-        
-        // Keep backlight on during processing (simplified for stability)
-        // Removed problematic WatchKit API calls that can cause crashes
         
         // Start processing timer
         startProcessingTimer()
@@ -416,8 +345,8 @@ struct AuthenticateView: View {
             return
         }
         
-        // Give Watch sensors and processing systems adequate time (increased for stability)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+        // Reduced processing time for better UX
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             print("🔍 Performing authentication analysis...")
             
             // Perform authentication
@@ -434,10 +363,8 @@ struct AuthenticateView: View {
             
             self.stopProcessingTimer()
             
-            // Add buffer time before showing result to ensure processing is complete
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.authenticationState = .result(result)
-            }
+            // Show result immediately
+            self.authenticationState = .result(result)
         }
     }
     
@@ -448,7 +375,7 @@ struct AuthenticateView: View {
         processingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             DispatchQueue.main.async {
                 withAnimation(.easeInOut(duration: 0.1)) {
-                    processingProgress += 0.033 // Complete in 3 seconds (0.1 * 30 = 3.0)
+                    processingProgress += 0.05 // Complete in 2 seconds (0.1 * 20 = 2.0)
                     if processingProgress >= 1.0 {
                         processingProgress = 1.0
                         stopProcessingTimer() // Stop timer when complete
@@ -473,10 +400,9 @@ struct AuthenticateView: View {
         
         // Clean up all resources before retry
         stopProcessingTimer()
-        stopCountdownTimer()
         
         // Give system time to fully reset
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             print("🔄 Starting authentication retry")
             self.authenticationState = .ready
             self.startAuthentication()
@@ -486,7 +412,6 @@ struct AuthenticateView: View {
     private func resetAuthentication() {
         // Clean up all resources
         stopProcessingTimer()
-        stopCountdownTimer()
         
         // Ensure HealthKit is stopped
         if healthKitService.isCapturing {
@@ -494,11 +419,10 @@ struct AuthenticateView: View {
         }
         
         // Give system time to fully reset before changing state
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.authenticationState = .ready
             self.retryCount = 0
             self.lastResult = nil
-            self.showingSuccess = false
             self.healthKitService.clearError()
             print("✅ Authentication system reset complete")
         }
@@ -509,8 +433,6 @@ struct AuthenticateView: View {
 
 enum AuthenticationViewState: Equatable {
     case ready
-    case initializing
-    case countdown(Int)
     case capturing
     case processing
     case result(AuthenticationResult)
@@ -538,43 +460,6 @@ struct ReadyStateView: View {
     }
 }
 
-struct InitializingStateView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.5)
-            
-            Text("Initializing...")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text("Preparing heart rate sensor")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
-}
-
-struct CountdownStateView: View {
-    let seconds: Int
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("\(seconds)")
-                .font(.system(size: 60, weight: .bold))
-                .foregroundColor(.orange)
-            
-            Text("Get Ready")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text("Place your finger on the Digital Crown")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-}
 
 
 
@@ -607,7 +492,7 @@ struct CapturingStateView: View {
                     .font(.body)
             }
             
-            Text("Hold still, \(Int((1.0 - progress) * 12)) seconds remaining")
+            Text("Hold still, \(Int((1.0 - progress) * 8)) seconds remaining")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
