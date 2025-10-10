@@ -534,21 +534,5 @@ struct UserStatistics: Codable {
 }
 
 // MARK: - User Auth Status
-enum UserAuthStatus: String, Codable, CaseIterable {
-    case pending = "pending"
-    case approved = "approved"
-    case denied = "denied"
-    case error = "error"
-    case retry = "retry"
-    
-    var displayName: String {
-        switch self {
-        case .pending: return "Pending"
-        case .approved: return "Approved"
-        case .denied: return "Denied"
-        case .error: return "Error"
-        case .retry: return "Retry Required"
-        }
-    }
-}
+// Uses shared definition from User.swift
 

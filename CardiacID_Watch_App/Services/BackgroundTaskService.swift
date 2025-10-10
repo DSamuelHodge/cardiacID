@@ -105,7 +105,8 @@ class BackgroundTaskService: NSObject, ObservableObject {
                     self.backgroundTaskStatus = .error
                     print("⚠️ Background authentication error")
                 case .pending:
-                    <#code#>
+                    self.backgroundTaskStatus = .monitoring
+                    print("⏳ Background authentication pending")
                 }
             }
         } else {
@@ -279,3 +280,4 @@ enum BackgroundTaskStatus: String, CaseIterable {
     }
 }
 #endif
+
