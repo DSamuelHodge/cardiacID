@@ -334,7 +334,9 @@ struct EnrollView: View {
             healthKitService.heartRateSamples.removeAll()
             
             // Use the HealthKitService from Services
-            healthKitService.startHeartRateCapture(duration: duration)
+            healthKitService.startHeartRateCapture(duration: duration) { _ in
+                // Completion handler - can be empty for now
+            }
             
             // Wait for capture to complete with buffer time
             try await Task.sleep(nanoseconds: UInt64((duration + 2.0) * 1_000_000_000))
@@ -450,7 +452,9 @@ struct EnrollView: View {
             healthKitService.heartRateSamples.removeAll()
             
             // Use the HealthKitService from Services
-            healthKitService.startHeartRateCapture(duration: duration)
+            healthKitService.startHeartRateCapture(duration: duration) { _ in
+                // Completion handler - can be empty for now
+            }
             
             // Wait for capture to complete
             try await Task.sleep(nanoseconds: UInt64((duration + 1.0) * 1_000_000_000))

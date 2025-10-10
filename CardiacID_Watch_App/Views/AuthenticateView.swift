@@ -224,7 +224,7 @@ struct AuthenticateView: View {
         .onReceive(healthKitService.$errorMessage) { error in
             if let error = error, !error.isEmpty {
                 print("HealthKit Error: \(error)")
-                authenticationState = .result(.failed)
+                authenticationState = .result(.error(message: error))
             }
         }
         .alert("Authentication Result", isPresented: $showingResult) {
@@ -334,7 +334,9 @@ struct AuthenticateView: View {
         
         // Start heart rate capture with proper duration
         let captureDuration: TimeInterval = 12.0 // Increased for better sensor engagement
-        healthKitService.startHeartRateCapture(duration: captureDuration)
+        healthKitService.startHeartRateCapture(duration: captureDuration) { _ in
+            // Completion handler - can be empty for now
+        }
         
         print("📊 Starting heart rate capture for \(captureDuration) seconds")
         
@@ -398,14 +400,14 @@ struct AuthenticateView: View {
         guard heartRateData.count >= 5 else {
             print("❌ Insufficient heart rate samples: \(heartRateData.count)")
             stopProcessingTimer()
-            authenticationState = .result(.failed)
+            authenticationState = .result(.denied(reason: "Insufficient heart rate samples"))
             return
         }
         
         guard healthKitService.validateHeartRateData(healthKitService.heartRateSamples) else {
             print("❌ Heart rate data validation failed")
             stopProcessingTimer()
-            authenticationState = .result(.failed)
+            authenticationState = .result(.denied(reason: "Heart rate data validation failed"))
             return
         }
         

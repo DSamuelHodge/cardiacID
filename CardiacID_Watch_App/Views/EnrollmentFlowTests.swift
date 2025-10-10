@@ -105,37 +105,44 @@ class EnrollmentFlowTests: ObservableObject {
     
     private func testAuthenticationResultProperties() {
         let testName = "Authentication result properties"
-        guard AuthenticationResult.approved.isSuccessful else {
+        
+        // Test approved result
+        let approvedResult = AuthenticationResult.approved(confidence: 0.95)
+        guard approvedResult.isSuccessful else {
             testResults[testName] = false
             testMessages[testName] = "Approved should be successful"
             return
         }
         
-        guard !AuthenticationResult.failed.isSuccessful else {
+        // Test denied result
+        let deniedResult = AuthenticationResult.denied(reason: "Test failure")
+        guard !deniedResult.isSuccessful else {
             testResults[testName] = false
-            testMessages[testName] = "Failed should not be successful"
+            testMessages[testName] = "Denied should not be successful"
             return
         }
         
-        guard AuthenticationResult.retryRequired.requiresRetry else {
+        // Test retry result
+        let retryResult = AuthenticationResult.retry(message: "Please try again")
+        guard retryResult.requiresRetry else {
             testResults[testName] = false
-            testMessages[testName] = "Retry required should require retry"
+            testMessages[testName] = "Retry should require retry"
             return
         }
         
-        guard !AuthenticationResult.approved.requiresRetry else {
+        guard !approvedResult.requiresRetry else {
             testResults[testName] = false
             testMessages[testName] = "Approved should not require retry"
             return
         }
         
-        guard !AuthenticationResult.approved.message.isEmpty else {
+        guard !approvedResult.message.isEmpty else {
             testResults[testName] = false
             testMessages[testName] = "All results should have messages"
             return
         }
         
-        guard !AuthenticationResult.failed.message.isEmpty else {
+        guard !deniedResult.message.isEmpty else {
             testResults[testName] = false
             testMessages[testName] = "All results should have messages"
             return
