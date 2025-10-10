@@ -176,28 +176,28 @@ struct EnrollView: View {
                 Group {
                     switch enrollmentState {
                     case .ready:
-                        Text("Ready to start").font(.caption)
+                        AnyView(Text("Ready to start").font(.caption))
                     case .initializing:
-                        ProgressView("Initializing...")
+                        AnyView(ProgressView("Initializing..."))
                     case .countdown(let n):
-                        VStack {
+                        AnyView(VStack {
                             Text("\(n)")
                                 .font(.system(size: 48, weight: .bold))
                                 .foregroundColor(.orange)
                             Text("Get Ready").font(.caption)
-                        }
+                        })
                     case .capturing:
-                        EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
+                        AnyView(EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate))
                     case .processing:
-                        ProcessingStateView(progress: processingProgress, title: "Creating Template")
+                        AnyView(ProcessingStateView(progress: processingProgress, title: "Creating Template"))
                     case .verification:
-                        ProcessingStateView(progress: processingProgress, title: "Verifying")
+                        AnyView(ProcessingStateView(progress: processingProgress, title: "Verifying"))
                     case .verificationComplete:
-                        ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
+                        AnyView(ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0))
                     case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
-                        Text("Complete").font(.caption)
+                        AnyView(Text("Complete").font(.caption))
                     case .error(let msg):
-                        Text(msg).font(.caption).foregroundColor(.red)
+                        AnyView(Text(msg).font(.caption).foregroundColor(.red))
                     }
                 }
 
@@ -334,8 +334,13 @@ struct EnrollView: View {
             healthKitService.heartRateSamples.removeAll()
             
             // Use the HealthKitService from Services
-            healthKitService.startHeartRateCapture(duration: duration) { _ in
-                // Completion handler - can be empty for now
+            healthKitService.startHeartRateCapture(duration: duration) { samples, error in
+                // Completion handler - handle both success and error cases
+                if let error = error {
+                    print("❌ Heart rate capture error: \(error)")
+                } else {
+                    print("✅ Heart rate capture completed with \(samples.count) samples")
+                }
             }
             
             // Wait for capture to complete with buffer time
@@ -452,8 +457,13 @@ struct EnrollView: View {
             healthKitService.heartRateSamples.removeAll()
             
             // Use the HealthKitService from Services
-            healthKitService.startHeartRateCapture(duration: duration) { _ in
-                // Completion handler - can be empty for now
+            healthKitService.startHeartRateCapture(duration: duration) { samples, error in
+                // Completion handler - handle both success and error cases
+                if let error = error {
+                    print("❌ Heart rate capture error: \(error)")
+                } else {
+                    print("✅ Heart rate capture completed with \(samples.count) samples")
+                }
             }
             
             // Wait for capture to complete

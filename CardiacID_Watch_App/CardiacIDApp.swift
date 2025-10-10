@@ -1,6 +1,5 @@
 import SwiftUI
 
-@main
 struct CardiacIDWatchApp: App {
     @StateObject private var authenticationService = AuthenticationService()
     @StateObject private var healthKitService = HealthKitService()

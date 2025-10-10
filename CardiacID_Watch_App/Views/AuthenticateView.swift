@@ -334,8 +334,13 @@ struct AuthenticateView: View {
         
         // Start heart rate capture with proper duration
         let captureDuration: TimeInterval = 12.0 // Increased for better sensor engagement
-        healthKitService.startHeartRateCapture(duration: captureDuration) { _ in
-            // Completion handler - can be empty for now
+        healthKitService.startHeartRateCapture(duration: captureDuration) { samples, error in
+            // Completion handler - handle both success and error cases
+            if let error = error {
+                print("❌ Heart rate capture error: \(error)")
+            } else {
+                print("✅ Heart rate capture completed with \(samples.count) samples")
+            }
         }
         
         print("📊 Starting heart rate capture for \(captureDuration) seconds")
