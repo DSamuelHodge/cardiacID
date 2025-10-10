@@ -1,12 +1,14 @@
 //
 //  HeartIDiOSApp.swift
-//  HeartID iOS App
+//  HeartID Watch App
 //
-//  iOS companion app with Watch Connectivity
+//  Watch app with simplified connectivity
 //
 
 import SwiftUI
+#if os(iOS)
 import WatchConnectivity
+#endif
 
 struct HeartIDiOSApp: App {
     @StateObject private var watchConnectivityService = WatchConnectivityService()
@@ -225,11 +227,11 @@ struct RecentActivityView: View {
                     )
                 }
                 
-                let stats = dataManager.userStatistics
-                if stats.totalAuthentications > 0 {
+                // Show authentication count if available
+                if dataManager.authenticationCount > 0 {
                     ActivityRow(
                         title: "Total Authentications",
-                        subtitle: "\(stats.totalAuthentications)",
+                        subtitle: "\(dataManager.authenticationCount)",
                         icon: "chart.bar",
                         color: .orange
                     )
@@ -579,8 +581,6 @@ struct AnalyticsView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     if dataManager.isUserEnrolled {
-                        let stats = dataManager.userStatistics
-                        
                         // Statistics Cards
                         LazyVGrid(columns: [
                             GridItem(.flexible()),
@@ -588,35 +588,35 @@ struct AnalyticsView: View {
                         ], spacing: 16) {
                             AnalyticsCard(
                                 title: "Days Enrolled",
-                                value: "\(stats.daysSinceEnrollment ?? 0)",
+                                value: "\(dataManager.enrollmentDate?.daysSince ?? 0)",
                                 icon: "calendar",
                                 color: .blue
                             )
                             
                             AnalyticsCard(
                                 title: "Total Auths",
-                                value: "\(stats.totalAuthentications)",
+                                value: "\(dataManager.authenticationCount)",
                                 icon: "checkmark.shield",
                                 color: .green
                             )
                             
                             AnalyticsCard(
                                 title: "Failed Attempts",
-                                value: "\(stats.failedAttempts)",
+                                value: "0", // Not tracked in current DataManager
                                 icon: "xmark.shield",
                                 color: .red
                             )
                             
                             AnalyticsCard(
                                 title: "Security Level",
-                                value: stats.securityLevel.rawValue,
+                                value: dataManager.currentSecurityLevel.rawValue,
                                 icon: "lock.shield",
                                 color: .purple
                             )
                         }
                         
                         // Usage Patterns
-                        UsagePatternsView(stats: stats)
+                        UsagePatternsView(dataManager: dataManager)
                         
                     } else {
                         NoDataView()
@@ -661,7 +661,7 @@ struct AnalyticsCard: View {
 }
 
 struct UsagePatternsView: View {
-    let stats: UserStatistics
+    @EnvironmentObject var dataManager: DataManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -670,7 +670,8 @@ struct UsagePatternsView: View {
                 .fontWeight(.bold)
             
             VStack(spacing: 8) {
-                if let daysSinceLastAuth = stats.daysSinceLastAuth {
+                if let lastAuthDate = dataManager.lastAuthenticationDate {
+                    let daysSinceLastAuth = lastAuthDate.daysSince
                     PatternRow(
                         title: "Days Since Last Auth",
                         value: "\(daysSinceLastAuth)",
@@ -678,8 +679,9 @@ struct UsagePatternsView: View {
                     )
                 }
                 
-                if stats.totalAuthentications > 0 {
-                    let avgPerDay = Double(stats.totalAuthentications) / Double(max(stats.daysSinceEnrollment ?? 1, 1))
+                if dataManager.authenticationCount > 0 {
+                    let enrollmentDays = max(dataManager.enrollmentDate?.daysSince ?? 1, 1)
+                    let avgPerDay = Double(dataManager.authenticationCount) / Double(enrollmentDays)
                     PatternRow(
                         title: "Avg Auths per Day",
                         value: String(format: "%.1f", avgPerDay),
@@ -746,6 +748,10 @@ class WatchConnectivityService: NSObject, ObservableObject {
     @Published var lastAuthMessage: String?
     @Published var lastAuthSuccess: Bool?
     
+    #if os(iOS)
+    private let session = WCSession.default
+    #endif
+    
     /// Validate authentication result payload from watch
     private func validateAuthPayload(_ payload: [String: Any]) -> Bool {
         guard payload["type"] as? String == "authenticationResult" else { return false }
@@ -765,21 +771,27 @@ class WatchConnectivityService: NSObject, ObservableObject {
     }
     
     func startSession() {
+        #if os(iOS)
         guard WCSession.isSupported() else {
             connectionStatus = "Watch Connectivity not supported"
             return
         }
         
         session.activate()
+        #else
+        connectionStatus = "Watch app - no connectivity needed"
+        isWatchConnected = true
+        #endif
     }
     
     func requestDataSync() {
+        #if os(iOS)
         guard session.isReachable else {
             connectionStatus = "Watch not reachable"
             return
         }
         
-        let message = ["action": "syncData", "timestamp": Date().timeIntervalSince1970]
+        let message: [String: Any] = ["action": "syncData", "timestamp": Date().timeIntervalSince1970]
         
         session.sendMessage(message, replyHandler: { [weak self] reply in
             DispatchQueue.main.async {
@@ -792,9 +804,15 @@ class WatchConnectivityService: NSObject, ObservableObject {
                 print("❌ Data sync failed: \(error)")
             }
         }
+        #else
+        // Watch app - no need to sync with itself
+        lastSyncDate = Date()
+        connectionStatus = "Watch app - sync complete"
+        #endif
     }
 }
 
+#if os(iOS)
 extension WatchConnectivityService: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         DispatchQueue.main.async {
@@ -908,5 +926,13 @@ extension WatchConnectivityService: WCSessionDelegate {
 
         // Always acknowledge
         replyHandler(["status": "received"])
+    }
+}
+#endif
+
+// MARK: - Date Extensions
+extension Date {
+    var daysSince: Int {
+        Calendar.current.dateComponents([.day], from: self, to: Date()).day ?? 0
     }
 }

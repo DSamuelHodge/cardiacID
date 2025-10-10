@@ -173,31 +173,31 @@ struct EnrollView: View {
                 }
 
                 // State-driven content
-                Group {
+                VStack {
                     switch enrollmentState {
                     case .ready:
-                        AnyView(Text("Ready to start").font(.caption))
+                        Text("Ready to start").font(.caption)
                     case .initializing:
-                        AnyView(ProgressView("Initializing..."))
+                        ProgressView("Initializing...")
                     case .countdown(let n):
-                        AnyView(VStack {
+                        VStack {
                             Text("\(n)")
                                 .font(.system(size: 48, weight: .bold))
                                 .foregroundColor(.orange)
                             Text("Get Ready").font(.caption)
-                        })
+                        }
                     case .capturing:
-                        AnyView(EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate))
+                        EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
                     case .processing:
-                        AnyView(ProcessingStateView(progress: processingProgress, title: "Creating Template"))
+                        ProcessingStateView(progress: processingProgress, title: "Creating Template")
                     case .verification:
-                        AnyView(ProcessingStateView(progress: processingProgress, title: "Verifying"))
+                        ProcessingStateView(progress: processingProgress, title: "Verifying")
                     case .verificationComplete:
-                        AnyView(ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0))
+                        ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
                     case .completed, .rangeOptions, .relaxation, .exercise, .rangeTest, .finalComplete:
-                        AnyView(Text("Complete").font(.caption))
+                        Text("Complete").font(.caption)
                     case .error(let msg):
-                        AnyView(Text(msg).font(.caption).foregroundColor(.red))
+                        Text(msg).font(.caption).foregroundColor(.red)
                     }
                 }
 

@@ -505,5 +505,39 @@ class HeartIDEncryptionService {
 
 // MARK: - App Configuration
 
+// MARK: - User Statistics
+struct UserStatistics: Codable {
+    let totalAuthentications: Int
+    let failedAttempts: Int
+    let daysSinceEnrollment: Int?
+    let daysSinceLastAuth: Int?
+    let securityLevel: SecurityLevel
+    
+    init(totalAuthentications: Int = 0, failedAttempts: Int = 0, daysSinceEnrollment: Int? = nil, daysSinceLastAuth: Int? = nil, securityLevel: SecurityLevel = .medium) {
+        self.totalAuthentications = totalAuthentications
+        self.failedAttempts = failedAttempts
+        self.daysSinceEnrollment = daysSinceEnrollment
+        self.daysSinceLastAuth = daysSinceLastAuth
+        self.securityLevel = securityLevel
+    }
+}
 
+// MARK: - User Auth Status
+enum UserAuthStatus: String, Codable, CaseIterable {
+    case pending = "pending"
+    case approved = "approved"
+    case denied = "denied"
+    case error = "error"
+    case retry = "retry"
+    
+    var displayName: String {
+        switch self {
+        case .pending: return "Pending"
+        case .approved: return "Approved"
+        case .denied: return "Denied"
+        case .error: return "Error"
+        case .retry: return "Retry Required"
+        }
+    }
+}
 
