@@ -15,6 +15,7 @@ enum AuthenticationResult: Codable {
     case denied(reason: String)
     case retry(message: String)
     case error(message: String)
+    case pending
     
     private enum CodingKeys: String, CodingKey {
         case type
@@ -28,6 +29,7 @@ enum AuthenticationResult: Codable {
         case denied
         case retry
         case error
+        case pending
     }
     
     var isSuccessful: Bool {
@@ -45,6 +47,8 @@ enum AuthenticationResult: Codable {
             return message
         case .error(let message):
             return "Error: \(message)"
+        case .pending:
+            return "Authentication pending"
         }
     }
     
@@ -59,6 +63,7 @@ enum AuthenticationResult: Codable {
         case .denied: return "denied"
         case .retry: return "retry"
         case .error: return "error"
+        case .pending: return "pending"
         }
     }
     
@@ -78,6 +83,8 @@ enum AuthenticationResult: Codable {
         case .error:
             let message = try container.decode(String.self, forKey: .message)
             self = .error(message: message)
+        case .pending:
+            self = .pending
         }
     }
     
@@ -96,6 +103,8 @@ enum AuthenticationResult: Codable {
             case .error(let message):
                 try container.encode(CaseType.error, forKey: .type)
                 try container.encode(message, forKey: .message)
+            case .pending:
+                try container.encode(CaseType.pending, forKey: .type)
         }
     }
 }
@@ -111,6 +120,8 @@ extension AuthenticationResult: Equatable {
             return lm == rm
         case (.error(let lm), .error(let rm)):
             return lm == rm
+        case (.pending, .pending):
+            return true
         default:
             return false
         }
