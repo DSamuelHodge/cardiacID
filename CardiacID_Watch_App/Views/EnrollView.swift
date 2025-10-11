@@ -240,13 +240,13 @@ struct EnrollView: View {
     
     @MainActor
     private func ensureHealthKitAuthorization() async {
-        guard !healthKitService.isAuthorized else { return }
+        let result = await healthKitService.ensureAuthorization()
         
-        // Request authorization asynchronously
-        let success = await healthKitService.requestAuthorization()
-        
-        if !success {
-            enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
+        switch result {
+        case .authorized:
+            print("✅ HealthKit authorization confirmed")
+        case .denied(let message), .notAvailable(let message):
+            enrollmentState = .error("HealthKit authorization failed: \(message)")
         }
     }
 
@@ -283,14 +283,27 @@ struct EnrollView: View {
     private func startEnrollment() {
         print("🚀 Starting enrollment process...")
         
-        // Check HealthKit authorization before starting
-        guard healthKitService.isAuthorized else {
-            enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
-            return
+        // First ensure HealthKit authorization and sensor validation
+        Task {
+            let authResult = await healthKitService.ensureAuthorization()
+            
+            switch authResult {
+            case .authorized:
+                // Validate sensor engagement
+                let sensorResult = await healthKitService.validateSensorEngagement()
+                
+                switch sensorResult {
+                case .ready:
+                    // Start capture immediately - no countdown needed
+                    startCapture()
+                case .notAuthorized(let message), .noRecentData(let message), .sensorError(let message):
+                    enrollmentState = .error("Sensor validation failed: \(message)")
+                }
+                
+            case .denied(let message), .notAvailable(let message):
+                enrollmentState = .error("HealthKit authorization failed: \(message)")
+            }
         }
-        
-        // Start capture immediately - no countdown needed
-        startCapture()
     }
 
 

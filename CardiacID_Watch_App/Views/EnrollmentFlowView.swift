@@ -67,11 +67,26 @@ struct EnrollmentFlowView: View {
                     if currentStep < totalSteps - 1 {
                         Button("Next") {
                             if currentStep == 0 {
-                                // Start HealthKit authorization
+                                // Start HealthKit authorization with enhanced validation
                                 Task {
-                                    let success = await healthKitService.requestAuthorization()
-                                    if success {
-                                        currentStep += 1
+                                    let authResult = await healthKitService.ensureAuthorization()
+                                    
+                                    switch authResult {
+                                    case .authorized:
+                                        // Validate sensor engagement
+                                        let sensorResult = await healthKitService.validateSensorEngagement()
+                                        
+                                        switch sensorResult {
+                                        case .ready:
+                                            currentStep += 1
+                                        case .notAuthorized(let message), .noRecentData(let message), .sensorError(let message):
+                                            errorMessage = "Sensor validation failed: \(message)"
+                                            showingError = true
+                                        }
+                                        
+                                    case .denied(let message), .notAvailable(let message):
+                                        errorMessage = "HealthKit authorization failed: \(message)"
+                                        showingError = true
                                     }
                                 }
                             } else {
@@ -492,35 +507,56 @@ struct CaptureStepView: View {
         }
     }
     
-    // MARK: - Automated Capture Process
-    
-    private func startAutomatedCapture() {
-        print("🚀 Starting automated capture process...")
-        currentPhase = .capturing
-        isCapturing = true
-        startTime = Date()
-        capturedSamples = []
-        
-        // Start heart rate capture
-        healthKitService.startHeartRateCapture(duration: 15.0) { samples, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("❌ Capture error: \(error.localizedDescription)")
-                    currentPhase = .failed("Capture failed: \(error.localizedDescription)")
-                    isCapturing = false
-                } else {
-                    print("✅ Capture completed with \(samples.count) samples")
-                    capturedSamples = samples.map { $0.value }
-                    processAssessment()
+                // MARK: - Automated Capture Process
+                
+                private func startAutomatedCapture() {
+                    print("🚀 Starting automated capture process...")
+                    
+                    // First ensure HealthKit authorization and sensor validation
+                    Task {
+                        let authResult = await healthKitService.ensureAuthorization()
+                        
+                        switch authResult {
+                        case .authorized:
+                            // Validate sensor engagement
+                            let sensorResult = await healthKitService.validateSensorEngagement()
+                            
+                            switch sensorResult {
+                            case .ready:
+                                currentPhase = .capturing
+                                isCapturing = true
+                                startTime = Date()
+                                capturedSamples = []
+                                
+                                // Start heart rate capture
+                                healthKitService.startHeartRateCapture(duration: 15.0) { samples, error in
+                                    DispatchQueue.main.async {
+                                        if let error = error {
+                                            print("❌ Capture error: \(error.localizedDescription)")
+                                            currentPhase = .failed("Capture failed: \(error.localizedDescription)")
+                                            isCapturing = false
+                                        } else {
+                                            print("✅ Capture completed with \(samples.count) samples")
+                                            capturedSamples = samples.map { $0.value }
+                                            processAssessment()
+                                        }
+                                    }
+                                }
+                                
+                                // Start progress timer
+                                captureTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+                                    updateProgress()
+                                }
+                                
+                            case .notAuthorized(let message), .noRecentData(let message), .sensorError(let message):
+                                currentPhase = .failed("Sensor validation failed: \(message)")
+                            }
+                            
+                        case .denied(let message), .notAvailable(let message):
+                            currentPhase = .failed("HealthKit authorization failed: \(message)")
+                        }
+                    }
                 }
-            }
-        }
-        
-        // Start progress timer
-        captureTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            updateProgress()
-        }
-    }
     
     private func processAssessment() {
         print("🔬 Processing assessment...")

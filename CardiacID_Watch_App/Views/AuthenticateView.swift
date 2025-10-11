@@ -95,9 +95,12 @@ struct AuthenticateView: View {
             if !healthKitService.isAuthorized {
                 Button("Authorize HealthKit") {
                     Task {
-                        let success = await healthKitService.requestAuthorization()
-                        if !success {
-                            // Handle authorization failure
+                        let result = await healthKitService.ensureAuthorization()
+                        switch result {
+                        case .authorized:
+                            print("✅ HealthKit authorization successful")
+                        case .denied(let message), .notAvailable(let message):
+                            authenticationState = .error("HealthKit authorization failed: \(message)")
                         }
                     }
                 }
@@ -250,25 +253,41 @@ struct AuthenticateView: View {
     // MARK: - Actions
     
     private func startAuthentication() {
-        // Validate system state before starting
-        guard healthKitService.isAuthorized else {
-            print("❌ HealthKit not authorized - cannot start authentication")
-            return
+        print("🚀 Starting authentication process...")
+        
+        // First ensure HealthKit authorization
+        Task {
+            let authResult = await healthKitService.ensureAuthorization()
+            
+            switch authResult {
+            case .authorized:
+                // Validate sensor engagement
+                let sensorResult = await healthKitService.validateSensorEngagement()
+                
+                switch sensorResult {
+                case .ready:
+                    // Validate system state before starting
+                    guard !healthKitService.isCapturing else {
+                        print("❌ Heart rate capture already in progress - waiting for completion")
+                        return
+                    }
+                    
+                    // Clean up any existing timers first
+                    stopProcessingTimer()
+                    
+                    retryCount = 0
+                    
+                    // Start capture immediately - no countdown needed
+                    startCapture()
+                    
+                case .notAuthorized(let message), .noRecentData(let message), .sensorError(let message):
+                    authenticationState = .error("Sensor validation failed: \(message)")
+                }
+                
+            case .denied(let message), .notAvailable(let message):
+                authenticationState = .error("HealthKit authorization failed: \(message)")
+            }
         }
-        
-        // Ensure no other processes are running
-        guard !healthKitService.isCapturing else {
-            print("❌ Heart rate capture already in progress - waiting for completion")
-            return
-        }
-        
-        // Clean up any existing timers first
-        stopProcessingTimer()
-        
-        retryCount = 0
-        
-        // Start capture immediately - no countdown needed
-        startCapture()
     }
     
     
