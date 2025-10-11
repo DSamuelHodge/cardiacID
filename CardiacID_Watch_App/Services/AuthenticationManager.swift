@@ -11,22 +11,30 @@ class AuthenticationManager: ObservableObject {
     private let authenticationService: AuthenticationService
     private let healthKitService: HealthKitService
     private let dataManager: DataManager
-    // SupabaseService not available in watch app
-    private let backgroundTaskService: BackgroundTaskService
-    private let bluetoothNFCService: BluetoothNFCService
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
-        self.authenticationService = AuthenticationService()
-        self.healthKitService = HealthKitService()
-        self.dataManager = DataManager()
-        // Supabase service not available in watch app
-        self.backgroundTaskService = BackgroundTaskService()
-        self.bluetoothNFCService = BluetoothNFCService()
+    // MARK: - Dependency Injection Constructor
+    init(
+        authenticationService: AuthenticationService,
+        healthKitService: HealthKitService,
+        dataManager: DataManager
+    ) {
+        self.authenticationService = authenticationService
+        self.healthKitService = healthKitService
+        self.dataManager = dataManager
         
         setupServices()
         setupBindings()
+    }
+    
+    // MARK: - Convenience Constructor for Legacy Code
+    convenience init() {
+        self.init(
+            authenticationService: AuthenticationService(),
+            healthKitService: HealthKitService(),
+            dataManager: DataManager.shared
+        )
     }
     
     // MARK: - Setup
@@ -230,8 +238,6 @@ class AuthenticationManager: ObservableObject {
         }
         authenticationService.clearError()
         healthKitService.clearError()
-        // Supabase service not available in watch app
-        bluetoothNFCService.clearError()
     }
     
     // MARK: - Service Access
@@ -239,9 +245,6 @@ class AuthenticationManager: ObservableObject {
     var healthKit: HealthKitService { healthKitService }
     var authentication: AuthenticationService { authenticationService }
     var data: DataManager { dataManager }
-    // Supabase service not available in watch app
-    var background: BackgroundTaskService { backgroundTaskService }
-    var bluetoothNFC: BluetoothNFCService { bluetoothNFCService }
 }
 
 // MARK: - Authentication State
