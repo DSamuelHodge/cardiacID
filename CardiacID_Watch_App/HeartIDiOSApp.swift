@@ -446,7 +446,8 @@ struct iOSSettingsView: View {
                         set: { newValue in
                             var prefs = dataManager.userPreferences
                             prefs.enableAlarms = newValue
-                            dataManager.saveUserPreferences(prefs)
+                            dataManager.userPreferences = prefs
+                            dataManager.saveUserPreferences()
                         }
                     ))
                 }
@@ -457,7 +458,8 @@ struct iOSSettingsView: View {
                         set: { newValue in
                             var prefs = dataManager.userPreferences
                             prefs.enableBackgroundAuthentication = newValue
-                            dataManager.saveUserPreferences(prefs)
+                            dataManager.userPreferences = prefs
+                            dataManager.saveUserPreferences()
                         }
                     ))
                     
@@ -466,7 +468,8 @@ struct iOSSettingsView: View {
                         set: { newValue in
                             var prefs = dataManager.userPreferences
                             prefs.debugMode = newValue
-                            dataManager.saveUserPreferences(prefs)
+                            dataManager.userPreferences = prefs
+                            dataManager.saveUserPreferences()
                         }
                     ))
                 }
