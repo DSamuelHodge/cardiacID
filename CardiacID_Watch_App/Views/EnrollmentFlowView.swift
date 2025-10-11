@@ -85,6 +85,11 @@ struct EnrollmentFlowView: View {
                                         }
                                         
                                     case .denied(let message), .notAvailable(let message):
+                                        // Run diagnostics to provide better error information
+                                        Task {
+                                            let diagnostics = await healthKitService.runHealthKitDiagnostics()
+                                            print("🔍 HealthKit Diagnostics:\n\(diagnostics)")
+                                        }
                                         errorMessage = "HealthKit authorization failed: \(message)"
                                         showingError = true
                                     }
@@ -111,6 +116,13 @@ struct EnrollmentFlowView: View {
         .navigationBarTitleDisplayMode(.inline)
         .alert("Error", isPresented: $showingError) {
             Button("OK") { showingError = false }
+            Button("Run Diagnostics") {
+                Task {
+                    let diagnostics = await healthKitService.runHealthKitDiagnostics()
+                    print("🔍 HealthKit Diagnostics:\n\(diagnostics)")
+                    // You could also show this in a separate alert or view
+                }
+            }
         } message: {
             Text(errorMessage ?? "Unknown error occurred")
         }
@@ -553,6 +565,11 @@ struct CaptureStepView: View {
                             }
                             
                         case .denied(let message), .notAvailable(let message):
+                            // Run diagnostics to provide better error information
+                            Task {
+                                let diagnostics = await healthKitService.runHealthKitDiagnostics()
+                                print("🔍 HealthKit Diagnostics:\n\(diagnostics)")
+                            }
                             currentPhase = .failed("HealthKit authorization failed: \(message)")
                         }
                     }

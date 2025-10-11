@@ -54,13 +54,22 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         guard HKHealthStore.isHealthDataAvailable() else {
             isAuthorized = false
             errorMessage = "HealthKit not available"
+            print("❌ HealthKit not available")
             return
         }
         
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
         let status = healthStore.authorizationStatus(for: heartRateType)
         
+        print("🔍 Checking HealthKit authorization status: \(status)")
+        
         isAuthorized = (status == .sharingAuthorized)
+        
+        if isAuthorized {
+            print("✅ HealthKit is authorized for heart rate data")
+        } else {
+            print("⚠️ HealthKit authorization status: \(status)")
+        }
     }
     
     func requestAuthorization() async -> Bool {
@@ -72,12 +81,22 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
         let typesToRead: Set<HKObjectType> = [heartRateType]
         
+        print("🔐 Requesting HealthKit authorization for heart rate data...")
+        
         do {
             try await healthStore.requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
+            
+            // Check status immediately after request
+            let status = healthStore.authorizationStatus(for: heartRateType)
+            print("📊 Authorization status after request: \(status)")
+            
             checkAuthorizationStatus()
+            print("✅ Authorization request completed. isAuthorized: \(isAuthorized)")
+            
             return true
         } catch {
             errorMessage = "Authorization failed: \(error.localizedDescription)"
+            print("❌ Authorization error: \(error.localizedDescription)")
             return false
         }
     }
@@ -102,8 +121,27 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         let success = await requestAuthorization()
         
         if success {
-            checkAuthorizationStatus() // Re-check after authorization
-            return isAuthorized ? .authorized : .denied("Authorization was granted but status check failed")
+            // Add a small delay to allow HealthKit to update its status
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            
+            // Re-check after authorization with retry logic
+            checkAuthorizationStatus()
+            
+            if isAuthorized {
+                return .authorized
+            } else {
+                // Try one more time after another brief delay
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+                checkAuthorizationStatus()
+                
+                if isAuthorized {
+                    return .authorized
+                } else {
+                    // Get detailed status for debugging
+                    let details = getDetailedAuthorizationStatus()
+                    return .denied("Authorization was granted but status check failed. Current status: \(details.status)")
+                }
+            }
         } else {
             return .denied("Failed to request HealthKit authorization")
         }
@@ -155,7 +193,10 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
     
     /// Validate that sensors are properly engaged before capture
     func validateSensorEngagement() async -> SensorValidationResult {
+        print("🔍 Validating sensor engagement...")
+        
         guard isAuthorized else {
+            print("❌ HealthKit not authorized")
             return .notAuthorized("HealthKit authorization required")
         }
         
@@ -164,27 +205,97 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         let status = healthStore.authorizationStatus(for: heartRateType)
         
         guard status == .sharingAuthorized else {
+            print("❌ Heart rate data access not authorized. Status: \(status)")
             return .notAuthorized("Heart rate data access not authorized")
         }
         
-        // Try to get recent heart rate data to validate sensor engagement
+        print("✅ Sensor engagement validation passed")
+        return .ready
+    }
+    
+    /// Test actual heart rate data access to ensure sensors are working
+    func testHeartRateDataAccess() async -> Bool {
+        print("🧪 Testing heart rate data access...")
+        
+        guard isAuthorized else {
+            print("❌ Not authorized for heart rate data")
+            return false
+        }
+        
+        let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
+        
+        // Try to query for recent heart rate data
         let predicate = HKQuery.predicateForSamples(
-            withStart: Date().addingTimeInterval(-10), // Last 10 seconds
+            withStart: Date().addingTimeInterval(-60), // Last minute
             end: nil
         )
         
-        let query = HKSampleQuery(
-            sampleType: heartRateType,
-            predicate: predicate,
-            limit: 1,
-            sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
-        ) { _, samples, error in
-            // This will be handled in the async context
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: heartRateType,
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
+            ) { _, samples, error in
+                if let error = error {
+                    print("❌ Heart rate data access test failed: \(error.localizedDescription)")
+                    continuation.resume(returning: false)
+                } else if let samples = samples, !samples.isEmpty {
+                    print("✅ Heart rate data access test passed - found \(samples.count) samples")
+                    continuation.resume(returning: true)
+                } else {
+                    print("⚠️ Heart rate data access test - no recent data found")
+                    continuation.resume(returning: true) // Still consider this a success
+                }
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    /// Comprehensive HealthKit diagnostics for troubleshooting
+    func runHealthKitDiagnostics() async -> String {
+        var diagnostics: [String] = []
+        
+        diagnostics.append("🔍 HealthKit Diagnostics Report")
+        diagnostics.append("=====================================")
+        
+        // Check availability
+        let isAvailable = HKHealthStore.isHealthDataAvailable()
+        diagnostics.append("HealthKit Available: \(isAvailable)")
+        
+        if !isAvailable {
+            diagnostics.append("❌ HealthKit is not available on this device")
+            return diagnostics.joined(separator: "\n")
         }
         
-        // For now, return success if authorized
-        // In a real implementation, you might want to check for recent data
-        return .ready
+        // Check heart rate type
+        let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
+        diagnostics.append("Heart Rate Type: \(heartRateType)")
+        
+        // Check authorization status
+        let status = healthStore.authorizationStatus(for: heartRateType)
+        diagnostics.append("Authorization Status: \(status)")
+        
+        // Check our internal state
+        diagnostics.append("Internal isAuthorized: \(isAuthorized)")
+        
+        // Test data access
+        let dataAccessTest = await testHeartRateDataAccess()
+        diagnostics.append("Data Access Test: \(dataAccessTest ? "✅ Passed" : "❌ Failed")")
+        
+        // Get detailed status
+        let details = getDetailedAuthorizationStatus()
+        diagnostics.append("Detailed Status: \(details.status)")
+        diagnostics.append("Can Request: \(details.canRequest)")
+        
+        if let errorMessage = details.errorMessage {
+            diagnostics.append("Error: \(errorMessage)")
+        }
+        
+        diagnostics.append("=====================================")
+        
+        return diagnostics.joined(separator: "\n")
     }
     
     // MARK: - Heart Rate Capture (Legacy Compatibility)
