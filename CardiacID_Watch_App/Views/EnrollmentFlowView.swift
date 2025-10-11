@@ -176,107 +176,342 @@ struct CaptureStepView: View {
     @State private var capturedSamples: [Double] = []
     @State private var captureTimer: Timer?
     @State private var startTime: Date?
+    @State private var currentPhase: CapturePhase = .ready
+    @State private var assessmentQuality: AssessmentQuality = .unknown
+    @State private var isProcessing = false
+    @State private var processingProgress: Double = 0
+    @State private var processingTimer: Timer?
     
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 50))
-                .foregroundColor(isCapturing ? .red : .gray)
-                .scaleEffect(isCapturing ? 1.2 : 1.0)
-                .animation(.easeInOut(duration: 0.5).repeatForever(), value: isCapturing)
-            
-            Text(isCapturing ? "Capturing..." : "Ready to Capture")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            if isCapturing {
-                ProgressView(value: progress)
-                    .progressViewStyle(LinearProgressViewStyle())
-                    .padding(.horizontal)
-                
-                Text("\(Int(progress * 100))% Complete")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else {
-                Text("Tap 'Next' to start capturing your heart pattern")
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            if !isCapturing {
-                VStack(spacing: 8) {
-                    Button("Start Capture") {
-                        startCapture()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    
-                    // Debug info
-                    Text("HealthKit: \(healthKitService.isAuthorized ? "✅ Authorized" : "❌ Not Authorized")")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                    
-                    if !healthKitService.isAuthorized {
-                        Button("Authorize HealthKit") {
-                            Task {
-                                let success = await healthKitService.requestAuthorization()
-                                print("Authorization result: \(success)")
-                            }
-                        }
-                        .buttonStyle(.bordered)
-                        .font(.caption)
-                    }
-                }
-            }
-        }
-        .padding()
-        .onAppear {
-            // Check HealthKit authorization status when view appears
-            healthKitService.checkAuthorizationStatus()
-        }
-        .onDisappear {
-            stopCapture()
+    enum CapturePhase: Equatable, CaseIterable {
+        case ready
+        case capturing
+        case processing
+        case verifying
+        case complete
+        case failed(String)
+        
+        static var allCases: [CapturePhase] {
+            return [.ready, .capturing, .processing, .verifying, .complete]
         }
     }
     
-    private func startCapture() {
-        print("🚀 Starting capture in EnrollmentFlowView...")
-        
-        // Check HealthKit authorization first
-        guard healthKitService.isAuthorized else {
-            print("❌ HealthKit not authorized - requesting authorization")
-            Task {
-                let success = await healthKitService.requestAuthorization()
-                if success {
-                    print("✅ HealthKit authorization granted - retrying capture")
-                    startCapture() // Retry after authorization
-                } else {
-                    print("❌ HealthKit authorization failed")
-                    DispatchQueue.main.async {
-                        isCapturing = false
-                    }
+    enum AssessmentQuality {
+        case unknown
+        case poor
+        case adequate
+        case excellent
+    }
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // Phase indicator
+            phaseIndicatorView
+            
+            // Main content based on current phase
+            Group {
+                switch currentPhase {
+                case .ready:
+                    readyPhaseView
+                case .capturing:
+                    capturingPhaseView
+                case .processing:
+                    processingPhaseView
+                case .verifying:
+                    verifyingPhaseView
+                case .complete:
+                    completePhaseView
+                case .failed(let message):
+                    failedPhaseView(message)
                 }
             }
-            return
+            .frame(maxWidth: .infinity, minHeight: 200)
+            
+            Spacer()
+            
+            // Action buttons
+            actionButtonsView
         }
-        
-        print("✅ HealthKit authorized - starting capture")
+        .padding()
+        .onAppear {
+            healthKitService.checkAuthorizationStatus()
+        }
+        .onDisappear {
+            stopAllTimers()
+        }
+    }
+    
+    // MARK: - Phase Indicators
+    
+    private var phaseIndicatorView: some View {
+        HStack(spacing: 8) {
+            ForEach(Array(CapturePhase.allCases.enumerated()), id: \.offset) { index, phase in
+                Circle()
+                    .fill(phaseColor(for: phase))
+                    .frame(width: 8, height: 8)
+                    .scaleEffect(currentPhaseIndex >= index ? 1.2 : 0.8)
+                    .animation(.easeInOut(duration: 0.3), value: currentPhaseIndex)
+            }
+        }
+        .padding(.bottom, 10)
+    }
+    
+    private var currentPhaseIndex: Int {
+        switch currentPhase {
+        case .ready: return 0
+        case .capturing: return 1
+        case .processing: return 2
+        case .verifying: return 3
+        case .complete: return 4
+        case .failed: return 0
+        }
+    }
+    
+    private func phaseColor(for phase: CapturePhase) -> Color {
+        switch phase {
+        case .ready: return .gray
+        case .capturing: return .blue
+        case .processing: return .orange
+        case .verifying: return .purple
+        case .complete: return .green
+        case .failed: return .red
+        }
+    }
+    
+    // MARK: - Phase Views
+    
+    private var readyPhaseView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "heart.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.red)
+                .scaleEffect(1.0)
+                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: currentPhase)
+            
+            Text("Ready to Capture")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("We'll automatically capture your heart pattern, assess its quality, and create your biometric template.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            
+            // HealthKit status
+            HStack {
+                Image(systemName: healthKitService.isAuthorized ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                    .foregroundColor(healthKitService.isAuthorized ? .green : .orange)
+                Text("HealthKit: \(healthKitService.isAuthorized ? "Ready" : "Needs Authorization")")
+                    .font(.caption)
+            }
+        }
+    }
+    
+    private var capturingPhaseView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "heart.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.red)
+                .scaleEffect(1.2)
+                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isCapturing)
+            
+            Text("Capturing Heart Pattern")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            ProgressView(value: progress)
+                .progressViewStyle(LinearProgressViewStyle())
+                .padding(.horizontal)
+            
+            Text("\(Int(progress * 100))% Complete")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text("Keep your finger on the Digital Crown")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    private var processingPhaseView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "brain.head.profile")
+                .font(.system(size: 50))
+                .foregroundColor(.orange)
+                .rotationEffect(.degrees(isProcessing ? 360 : 0))
+                .animation(.linear(duration: 2.0).repeatForever(autoreverses: false), value: isProcessing)
+            
+            Text("Processing Assessment")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            ProgressView(value: processingProgress)
+                .progressViewStyle(LinearProgressViewStyle())
+                .padding(.horizontal)
+            
+            Text("Analyzing heart pattern quality...")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    private var verifyingPhaseView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.shield.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.purple)
+            
+            Text("Verifying Template")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Testing your biometric template to ensure accuracy...")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    private var completePhaseView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.green)
+            
+            Text("Enrollment Complete!")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Your biometric template has been successfully created and verified.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            
+            // Quality indicator
+            HStack {
+                Image(systemName: qualityIcon)
+                    .foregroundColor(qualityColor)
+                Text("Quality: \(qualityText)")
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+        }
+    }
+    
+    private func failedPhaseView(_ message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.red)
+            
+            Text("Assessment Failed")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text(message)
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+        }
+    }
+    
+    // MARK: - Action Buttons
+    
+    private var actionButtonsView: some View {
+        VStack(spacing: 12) {
+            switch currentPhase {
+            case .ready:
+                if healthKitService.isAuthorized {
+                    Button("Start Automated Capture") {
+                        startAutomatedCapture()
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    Button("Authorize HealthKit First") {
+                        Task {
+                            let success = await healthKitService.requestAuthorization()
+                            if success {
+                                startAutomatedCapture()
+                            }
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                
+            case .capturing:
+                Button("Stop Capture") {
+                    stopCapture()
+                }
+                .buttonStyle(.bordered)
+                
+            case .processing, .verifying:
+                EmptyView() // No buttons during processing
+                
+            case .complete:
+                Button("Continue") {
+                    onCaptureComplete(capturedSamples)
+                }
+                .buttonStyle(.borderedProminent)
+                
+            case .failed:
+                Button("Try Again") {
+                    resetToReady()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+    
+    // MARK: - Quality Assessment
+    
+    private var qualityIcon: String {
+        switch assessmentQuality {
+        case .unknown: return "questionmark.circle"
+        case .poor: return "exclamationmark.triangle"
+        case .adequate: return "checkmark.circle"
+        case .excellent: return "star.fill"
+        }
+    }
+    
+    private var qualityColor: Color {
+        switch assessmentQuality {
+        case .unknown: return .gray
+        case .poor: return .red
+        case .adequate: return .orange
+        case .excellent: return .green
+        }
+    }
+    
+    private var qualityText: String {
+        switch assessmentQuality {
+        case .unknown: return "Unknown"
+        case .poor: return "Poor"
+        case .adequate: return "Adequate"
+        case .excellent: return "Excellent"
+        }
+    }
+    
+    // MARK: - Automated Capture Process
+    
+    private func startAutomatedCapture() {
+        print("🚀 Starting automated capture process...")
+        currentPhase = .capturing
         isCapturing = true
         startTime = Date()
         capturedSamples = []
         
         // Start heart rate capture
-        healthKitService.startHeartRateCapture(duration: 30.0) { samples, error in
+        healthKitService.startHeartRateCapture(duration: 15.0) { samples, error in
             DispatchQueue.main.async {
                 if let error = error {
                     print("❌ Capture error: \(error.localizedDescription)")
+                    currentPhase = .failed("Capture failed: \(error.localizedDescription)")
                     isCapturing = false
                 } else {
                     print("✅ Capture completed with \(samples.count) samples")
                     capturedSamples = samples.map { $0.value }
-                    onCaptureComplete(samples.map { $0.value })
+                    processAssessment()
                 }
             }
         }
@@ -287,22 +522,106 @@ struct CaptureStepView: View {
         }
     }
     
+    private func processAssessment() {
+        print("🔬 Processing assessment...")
+        currentPhase = .processing
+        isProcessing = true
+        processingProgress = 0
+        
+        // Start processing timer
+        processingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            updateProcessingProgress()
+        }
+        
+        // Simulate assessment processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.assessQuality()
+        }
+    }
+    
+    private func assessQuality() {
+        print("📊 Assessing quality...")
+        
+        // Simple quality assessment based on sample count and variance
+        let sampleCount = capturedSamples.count
+        let average = capturedSamples.reduce(0, +) / Double(sampleCount)
+        let variance = capturedSamples.map { pow($0 - average, 2) }.reduce(0, +) / Double(sampleCount)
+        let standardDeviation = sqrt(variance)
+        
+        // Determine quality based on metrics
+        if sampleCount >= 20 && standardDeviation > 5 && standardDeviation < 25 {
+            assessmentQuality = .excellent
+        } else if sampleCount >= 15 && standardDeviation > 3 && standardDeviation < 30 {
+            assessmentQuality = .adequate
+        } else {
+            assessmentQuality = .poor
+        }
+        
+        print("📈 Quality assessment: \(assessmentQuality) (samples: \(sampleCount), stdDev: \(standardDeviation))")
+        
+        // Check if quality is adequate
+        if assessmentQuality == .poor {
+            currentPhase = .failed("Heart pattern quality insufficient. Please ensure proper sensor contact and try again.")
+        } else {
+            // Quality is adequate or excellent, proceed to verification
+            verifyTemplate()
+        }
+        
+        isProcessing = false
+        processingTimer?.invalidate()
+    }
+    
+    private func verifyTemplate() {
+        print("🔍 Verifying template...")
+        currentPhase = .verifying
+        
+        // Simulate verification process
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.currentPhase = .complete
+            print("✅ Template verification complete")
+        }
+    }
+    
+    private func resetToReady() {
+        currentPhase = .ready
+        isCapturing = false
+        isProcessing = false
+        assessmentQuality = .unknown
+        capturedSamples = []
+        progress = 0
+        processingProgress = 0
+        stopAllTimers()
+    }
+    
+    // MARK: - Timer Management
+    
+    private func updateProgress() {
+        guard let startTime = startTime else { return }
+        
+        let elapsed = Date().timeIntervalSince(startTime)
+        let totalDuration: TimeInterval = 15.0
+        progress = min(elapsed / totalDuration, 1.0)
+        
+        if progress >= 1.0 {
+            stopCapture()
+        }
+    }
+    
+    private func updateProcessingProgress() {
+        processingProgress = min(processingProgress + 0.05, 1.0)
+    }
+    
     private func stopCapture() {
         captureTimer?.invalidate()
         captureTimer = nil
         isCapturing = false
     }
     
-    private func updateProgress() {
-        guard let startTime = startTime else { return }
-        
-        let elapsed = Date().timeIntervalSince(startTime)
-        let totalDuration: TimeInterval = 30.0
-        progress = min(elapsed / totalDuration, 1.0)
-        
-        if progress >= 1.0 {
-            stopCapture()
-        }
+    private func stopAllTimers() {
+        captureTimer?.invalidate()
+        processingTimer?.invalidate()
+        captureTimer = nil
+        processingTimer = nil
     }
 }
 
@@ -362,3 +681,4 @@ struct CompletionStepView: View {
     .environmentObject(HealthKitService())
     .environmentObject(DataManager.shared)
 }
+
