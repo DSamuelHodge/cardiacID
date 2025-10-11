@@ -35,7 +35,10 @@ class AppState: ObservableObject {
     @Published var healthKitAvailable = false
     @Published var errorMessage: String?
     
-    private let dataManager = DataManager.shared
+    // Core services
+    let dataManager = DataManager.shared
+    let authenticationService = AuthenticationService()
+    let healthKitService = HealthKitService()
     
     func initialize() async {
         // Check enrollment status first (fast operation)
@@ -82,10 +85,22 @@ struct MainView: View {
                 ErrorView(message: error)
             } else if !appState.isUserEnrolled {
                 // Show enrollment flow
-                EnrollmentView()
+                EnrollmentFlowView(
+                    isEnrolled: $appState.isUserEnrolled,
+                    showEnrollment: .constant(true),
+                    onEnrollmentComplete: {
+                        appState.isUserEnrolled = true
+                    }
+                )
+                .environmentObject(appState.authenticationService)
+                .environmentObject(appState.healthKitService)
+                .environmentObject(appState.dataManager)
             } else {
                 // Show main app
                 AuthenticatedAppView()
+                    .environmentObject(appState.authenticationService)
+                    .environmentObject(appState.healthKitService)
+                    .environmentObject(appState.dataManager)
             }
         }
     }
@@ -184,69 +199,79 @@ struct EnrollmentView: View {
 
 struct AuthenticatedAppView: View {
     @EnvironmentObject var appState: AppState
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1 // Start with Menu tab
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Authentication Tab
-            AuthenticationTabView()
+            // Landing Tab
+            LandingTabView()
                 .tag(0)
             
-            // Settings Tab
-            SettingsTabView()
+            // Menu Tab (Primary)
+            MenuView()
                 .tag(1)
+            
+            // Enroll Tab
+            EnrollView()
+                .tag(2)
+            
+            // Authenticate Tab
+            AuthenticateView()
+                .tag(3)
+            
+            // Settings Tab
+            SettingsView()
+                .tag(4)
         }
-        .tabViewStyle(PageTabViewStyle())
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 }
 
-// MARK: - Authentication Tab
+// MARK: - Landing Tab View
 
-struct AuthenticationTabView: View {
-    @State private var isAuthenticating = false
+struct LandingTabView: View {
+    @State private var showContent = false
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
+            // HeartID Logo/Icon
             Image(systemName: "heart.fill")
-                .font(.system(size: 50))
-                .foregroundColor(.red)
-            
-            Text("HeartID")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            Button("Authenticate") {
-                isAuthenticating = true
-                // Start authentication process
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(isAuthenticating)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-    }
-}
-
-// MARK: - Settings Tab
-
-struct SettingsTabView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "gear")
                 .font(.system(size: 40))
-                .foregroundColor(.gray)
+                .foregroundColor(.red)
+                .scaleEffect(showContent ? 1.0 : 0.8)
+                .animation(.easeInOut(duration: 0.5), value: showContent)
             
-            Text("Settings")
-                .font(.headline)
+            Text("HeartID V0.4")
+                .font(.system(size: 24))
                 .fontWeight(.bold)
+                .opacity(showContent ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
             
-            Text("Configure your HeartID")
-                .font(.caption)
+            Text("Biometric Authentication")
+                .font(.system(size: 16))
                 .foregroundColor(.secondary)
+                .opacity(showContent ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.5).delay(0.4), value: showContent)
+            
+            Spacer()
+            
+            // Status indicator
+            VStack(spacing: 12) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 30))
+                    .foregroundColor(.green)
+                
+                Text("Ready")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .opacity(showContent ? 1.0 : 0.0)
+            .animation(.easeInOut(duration: 0.5).delay(0.6), value: showContent)
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
+        .onAppear {
+            showContent = true
+        }
     }
 }

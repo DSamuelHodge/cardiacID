@@ -140,6 +140,13 @@ struct EnrollView: View {
     @EnvironmentObject var dataManager: DataManager
 
     @State private var enrollmentState: EnrollmentState = .ready
+    
+    // Helper function to safely dismiss
+    private func safeDismiss() {
+        // In TabView context, dismiss might not be available
+        // This will be handled gracefully by SwiftUI
+        dismiss()
+    }
     @State private var captureProgress: Double = 0
     @State private var currentHeartRate: Double = 0
     @State private var errorMessage: String?
@@ -198,9 +205,11 @@ struct EnrollView: View {
                         Button("Start") { startEnrollment() }
                             .buttonStyle(.borderedProminent)
                     } else if case .error = enrollmentState {
-                        Button("Close") { dismiss() }.buttonStyle(.bordered)
+                        Button("Close") { 
+                            safeDismiss()
+                        }.buttonStyle(.bordered)
                     } else {
-                        Button("Cancel") { dismiss() }.buttonStyle(.bordered)
+                        Button("Cancel") { safeDismiss() }.buttonStyle(.bordered)
                     }
                 }
             }
@@ -209,7 +218,7 @@ struct EnrollView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") { safeDismiss() }
                 }
             }
         }
@@ -506,7 +515,7 @@ struct EnrollView: View {
         if let vr = verificationResult, vr.passed {
             authenticationService.markEnrolledAndAuthenticated()
             NotificationCenter.default.post(name: .init("UserEnrolled"), object: nil)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { dismiss() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { safeDismiss() }
         }
 
         enrollmentState = .verificationComplete

@@ -3,7 +3,6 @@ import Foundation
 import WatchKit
 
 struct AuthenticateView: View {
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authenticationService: AuthenticationService
     @EnvironmentObject var healthKitService: HealthKitService
     
@@ -188,7 +187,8 @@ struct AuthenticateView: View {
         // Stop processing timer
         stopProcessingTimer()
         
-        dismiss()
+        // Reset to ready state instead of dismissing
+        authenticationState = .ready
     }
     
     
@@ -218,7 +218,8 @@ struct AuthenticateView: View {
         }
         .alert("Authentication Result", isPresented: $showingResult) {
             Button("OK") {
-                dismiss()
+                // Reset to ready state instead of dismissing
+                authenticationState = .ready
             }
         } message: {
             if let result = lastResult {
@@ -226,8 +227,8 @@ struct AuthenticateView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .init("UserDeleted"))) { _ in
-            // Dismiss the view when user is deleted
-            dismiss()
+            // Reset to ready state when user is deleted
+            authenticationState = .ready
         }
         .onDisappear {
             // Clean up processing timer
