@@ -27,66 +27,70 @@ struct EnrollmentFlowView: View {
     private let totalSteps = 3
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Progress indicator
-            ProgressView(value: Double(currentStep), total: Double(totalSteps))
-                .progressViewStyle(LinearProgressViewStyle())
-                .padding(.horizontal)
-            
-            // Step content
-            Group {
-                switch currentStep {
-                case 0:
-                    WelcomeStepView()
-                case 1:
-                    CaptureStepView(
-                        isCapturing: $isCapturing,
-                        progress: $captureProgress,
-                        onCaptureComplete: handleCaptureComplete
-                    )
-                case 2:
-                    CompletionStepView()
-                default:
-                    EmptyView()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // Navigation buttons
-            HStack(spacing: 16) {
-                if currentStep > 0 {
-                    Button("Back") {
-                        currentStep -= 1
+        ScrollView {
+            VStack(spacing: 20) {
+                // Progress indicator
+                ProgressView(value: Double(currentStep), total: Double(totalSteps))
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .padding(.horizontal)
+                
+                // Step content
+                Group {
+                    switch currentStep {
+                    case 0:
+                        WelcomeStepView()
+                    case 1:
+                        CaptureStepView(
+                            isCapturing: $isCapturing,
+                            progress: $captureProgress,
+                            onCaptureComplete: handleCaptureComplete
+                        )
+                    case 2:
+                        CompletionStepView()
+                    default:
+                        EmptyView()
                     }
-                    .buttonStyle(.bordered)
                 }
+                .frame(maxWidth: .infinity, minHeight: 200)
                 
-                Spacer()
-                
-                if currentStep < totalSteps - 1 {
-                    Button("Next") {
-                        if currentStep == 0 {
-                            // Start HealthKit authorization
-                            Task {
-                                let success = await healthKitService.requestAuthorization()
-                                if success {
-                                    currentStep += 1
-                                }
-                            }
-                        } else {
-                            currentStep += 1
+                // Navigation buttons
+                HStack(spacing: 16) {
+                    if currentStep > 0 {
+                        Button("Back") {
+                            currentStep -= 1
                         }
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(currentStep == 1 && !isCapturing)
-                } else {
-                    Button("Complete") {
-                        completeEnrollment()
+                    
+                    Spacer()
+                    
+                    if currentStep < totalSteps - 1 {
+                        Button("Next") {
+                            if currentStep == 0 {
+                                // Start HealthKit authorization
+                                Task {
+                                    let success = await healthKitService.requestAuthorization()
+                                    if success {
+                                        currentStep += 1
+                                    }
+                                }
+                            } else {
+                                currentStep += 1
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(currentStep == 1 && !isCapturing)
+                    } else {
+                        Button("Complete") {
+                            completeEnrollment()
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
-                    .buttonStyle(.borderedProminent)
                 }
+                
+                Spacer(minLength: 50)
             }
-            .padding(.horizontal)
+            .padding()
         }
         .navigationTitle("Enrollment")
         .navigationBarTitleDisplayMode(.inline)

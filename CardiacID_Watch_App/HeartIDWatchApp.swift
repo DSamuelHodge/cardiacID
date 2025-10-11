@@ -77,10 +77,10 @@ class AppState: ObservableObject {
         // Use the existing HealthKitService instead of creating a new HKHealthStore
         // Add timeout to prevent hanging
         let success = await withTimeout(seconds: 10) {
-            await healthKitService.requestAuthorization()
+            await self.healthKitService.requestAuthorization()
         }
         
-        if !success {
+        if success != true {
             print("⚠️ HealthKit authorization failed or timed out")
             errorMessage = "HealthKit authorization failed"
         } else {
@@ -149,23 +149,29 @@ struct LoadingView: View {
     @State private var animationPhase = 0
     
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 40))
-                .foregroundColor(.red)
-                .scaleEffect(animationPhase == 0 ? 1.0 : 1.2)
-                .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animationPhase)
-            
-            Text("HeartID")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text("Initializing...")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            ProgressView()
-                .scaleEffect(0.8)
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.red)
+                    .scaleEffect(animationPhase == 0 ? 1.0 : 1.2)
+                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animationPhase)
+                
+                Text("HeartID")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                
+                Text("Initializing...")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                ProgressView()
+                    .scaleEffect(0.8)
+                
+                Spacer(minLength: 50)
+            }
+            .frame(maxWidth: .infinity, minHeight: 200)
+            .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
@@ -181,29 +187,34 @@ struct ErrorView: View {
     let message: String
     
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
-                .foregroundColor(.orange)
-            
-            Text("Setup Required")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text(message)
-                .font(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-            
-            Button("Retry") {
-                // Retry initialization
-                Task {
-                    await AppState().initialize()
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.orange)
+                
+                Text("Setup Required")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                
+                Text(message)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                
+                Button("Retry") {
+                    // Retry initialization
+                    Task {
+                        await AppState().initialize()
+                    }
                 }
+                .buttonStyle(.borderedProminent)
+                
+                Spacer(minLength: 50)
             }
-            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity, minHeight: 200)
+            .padding()
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
     }
@@ -216,28 +227,33 @@ struct EnrollmentView: View {
     @State private var isEnrolling = false
     
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "person.badge.plus")
-                .font(.system(size: 40))
-                .foregroundColor(.blue)
-            
-            Text("Welcome to HeartID")
-                .font(.headline)
-                .fontWeight(.bold)
-            
-            Text("Set up your biometric authentication")
-                .font(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-            
-            Button("Start Setup") {
-                isEnrolling = true
-                // Start enrollment process
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: "person.badge.plus")
+                    .font(.system(size: 40))
+                    .foregroundColor(.blue)
+                
+                Text("Welcome to HeartID")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                
+                Text("Set up your biometric authentication")
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                
+                Button("Start Setup") {
+                    isEnrolling = true
+                    // Start enrollment process
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(isEnrolling)
+                
+                Spacer(minLength: 50)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(isEnrolling)
+            .frame(maxWidth: .infinity, minHeight: 200)
+            .padding()
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
     }
@@ -281,40 +297,46 @@ struct LandingTabView: View {
     @State private var showContent = false
     
     var body: some View {
-        VStack(spacing: 20) {
-            // HeartID Logo/Icon
-            Image(systemName: "heart.fill")
-                .font(.system(size: 40))
-                .foregroundColor(.red)
-                .scaleEffect(showContent ? 1.0 : 0.8)
-                .animation(.easeInOut(duration: 0.5), value: showContent)
-            
-            Text("HeartID V0.4")
-                .font(.system(size: 24))
-                .fontWeight(.bold)
-                .opacity(showContent ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
-            
-            Text("Biometric Authentication")
-                .font(.system(size: 16))
-                .foregroundColor(.secondary)
-                .opacity(showContent ? 1.0 : 0.0)
-                .animation(.easeInOut(duration: 0.5).delay(0.4), value: showContent)
-            
-            Spacer()
-            
-            // Status indicator
-            VStack(spacing: 12) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 30))
-                    .foregroundColor(.green)
+        ScrollView {
+            VStack(spacing: 20) {
+                // HeartID Logo/Icon
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.red)
+                    .scaleEffect(showContent ? 1.0 : 0.8)
+                    .animation(.easeInOut(duration: 0.5), value: showContent)
                 
-                Text("Ready")
-                    .font(.caption)
+                Text("HeartID V0.4")
+                    .font(.system(size: 24))
+                    .fontWeight(.bold)
+                    .opacity(showContent ? 1.0 : 0.0)
+                    .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
+                
+                Text("Biometric Authentication")
+                    .font(.system(size: 16))
                     .foregroundColor(.secondary)
+                    .opacity(showContent ? 1.0 : 0.0)
+                    .animation(.easeInOut(duration: 0.5).delay(0.4), value: showContent)
+                
+                Spacer(minLength: 50)
+                
+                // Status indicator
+                VStack(spacing: 12) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 30))
+                        .foregroundColor(.green)
+                    
+                    Text("Ready")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .opacity(showContent ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.5).delay(0.6), value: showContent)
+                
+                Spacer(minLength: 50)
             }
-            .opacity(showContent ? 1.0 : 0.0)
-            .animation(.easeInOut(duration: 0.5).delay(0.6), value: showContent)
+            .frame(maxWidth: .infinity, minHeight: 200)
+            .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)

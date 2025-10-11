@@ -166,54 +166,58 @@ struct EnrollView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 14) {
-                // Header
-                VStack(spacing: 8) {
-                    Image(systemName: "person.badge.plus")
-                        .font(.system(size: 36))
-                        .foregroundColor(.blue)
-                    Text("Enroll").font(.headline)
-                    Text(helperSubtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-
-                // State-driven content
-                VStack {
-                    switch enrollmentState {
-                    case .ready:
-                        Text("Ready to start").font(.caption)
-                    case .capturing:
-                        EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
-                    case .processing:
-                        ProcessingStateView(progress: processingProgress, title: "Creating Template")
-                    case .verification:
-                        ProcessingStateView(progress: processingProgress, title: "Verifying")
-                    case .verificationComplete:
-                        ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
-                    case .completed:
-                        Text("Complete").font(.caption)
-                    case .error(let msg):
-                        Text(msg).font(.caption).foregroundColor(.red)
+            ScrollView {
+                VStack(spacing: 14) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Image(systemName: "person.badge.plus")
+                            .font(.system(size: 36))
+                            .foregroundColor(.blue)
+                        Text("Enroll").font(.headline)
+                        Text(helperSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
                     }
-                }
 
-                // Action row
-                HStack {
-                    if case .ready = enrollmentState {
-                        Button("Start") { startEnrollment() }
-                            .buttonStyle(.borderedProminent)
-                    } else if case .error = enrollmentState {
-                        Button("Close") { 
-                            safeDismiss()
-                        }.buttonStyle(.bordered)
-                    } else {
-                        Button("Cancel") { safeDismiss() }.buttonStyle(.bordered)
+                    // State-driven content
+                    VStack {
+                        switch enrollmentState {
+                        case .ready:
+                            Text("Ready to start").font(.caption)
+                        case .capturing:
+                            EnrollCapturingStateView(progress: captureProgress, heartRate: currentHeartRate)
+                        case .processing:
+                            ProcessingStateView(progress: processingProgress, title: "Creating Template")
+                        case .verification:
+                            ProcessingStateView(progress: processingProgress, title: "Verifying")
+                        case .verificationComplete:
+                            ResultStateView(result: authenticationService.lastAuthenticationResult ?? .pending, retryCount: 0)
+                        case .completed:
+                            Text("Complete").font(.caption)
+                        case .error(let msg):
+                            Text(msg).font(.caption).foregroundColor(.red)
+                        }
                     }
+
+                    // Action row
+                    HStack {
+                        if case .ready = enrollmentState {
+                            Button("Start") { startEnrollment() }
+                                .buttonStyle(.borderedProminent)
+                        } else if case .error = enrollmentState {
+                            Button("Close") { 
+                                safeDismiss()
+                            }.buttonStyle(.bordered)
+                        } else {
+                            Button("Cancel") { safeDismiss() }.buttonStyle(.bordered)
+                        }
+                    }
+                    
+                    Spacer(minLength: 50)
                 }
+                .padding()
             }
-            .padding()
             .navigationTitle("Enroll")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
