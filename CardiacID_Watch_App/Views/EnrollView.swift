@@ -321,13 +321,17 @@ struct EnrollView: View {
             // Clear any existing samples before starting new capture
             healthKitService.heartRateSamples.removeAll()
             
-            // Use the HealthKitService from Services
+            // Start heart rate capture with proper completion handling
             healthKitService.startHeartRateCapture(duration: duration) { samples, error in
-                // Completion handler - handle both success and error cases
-                if let error = error {
-                    print("❌ Heart rate capture error: \(error)")
-                } else {
-                    print("✅ Heart rate capture completed with \(samples.count) samples")
+                Task { @MainActor in
+                    if let error = error {
+                        print("❌ Heart rate capture error: \(error)")
+                        enrollmentState = .error("Capture failed: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Heart rate capture completed with \(samples.count) samples")
+                        // Process the captured samples
+                        processCapturedSamples(samples)
+                    }
                 }
             }
             
@@ -393,6 +397,59 @@ struct EnrollView: View {
         } catch {
             print("❌ Enrollment capture error: \(error.localizedDescription)")
             enrollmentState = .error("Capture failed: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Sample Processing
+    
+    private func processCapturedSamples(_ samples: [HeartRateSample]) {
+        let values = samples.map { $0.value }
+        print("✅ Processing \(values.count) captured samples")
+        
+        // Enhanced validation with more detailed error messages
+        guard !values.isEmpty else {
+            enrollmentState = .error("No heart rate data captured. Ensure watch is properly fitted and try again.")
+            return
+        }
+        
+        guard values.count >= 8 else {
+            enrollmentState = .error("Insufficient heart rate data (\(values.count) samples). Need at least 8 samples. Please try again.")
+            return
+        }
+        
+        // Validate data quality - check for reasonable heart rate values
+        let validValues = values.filter { $0 > 30 && $0 < 220 }
+        guard validValues.count >= 8 else {
+            enrollmentState = .error("Invalid heart rate values detected. Please ensure proper sensor contact.")
+            return
+        }
+        
+        // Store the baseline pattern and create template
+        baselinePattern = values
+        if let template = makeTemplate(from: values) {
+            storeBaseline(template)
+            enrollmentState = .processing
+            processEnrollmentTemplate(template)
+        } else {
+            enrollmentState = .error("Failed to create biometric template. Please try again.")
+        }
+    }
+    
+    private func processEnrollmentTemplate(_ template: HeartTemplate) {
+        print("🔄 Processing enrollment template...")
+        
+        // Start processing timer
+        processingProgress = 0
+        if processingTimer == nil { 
+            startProcessingTimer() 
+        }
+        
+        // Simulate template processing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.stopProcessingTimer()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { 
+                self.startAutomaticVerification() 
+            }
         }
     }
 

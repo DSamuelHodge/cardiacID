@@ -100,47 +100,68 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         captureProgress = 0
         
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-        let startDate = Date().addingTimeInterval(-duration)
+        var collectedSamples: [HeartRateSample] = []
+        let captureStartTime = Date()
         
-        let query = HKAnchoredObjectQuery(
-            type: heartRateType,
-            predicate: HKQuery.predicateForSamples(withStart: startDate, end: nil),
-            anchor: nil,
-            limit: HKObjectQueryNoLimit
-        ) { [weak self] _, samples, _, _, error in
-            Task { @MainActor in
-                if let error = error {
-                    self?.isCapturing = false
-                    self?.errorMessage = error.localizedDescription
-                    completion([], error)
-                } else if let samples = samples as? [HKQuantitySample] {
-                    let heartRateSamples = samples.map { sample in
-                        HeartRateSample(
-                            value: sample.quantity.doubleValue(for: HKUnit(from: "count/min")),
-                            timestamp: sample.startDate,
-                            source: sample.sourceRevision.source.name
-                        )
+        // Create a timer to continuously collect samples during the capture duration
+        captureTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            guard let self = self else { return }
+            
+            // Query for samples from the last 2 seconds
+            let queryStartDate = Date().addingTimeInterval(-2.0)
+            let predicate = HKQuery.predicateForSamples(withStart: queryStartDate, end: nil)
+            
+            let query = HKSampleQuery(
+                sampleType: heartRateType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
+            ) { _, samples, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("❌ Sample query error: \(error)")
+                        return
                     }
-                    self?.heartRateSamples = heartRateSamples
-                    completion(heartRateSamples, nil)
+                    
+                    if let samples = samples as? [HKQuantitySample] {
+                        let newSamples = samples.map { sample in
+                            HeartRateSample(
+                                value: sample.quantity.doubleValue(for: HKUnit(from: "count/min")),
+                                timestamp: sample.startDate,
+                                source: sample.sourceRevision.source.name
+                            )
+                        }
+                        
+                        // Add new samples to our collection
+                        collectedSamples.append(contentsOf: newSamples)
+                        self.heartRateSamples = collectedSamples
+                        
+                        // Update current heart rate with the latest sample
+                        if let latestSample = newSamples.first {
+                            self.currentHeartRate = latestSample.value
+                        }
+                        
+                        print("📊 Collected \(collectedSamples.count) samples, latest HR: \(self.currentHeartRate)")
+                    }
                 }
             }
-        }
-        
-        heartRateQuery = query
-        healthStore.execute(query)
-        
-        // Update progress
-        captureTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                self.captureProgress = min(1.0, self.captureProgress + 0.1)
+            
+            self.healthStore.execute(query)
+            
+            // Update progress
+            let elapsed = Date().timeIntervalSince(captureStartTime)
+            self.captureProgress = min(elapsed / duration, 1.0)
+            
+            // Check if capture duration is complete
+            if elapsed >= duration {
+                timer.invalidate()
+                self.isCapturing = false
+                self.captureProgress = 1.0
+                
+                // Call completion with collected samples
+                completion(collectedSamples, nil)
+                print("✅ Capture completed with \(collectedSamples.count) samples")
             }
-        }
-        
-        // Stop capture after duration
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-            self.stopHeartRateCapture()
         }
     }
     

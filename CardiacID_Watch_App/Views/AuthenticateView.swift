@@ -51,6 +51,8 @@ struct AuthenticateView: View {
                 ProcessingStateView(progress: processingProgress, title: "Processing Authentication")
             case .result(let result):
                 ResultStateView(result: result, retryCount: retryCount)
+            case .error(let message):
+                ErrorStateView(message: message)
             }
         }
         .padding()
@@ -69,8 +71,17 @@ struct AuthenticateView: View {
                 EmptyView()
             case .result(let result):
                 resultButtonsView(result: result)
+            case .error:
+                errorButtonsView
             }
         }
+    }
+    
+    private var errorButtonsView: some View {
+        Button("Try Again") {
+            authenticationState = .ready
+        }
+        .buttonStyle(.borderedProminent)
     }
     
     private var readyButtonsView: some View {
@@ -272,22 +283,16 @@ struct AuthenticateView: View {
         
         // Start heart rate capture with optimized duration
         let captureDuration: TimeInterval = 8.0 // Reduced from 12 seconds to 8 seconds
-        healthKitService.startHeartRateCapture(duration: captureDuration) { samples, error in
-            // Completion handler - handle both success and error cases
-            if let error = error {
-                print("❌ Heart rate capture error: \(error)")
-            } else {
-                print("✅ Heart rate capture completed with \(samples.count) samples")
-            }
-        }
-        
-        print("📊 Starting heart rate capture for \(captureDuration) seconds")
-        
-        // Listen for completion with minimal buffer time
-        DispatchQueue.main.asyncAfter(deadline: .now() + captureDuration + 1.0) {
-            if self.authenticationState == .capturing {
-                print("✅ Capture duration complete - starting processing")
-                self.completeAuthentication()
+        healthKitService.startHeartRateCapture(duration: captureDuration) { [weak self] samples, error in
+            Task { @MainActor in
+                if let error = error {
+                    print("❌ Heart rate capture error: \(error)")
+                    self?.authenticationState = .error("Capture failed: \(error.localizedDescription)")
+                } else {
+                    print("✅ Heart rate capture completed with \(samples.count) samples")
+                    // Process the captured samples for authentication
+                    self?.processAuthenticationSamples(samples)
+                }
             }
         }
     }
@@ -309,6 +314,43 @@ struct AuthenticateView: View {
         }
     }
     
+    private func processAuthenticationSamples(_ samples: [HeartRateSample]) {
+        print("🔬 Processing \(samples.count) authentication samples")
+        
+        // Validate samples
+        guard !samples.isEmpty else {
+            authenticationState = .error("No heart rate data captured. Please try again.")
+            return
+        }
+        
+        guard samples.count >= 5 else {
+            authenticationState = .error("Insufficient heart rate data (\(samples.count) samples). Need at least 5 samples.")
+            return
+        }
+        
+        // Validate data quality
+        let values = samples.map { $0.value }
+        let validValues = values.filter { $0 > 30 && $0 < 220 }
+        guard validValues.count >= 5 else {
+            authenticationState = .error("Invalid heart rate values detected. Please ensure proper sensor contact.")
+            return
+        }
+        
+        // Start authentication processing
+        authenticationState = .processing
+        processingProgress = 0
+        startProcessingTimer()
+        
+        // Perform authentication with the captured data
+        let result = authenticationService.completeAuthentication(with: values)
+        
+        // Stop processing timer and show result
+        stopProcessingTimer()
+        authenticationState = .result(result)
+        
+        print("✅ Authentication completed with result: \(result.isSuccess ? "Success" : "Failed")")
+    }
+
     private func completeAuthentication() {
         // Validate state before processing
         guard authenticationState == .capturing else {
@@ -442,6 +484,7 @@ enum AuthenticationViewState: Equatable {
     case capturing
     case processing
     case result(AuthenticationResult)
+    case error(String)
 }
 
 
@@ -459,6 +502,28 @@ struct ReadyStateView: View {
                 .fontWeight(.bold)
             
             Text("Place your finger on the Digital Crown and tap Start")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+}
+
+
+struct ErrorStateView: View {
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.orange)
+            
+            Text("Authentication Error")
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -504,3 +569,4 @@ struct CapturingStateView: View {
         }
     }
 }
+
