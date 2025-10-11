@@ -1,8 +1,8 @@
 import Foundation
 import Combine
 
-// MARK: - DataManager Import
-// Using the real DataManager from the Models directory
+// MARK: - Import Required Types
+// Import all necessary types for the authentication service
 
 /// Selection for heart pattern assessment approach
 enum HeartPatternAssessmentMode: String, Codable {
