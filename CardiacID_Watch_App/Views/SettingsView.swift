@@ -4,7 +4,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var authenticationService: AuthenticationService
     @EnvironmentObject var dataManager: DataManager
-    @EnvironmentObject var backgroundTaskService: BackgroundTaskService
     // @EnvironmentObject var watchConnectivityService: WatchConnectivityService  // Temporarily disabled
     
     @State private var showingClearDataAlert = false
@@ -494,7 +493,6 @@ struct FeatureRow: View {
     SettingsView()
         .environmentObject(AuthenticationService())
         .environmentObject(DataManager())
-        .environmentObject(BackgroundTaskService())
         // .environmentObject(WatchConnectivityService())  // Temporarily disabled
 }
 

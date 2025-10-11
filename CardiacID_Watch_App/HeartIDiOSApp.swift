@@ -436,7 +436,8 @@ struct iOSSettingsView: View {
                         set: { newValue in
                             var prefs = dataManager.userPreferences
                             prefs.enableNotifications = newValue
-                            dataManager.saveUserPreferences(prefs)
+                            dataManager.userPreferences = prefs
+                            dataManager.saveUserPreferences()
                         }
                     ))
                     
@@ -500,7 +501,8 @@ struct SecurityLevelSettingsView: View {
                     selectedLevel = level
                     var prefs = dataManager.userPreferences
                     prefs.securityLevel = level
-                    dataManager.saveUserPreferences(prefs)
+                    dataManager.userPreferences = prefs
+                    dataManager.saveUserPreferences()
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
@@ -544,7 +546,8 @@ struct AuthFrequencySettingsView: View {
                     selectedFrequency = frequency
                     var prefs = dataManager.userPreferences
                     prefs.authenticationFrequency = frequency
-                    dataManager.saveUserPreferences(prefs)
+                    dataManager.userPreferences = prefs
+                    dataManager.saveUserPreferences()
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
