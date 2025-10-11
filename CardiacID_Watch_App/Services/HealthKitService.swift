@@ -402,6 +402,7 @@ class HealthKitService: NSObject, ObservableObject {
             startHeartRateCapture(duration: duration) { samples, error in
                 if let captureError = error, retryCount < maxRetries {
                     retryCount += 1
+                    print("⚠️ Heart rate capture failed (attempt \(retryCount)/\(maxRetries)): \(captureError.localizedDescription)")
                     let delay = pow(2.0, Double(retryCount)) // Exponential backoff
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                         attemptCapture()
