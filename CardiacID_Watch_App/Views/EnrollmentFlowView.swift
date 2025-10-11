@@ -224,7 +224,7 @@ struct CaptureStepView: View {
                     isCapturing = false
                 } else {
                     capturedSamples = samples.map { $0.value }
-                    onCaptureComplete(samples)
+                    onCaptureComplete(samples.map { $0.value })
                 }
             }
         }
