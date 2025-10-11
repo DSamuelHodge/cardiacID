@@ -207,19 +207,62 @@ struct CaptureStepView: View {
             Spacer()
             
             if !isCapturing {
-                Button("Start Capture") {
-                    startCapture()
+                VStack(spacing: 8) {
+                    Button("Start Capture") {
+                        startCapture()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    // Debug info
+                    Text("HealthKit: \(healthKitService.isAuthorized ? "✅ Authorized" : "❌ Not Authorized")")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    
+                    if !healthKitService.isAuthorized {
+                        Button("Authorize HealthKit") {
+                            Task {
+                                let success = await healthKitService.requestAuthorization()
+                                print("Authorization result: \(success)")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .font(.caption)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
             }
         }
         .padding()
+        .onAppear {
+            // Check HealthKit authorization status when view appears
+            healthKitService.checkAuthorizationStatus()
+        }
         .onDisappear {
             stopCapture()
         }
     }
     
     private func startCapture() {
+        print("🚀 Starting capture in EnrollmentFlowView...")
+        
+        // Check HealthKit authorization first
+        guard healthKitService.isAuthorized else {
+            print("❌ HealthKit not authorized - requesting authorization")
+            Task {
+                let success = await healthKitService.requestAuthorization()
+                if success {
+                    print("✅ HealthKit authorization granted - retrying capture")
+                    startCapture() // Retry after authorization
+                } else {
+                    print("❌ HealthKit authorization failed")
+                    DispatchQueue.main.async {
+                        isCapturing = false
+                    }
+                }
+            }
+            return
+        }
+        
+        print("✅ HealthKit authorized - starting capture")
         isCapturing = true
         startTime = Date()
         capturedSamples = []
@@ -231,6 +274,7 @@ struct CaptureStepView: View {
                     print("❌ Capture error: \(error.localizedDescription)")
                     isCapturing = false
                 } else {
+                    print("✅ Capture completed with \(samples.count) samples")
                     capturedSamples = samples.map { $0.value }
                     onCaptureComplete(samples.map { $0.value })
                 }
