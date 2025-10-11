@@ -22,6 +22,28 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
     private var heartRateQuery: HKQuery?
     private var captureTimer: Timer?
     
+    // MARK: - Computed Properties
+    
+    var authorizationStatus: String {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            return "Not Available"
+        }
+        
+        let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
+        let status = healthStore.authorizationStatus(for: heartRateType)
+        
+        switch status {
+        case .notDetermined:
+            return "Not Determined"
+        case .sharingDenied:
+            return "Denied"
+        case .sharingAuthorized:
+            return "Authorized"
+        @unknown default:
+            return "Unknown"
+        }
+    }
+    
     init() {
         checkAuthorizationStatus()
     }
@@ -134,7 +156,6 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         }
         
         isCapturing = true
-        let heartRateSamples: [Double] = []
         
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
         let startDate = Date().addingTimeInterval(-duration)
@@ -164,11 +185,14 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         
         stopHeartRateCapture()
         
-        if heartRateSamples.isEmpty {
+        // Convert HeartRateSample array to Double array
+        let capturedValues = heartRateSamples.map { $0.value }
+        
+        if capturedValues.isEmpty {
             return .failure(HealthKitError.noDataCaptured)
         }
         
-        return .success(heartRateSamples)
+        return .success(capturedValues)
     }
     
     func stopHeartRateCapture() {

@@ -69,14 +69,16 @@ struct WatchSettingsView: View {
                     
                     if !healthKitService.isAuthorized {
                         Button("Request Authorization") {
-                            healthKitService.requestAuthorization()
+                            Task {
+                                await healthKitService.requestAuthorization()
+                            }
                         }
                     }
                     
                     HStack {
                         Text("Status")
                         Spacer()
-                        Text(healthKitService.getAuthorizationStatus())
+                        Text(healthKitService.authorizationStatus)
                             .foregroundColor(.secondary)
                             .font(.caption)
                     }
@@ -157,7 +159,8 @@ struct SecurityLevelWatchView: View {
                     selectedLevel = level
                     var preferences = dataManager.userPreferences
                     preferences.securityLevel = level
-                    dataManager.saveUserPreferences(preferences)
+                    dataManager.userPreferences = preferences
+                    dataManager.saveUserPreferences()
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
