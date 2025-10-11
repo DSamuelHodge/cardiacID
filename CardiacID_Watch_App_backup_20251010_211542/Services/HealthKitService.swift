@@ -9,6 +9,7 @@ import Foundation
 import HealthKit
 import Combine
 
+@MainActor
 class HealthKitService: ObservableObject {
     private let healthStore = HKHealthStore()
     
@@ -51,7 +52,7 @@ class HealthKitService: ObservableObject {
         let typesToRead: Set<HKObjectType> = [heartRateType]
         
         do {
-            let success = try await healthStore.requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
+            let success = try await healthStore.requestAuthorization(toShare: nil, read: typesToRead)
             checkAuthorizationStatus()
             return success
         } catch {
@@ -110,10 +111,8 @@ class HealthKitService: ObservableObject {
         
         // Update progress
         captureTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                self.captureProgress = min(1.0, self.captureProgress + 0.1)
-            }
+            guard let self = self else { return }
+            self.captureProgress = min(1.0, self.captureProgress + 0.1)
         }
         
         // Stop capture after duration

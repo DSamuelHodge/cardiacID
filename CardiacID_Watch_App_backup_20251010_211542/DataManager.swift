@@ -69,13 +69,13 @@ class DataManager: ObservableObject {
     
     func saveUserProfile(_ profile: UserProfile) -> Bool {
         // Save basic profile info
-        userDefaults.set(profile.id.uuidString, forKey: "userProfileId")
+        userDefaults.set(profile.id, forKey: "userProfileId")
         userDefaults.set(profile.enrollmentDate, forKey: Keys.enrollmentDate)
         userDefaults.set(profile.lastAuthenticationDate, forKey: Keys.lastAuthDate)
         userDefaults.set(profile.authenticationCount, forKey: "authenticationCount")
         
         // Save biometric template
-        if let templateData = try? JSONEncoder().encode(profile.biometricTemplate) {
+        if let templateData = try? JSONEncoder().encode(profile.template) {
             return saveBiometricTemplate(templateData)
         }
         
@@ -83,14 +83,14 @@ class DataManager: ObservableObject {
     }
     
     func getUserProfile() -> UserProfile? {
-        guard let profileIdString = userDefaults.string(forKey: "userProfileId"),
-              let profileId = UUID(uuidString: profileIdString),
+        guard let profileId = userDefaults.string(forKey: "userProfileId"),
               let templateData = loadBiometricTemplate(),
               let template = try? JSONDecoder().decode(BiometricTemplate.self, from: templateData) else {
             return nil
         }
         
         var profile = UserProfile(id: profileId, template: template)
+        profile.enrollmentDate = userDefaults.object(forKey: Keys.enrollmentDate) as? Date
         profile.lastAuthenticationDate = userDefaults.object(forKey: Keys.lastAuthDate) as? Date
         profile.authenticationCount = userDefaults.integer(forKey: "authenticationCount")
         
@@ -124,13 +124,11 @@ class DataManager: ObservableObject {
         userDefaults.removeObject(forKey: "userPreferences")
         
         // Clear Keychain
-        _ = deleteBiometricTemplate()
+        deleteBiometricTemplate()
         
         // Reset state
-        DispatchQueue.main.async {
-            self.isUserEnrolled = false
-            self.userPreferences = UserPreferences()
-        }
+        isUserEnrolled = false
+        userPreferences = UserPreferences()
     }
     
     func resetToDefaults() {
@@ -184,4 +182,17 @@ class DataManager: ObservableObject {
     }
 }
 
-// UserPreferences is defined in BiometricModels.swift
+// MARK: - UserPreferences Model
+
+struct UserPreferences: Codable {
+    var securityLevel: SecurityLevel = .medium
+    var enableNotifications: Bool = true
+    var autoLockEnabled: Bool = true
+    var authenticationFrequency: AuthenticationFrequency = .onDemand
+    
+    enum AuthenticationFrequency: String, Codable, CaseIterable {
+        case onDemand = "onDemand"
+        case periodic = "periodic"
+        case continuous = "continuous"
+    }
+}

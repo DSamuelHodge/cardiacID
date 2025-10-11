@@ -59,7 +59,7 @@ class AppState: ObservableObject {
         let typesToRead: Set<HKObjectType> = [heartRateType]
         
         do {
-            let success = try await HKHealthStore().requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
+            let success = try await HKHealthStore().requestAuthorization(toShare: nil, read: typesToRead)
             if !success {
                 errorMessage = "HealthKit authorization denied"
             }

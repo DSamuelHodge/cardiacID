@@ -290,29 +290,25 @@ struct SettingsView: View {
     private func toggleBluetooth() {
         var preferences = dataManager.userPreferences
         preferences.enableBluetooth.toggle()
-        dataManager.userPreferences = preferences
-        dataManager.saveUserPreferences()
+        dataManager.saveUserPreferences(preferences)
     }
     
     private func toggleNFC() {
         var preferences = dataManager.userPreferences
         preferences.enableNFC.toggle()
-        dataManager.userPreferences = preferences
-        dataManager.saveUserPreferences()
+        dataManager.saveUserPreferences(preferences)
     }
     
     private func updateAlarms(_ enabled: Bool) {
         var preferences = dataManager.userPreferences
         preferences.enableAlarms = enabled
-        dataManager.userPreferences = preferences
-        dataManager.saveUserPreferences()
+        dataManager.saveUserPreferences(preferences)
     }
     
     private func updateNotifications(_ enabled: Bool) {
         var preferences = dataManager.userPreferences
         preferences.enableNotifications = enabled
-        dataManager.userPreferences = preferences
-        dataManager.saveUserPreferences()
+        dataManager.saveUserPreferences(preferences)
     }
     
     private func logout() {

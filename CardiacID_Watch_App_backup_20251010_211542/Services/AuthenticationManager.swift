@@ -2,7 +2,6 @@ import Foundation
 import Combine
 
 /// Manager for coordinating authentication services and managing authentication state
-@MainActor
 class AuthenticationManager: ObservableObject {
     @Published var isAuthenticated = false
     @Published var authenticationState: AuthenticationState = .idle

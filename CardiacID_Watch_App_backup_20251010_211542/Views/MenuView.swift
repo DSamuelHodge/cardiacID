@@ -481,7 +481,7 @@ struct SecurityLevelView: View {
                     Button("Save Security Level") {
                         var preferences = dataManager.userPreferences
                         preferences.securityLevel = selectedLevel
-                        dataManager.saveUserPreferences()
+                        dataManager.saveUserPreferences(preferences)
                         dismiss()
                     }
                     .buttonStyle(.borderedProminent)
@@ -585,8 +585,7 @@ struct AlarmNotificationView: View {
                         var preferences = dataManager.userPreferences
                         preferences.enableAlarms = enableAlarms
                         preferences.enableNotifications = enableNotifications
-                        dataManager.userPreferences = preferences
-                        dataManager.saveUserPreferences()
+                        dataManager.saveUserPreferences(preferences)
                         dismiss()
                     }
                     .buttonStyle(.borderedProminent)
