@@ -17,9 +17,17 @@ struct HeartID_WatchApp: App {
             MainView()
                 .environmentObject(appState)
                 .onAppear {
-                    // Initialize app state asynchronously
+                    // Initialize app state asynchronously with fallback timeout
                     Task {
                         await appState.initialize()
+                    }
+                    
+                    // Fallback: Force initialization after 5 seconds if still loading
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        if !appState.isInitialized {
+                            print("⚠️ Forcing initialization due to timeout")
+                            appState.isInitialized = true
+                        }
                     }
                 }
         }
@@ -41,31 +49,60 @@ class AppState: ObservableObject {
     let healthKitService = HealthKitService()
     
     func initialize() async {
+        print("🚀 Starting app initialization...")
+        
         // Check enrollment status first (fast operation)
         isUserEnrolled = dataManager.isUserEnrolled
+        print("📊 User enrolled: \(isUserEnrolled)")
         
         // Check HealthKit availability (non-blocking)
         healthKitAvailable = HKHealthStore.isHealthDataAvailable()
+        print("🏥 HealthKit available: \(healthKitAvailable)")
         
-        // Request HealthKit authorization asynchronously if needed
+        // Request HealthKit authorization asynchronously if needed (non-blocking)
         if healthKitAvailable && !isUserEnrolled {
-            await requestHealthKitAuthorization()
+            print("🔐 Requesting HealthKit authorization...")
+            Task {
+                await requestHealthKitAuthorization()
+            }
         }
         
+        print("✅ App initialization complete")
         isInitialized = true
     }
     
     private func requestHealthKitAuthorization() async {
-        guard HKHealthStore.isHealthDataAvailable() else { return }
+        print("🔐 Starting HealthKit authorization...")
         
-        let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-        let typesToRead: Set<HKObjectType> = [heartRateType]
+        // Use the existing HealthKitService instead of creating a new HKHealthStore
+        // Add timeout to prevent hanging
+        let success = await withTimeout(seconds: 10) {
+            await healthKitService.requestAuthorization()
+        }
         
-        do {
-            try await HKHealthStore().requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
-            // Authorization request completed successfully
-        } catch {
-            errorMessage = "HealthKit authorization failed: \(error.localizedDescription)"
+        if !success {
+            print("⚠️ HealthKit authorization failed or timed out")
+            errorMessage = "HealthKit authorization failed"
+        } else {
+            print("✅ HealthKit authorization successful")
+        }
+    }
+    
+    // Helper function for timeout
+    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async -> T) async -> T? {
+        return await withTaskGroup(of: T?.self) { group in
+            group.addTask {
+                await operation()
+            }
+            
+            group.addTask {
+                try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                return nil
+            }
+            
+            let result = await group.next()
+            group.cancelAll()
+            return result ?? nil
         }
     }
 }
@@ -109,21 +146,32 @@ struct MainView: View {
 // MARK: - Loading View
 
 struct LoadingView: View {
+    @State private var animationPhase = 0
+    
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "heart.fill")
                 .font(.system(size: 40))
                 .foregroundColor(.red)
+                .scaleEffect(animationPhase == 0 ? 1.0 : 1.2)
+                .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animationPhase)
             
             Text("HeartID")
                 .font(.headline)
                 .fontWeight(.bold)
+            
+            Text("Initializing...")
+                .font(.caption)
+                .foregroundColor(.secondary)
             
             ProgressView()
                 .scaleEffect(0.8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
+        .onAppear {
+            animationPhase = 1
+        }
     }
 }
 
