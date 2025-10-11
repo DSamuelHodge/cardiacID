@@ -67,8 +67,12 @@ struct EnrollmentFlowView: View {
                     Button("Next") {
                         if currentStep == 0 {
                             // Start HealthKit authorization
-                            healthKitService.requestAuthorization()
-                            currentStep += 1
+                            Task {
+                                let success = await healthKitService.requestAuthorization()
+                                if success {
+                                    currentStep += 1
+                                }
+                            }
                         } else {
                             currentStep += 1
                         }

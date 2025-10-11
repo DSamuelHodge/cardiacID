@@ -195,7 +195,12 @@ struct MenuView: View {
         
         // Check HealthKit authorization if not already done
         if !healthKitService.isAuthorized {
-            healthKitService.requestAuthorization()
+            Task {
+                let success = await healthKitService.requestAuthorization()
+                if !success {
+                    // Handle authorization failure
+                }
+            }
         }
     }
 }

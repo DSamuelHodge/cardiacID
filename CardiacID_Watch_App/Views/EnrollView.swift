@@ -229,13 +229,10 @@ struct EnrollView: View {
     private func ensureHealthKitAuthorization() async {
         guard !healthKitService.isAuthorized else { return }
         
-        // Request authorization synchronously
-        healthKitService.requestAuthorization()
+        // Request authorization asynchronously
+        let success = await healthKitService.requestAuthorization()
         
-        // Wait a moment for authorization to complete
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-        
-        if !healthKitService.isAuthorized {
+        if !success {
             enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
         }
     }
@@ -258,12 +255,10 @@ struct EnrollView: View {
         
         if !healthKitService.isAuthorized {
             print("⚠️ HealthKit not authorized, requesting permission...")
-            healthKitService.requestAuthorization()
-            
-            // Wait a moment for authorization to complete
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                if !self.healthKitService.isAuthorized {
-                    self.enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
+            Task {
+                let success = await healthKitService.requestAuthorization()
+                if !success {
+                    enrollmentState = .error("HealthKit authorization required. Please enable in Settings.")
                 }
             }
         } else {

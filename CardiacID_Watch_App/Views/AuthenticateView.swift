@@ -84,7 +84,12 @@ struct AuthenticateView: View {
             
             if !healthKitService.isAuthorized {
                 Button("Authorize HealthKit") {
-                    healthKitService.requestAuthorization()
+                    Task {
+                        let success = await healthKitService.requestAuthorization()
+                        if !success {
+                            // Handle authorization failure
+                        }
+                    }
                 }
                 .buttonStyle(.bordered)
             }
@@ -338,7 +343,7 @@ struct AuthenticateView: View {
             return
         }
         
-        guard healthKitService.validateHeartRateData(healthKitService.heartRateSamples) else {
+        guard healthKitService.validateHeartRateData(heartRateData) else {
             print("❌ Heart rate data validation failed")
             stopProcessingTimer()
             authenticationState = .result(.denied(reason: "Heart rate data validation failed"))

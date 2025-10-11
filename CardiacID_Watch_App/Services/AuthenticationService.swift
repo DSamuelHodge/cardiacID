@@ -274,7 +274,7 @@ class AuthenticationService: ObservableObject {
     // Temporarily disabled - requires DataManager
     /*
     private func updateUserProfileAfterAuthentication() {
-        guard var profile = dataManager.userProfile else { return }
+        guard let profile = dataManager.getUserProfile() else { return }
         
         let updatedProfile = profile.updateAfterAuthentication()
         dataManager.saveUserProfile(updatedProfile)

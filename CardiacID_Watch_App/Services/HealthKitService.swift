@@ -9,7 +9,7 @@ import Foundation
 import HealthKit
 import Combine
 
-class HealthKitService: ObservableObject {
+class HealthKitService: ObservableObject, @unchecked Sendable {
     private let healthStore = HKHealthStore()
     
     @Published var isAuthorized = false
@@ -51,9 +51,9 @@ class HealthKitService: ObservableObject {
         let typesToRead: Set<HKObjectType> = [heartRateType]
         
         do {
-            let success = try await healthStore.requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
+            try await healthStore.requestAuthorization(toShare: Set<HKSampleType>(), read: typesToRead)
             checkAuthorizationStatus()
-            return success
+            return true
         } catch {
             errorMessage = "Authorization failed: \(error.localizedDescription)"
             return false
@@ -145,12 +145,13 @@ class HealthKitService: ObservableObject {
             anchor: nil,
             limit: HKObjectQueryNoLimit
         ) { [weak self] _, samples, _, _, error in
-            Task { @MainActor in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
                 if let error = error {
-                    self?.isCapturing = false
-                    self?.errorMessage = error.localizedDescription
+                    self.isCapturing = false
+                    self.errorMessage = error.localizedDescription
                 } else if let samples = samples as? [HKQuantitySample] {
-                    heartRateSamples = samples.map { $0.quantity.doubleValue(for: HKUnit(from: "count/min")) }
+                    self.heartRateSamples = samples.map { HeartRateSample(value: $0.quantity.doubleValue(for: HKUnit(from: "count/min")), timestamp: $0.startDate, source: $0.sourceRevision.source.name) }
                 }
             }
         }
