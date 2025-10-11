@@ -134,7 +134,7 @@ class HealthKitService: ObservableObject, @unchecked Sendable {
         }
         
         isCapturing = true
-        var heartRateSamples: [Double] = []
+        let heartRateSamples: [Double] = []
         
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
         let startDate = Date().addingTimeInterval(-duration)
