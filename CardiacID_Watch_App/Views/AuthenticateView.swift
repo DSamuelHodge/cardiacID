@@ -283,15 +283,15 @@ struct AuthenticateView: View {
         
         // Start heart rate capture with optimized duration
         let captureDuration: TimeInterval = 8.0 // Reduced from 12 seconds to 8 seconds
-        healthKitService.startHeartRateCapture(duration: captureDuration) { [weak self] samples, error in
+        healthKitService.startHeartRateCapture(duration: captureDuration) { samples, error in
             Task { @MainActor in
                 if let error = error {
                     print("❌ Heart rate capture error: \(error)")
-                    self?.authenticationState = .error("Capture failed: \(error.localizedDescription)")
+                    authenticationState = .error("Capture failed: \(error.localizedDescription)")
                 } else {
                     print("✅ Heart rate capture completed with \(samples.count) samples")
                     // Process the captured samples for authentication
-                    self?.processAuthenticationSamples(samples)
+                    processAuthenticationSamples(samples)
                 }
             }
         }
