@@ -1,15 +1,21 @@
 //
-//  HeartIDApp.swift
+//  X_HeartIDApp.swift
 //  HeartID Watch App
 //
-//  Enterprise-grade biometric authentication app
+//  ❌ DISABLED - This entire file is disabled to avoid @main conflicts
+//  🗑️ SAFE TO DELETE - The active app entry point is in HeartIDWatchApp.swift
 //
+//  This file contains a complete app implementation that is currently 
+//  disabled by commenting out the entire content.
+
+#if false
+// Entire file content disabled
 
 import SwiftUI
 import HealthKit
 
-@main
-struct HeartIDWatchApp: App {
+// @main - DISABLED
+struct X_HeartIDWatchApp_DISABLED: App {
     
     // MARK: - Service Instances
     
@@ -383,3 +389,5 @@ struct SettingsView: View {
         }
     }
 }
+
+#endif // End of disabled HeartIDApp.swift

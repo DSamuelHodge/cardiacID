@@ -26,11 +26,11 @@ struct EnhancedBiometricValidation {
         let qualityScore: Double
         let errorMessage: String?
         let recommendations: [String]
-        let hrvFeatures: HRVCalculator.HRVFeatures?
+        let hrvFeatures: MainHRVCalculator.HRVFeatures?
         let validationDetails: ValidationDetails
         
         init(isValid: Bool, qualityScore: Double, errorMessage: String? = nil, 
-             recommendations: [String] = [], hrvFeatures: HRVCalculator.HRVFeatures? = nil,
+             recommendations: [String] = [], hrvFeatures: MainHRVCalculator.HRVFeatures? = nil,
              validationDetails: ValidationDetails) {
             self.isValid = isValid
             self.qualityScore = qualityScore
@@ -94,7 +94,7 @@ struct EnhancedBiometricValidation {
         recommendations.append(contentsOf: consistency.recommendations)
         
         // 6. HRV analysis
-        let hrvFeatures = HRVCalculator.calculateHRV(samples)
+        let hrvFeatures = MainHRVCalculator.calculateHRV(samples)
         let hrvValidation = validateHRVFeatures(hrvFeatures)
         qualityComponents["hrv"] = hrvValidation.score
         recommendations.append(contentsOf: hrvValidation.recommendations)
@@ -288,7 +288,7 @@ struct EnhancedBiometricValidation {
     
     // MARK: - HRV Features Validation
     
-    private static func validateHRVFeatures(_ features: HRVCalculator.HRVFeatures) -> (score: Double, recommendations: [String]) {
+    private static func validateHRVFeatures(_ features: MainHRVCalculator.HRVFeatures) -> (score: Double, recommendations: [String]) {
         var recommendations: [String] = []
         var score = 0.5  // Base score
         

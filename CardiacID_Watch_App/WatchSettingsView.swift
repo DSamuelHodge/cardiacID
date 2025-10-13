@@ -10,7 +10,7 @@ import SwiftUI
 struct WatchSettingsView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var authenticationService: AuthenticationService
-    @EnvironmentObject var healthKitService: HealthKitService
+    @EnvironmentObject var healthKitService: MainHealthKitService
     
     @State private var showingClearDataAlert = false
     @State private var showingResetAlert = false
@@ -159,8 +159,7 @@ struct SecurityLevelWatchView: View {
                     selectedLevel = level
                     var preferences = dataManager.userPreferences
                     preferences.securityLevel = level
-                    dataManager.userPreferences = preferences
-                    dataManager.saveUserPreferences()
+                    _ = dataManager.saveUserPreferences(preferences)
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
@@ -192,8 +191,8 @@ struct SecurityLevelWatchView: View {
 #Preview {
     NavigationView {
         WatchSettingsView()
-            .environmentObject(DataManager())
+            .environmentObject(DataManager.shared)
             .environmentObject(AuthenticationService())
-            .environmentObject(HealthKitService())
+            .environmentObject(MainHealthKitService())
     }
 }

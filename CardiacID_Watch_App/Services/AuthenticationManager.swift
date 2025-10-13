@@ -95,7 +95,7 @@ class AuthenticationManager: ObservableObject {
         }
         
         // Start heart rate capture using duration and completion handler
-        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] samples, error in
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] (samples: [HeartRateSample], error: Error?) in
             guard let self = self else { return }
             if let error = error {
                 DispatchQueue.main.async {
@@ -146,7 +146,7 @@ class AuthenticationManager: ObservableObject {
         }
         
         // Start heart rate capture using duration and completion handler
-        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] samples, error in
+        healthKitService.startHeartRateCapture(duration: AppConfiguration.defaultCaptureDuration) { [weak self] (samples: [HeartRateSample], error: Error?) in
             guard let self = self else { return }
             if let error = error {
                 DispatchQueue.main.async {

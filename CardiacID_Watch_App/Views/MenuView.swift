@@ -636,5 +636,5 @@ struct MenuProcessingStateView: View {
 #Preview {
     MenuView()
         .environmentObject(AuthenticationService())
-        .environmentObject(DataManager())
+        .environmentObject(DataManager.shared)
 }

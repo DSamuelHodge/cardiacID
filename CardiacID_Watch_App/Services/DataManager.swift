@@ -12,6 +12,10 @@ import CryptoKit
 /// Enterprise data manager with secure storage and encryption
 class DataManager: ObservableObject {
     
+    // MARK: - Shared Instance
+    
+    static let shared = DataManager()
+    
     // MARK: - Configuration
     
     private let keychainService = "com.heartid.watchapp"
@@ -31,10 +35,38 @@ class DataManager: ObservableObject {
     
     // MARK: - Initialization
     
-    init() {
+    private init() {
         setupEncryption()
         loadUserPreferences()
         verifyDataIntegrity()
+    }
+    
+    // MARK: - Dynamic Member Support
+    
+    /// Current security level from user preferences
+    var currentSecurityLevel: SecurityLevel {
+        return userPreferences.securityLevel
+    }
+    
+    /// Last authentication date from user profile
+    var lastAuthenticationDate: Date? {
+        return getUserProfile()?.lastAuthenticationDate
+    }
+    
+    /// Reset all settings to defaults
+    func resetToDefaults() {
+        userPreferences = UserPreferences()
+        _ = saveUserPreferences(userPreferences)
+    }
+    
+    /// Authentication count from user profile
+    var authenticationCount: Int {
+        return getUserProfile()?.authenticationCount ?? 0
+    }
+    
+    /// Enrollment date from user profile
+    var enrollmentDate: Date? {
+        return getUserProfile()?.enrollmentDate
     }
     
     // MARK: - Encryption Setup
@@ -142,6 +174,13 @@ class DataManager: ObservableObject {
     /// Check if user is enrolled
     func isUserEnrolled() -> Bool {
         return getUserProfile() != nil
+    }
+    
+    /// Set user enrollment status (for compatibility)
+    func setUserEnrolled(_ enrolled: Bool) {
+        // This method exists for compatibility with existing code
+        // The actual enrollment status is determined by the presence of a user profile
+        debugLog.info("User enrollment status set to: \(enrolled)")
     }
     
     // MARK: - User Preferences Management

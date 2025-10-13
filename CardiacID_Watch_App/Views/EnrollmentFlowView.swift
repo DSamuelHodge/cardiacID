@@ -43,7 +43,7 @@ struct EnrollmentFlowView: View {
                         CaptureStepView(
                             isCapturing: $isCapturing,
                             progress: $captureProgress,
-                            onCaptureComplete: handleCaptureComplete
+                            message: $enrollmentMessage
                         )
                     case 2:
                         CompletionStepView()
@@ -726,8 +726,8 @@ struct CompletionStepView: View {
 
 #Preview {
     EnrollmentFlowView(
-        isEnrolled: .constant(false),
-        showEnrollment: .constant(true),
+        isEnrolled: Binding.constant(false),
+        showEnrollment: Binding.constant(true),
         onEnrollmentComplete: {}
     )
     .environmentObject(AuthenticationService())

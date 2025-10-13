@@ -34,6 +34,33 @@ struct HeartRateSample: Codable, Identifiable {
         self.quality = 1.0 // HealthKit samples are considered high quality
     }
     
+    // MARK: - Codable Conformance
+    enum CodingKeys: String, CodingKey {
+        case id
+        case value
+        case timestamp
+        case source
+        case quality
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(UUID.self, forKey: .id)
+        self.value = try container.decode(Double.self, forKey: .value)
+        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
+        self.source = try container.decode(String.self, forKey: .source)
+        self.quality = try container.decode(Double.self, forKey: .quality)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(value, forKey: .value)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(source, forKey: .source)
+        try container.encode(quality, forKey: .quality)
+    }
+    
     /// Validate if the heart rate value is within reasonable range
     var isValid: Bool {
         return value >= 30 && value <= 200
@@ -46,7 +73,7 @@ struct HeartRateSample: Codable, Identifiable {
     
     /// Get time since measurement
     var timeAgo: String {
-        let interval = Date().timeIntervalSince(timestamp)
+        let interval: TimeInterval = Date().timeIntervalSince(timestamp)
         if interval < 60 {
             return "\(Int(interval))s ago"
         } else if interval < 3600 {
@@ -58,7 +85,8 @@ struct HeartRateSample: Codable, Identifiable {
     
     /// Check if this sample is recent (within last 5 minutes)
     var isRecent: Bool {
-        return Date().timeIntervalSince(timestamp) < 300 // 5 minutes
+        let interval: TimeInterval = Date().timeIntervalSince(timestamp)
+        return interval < 300 // 5 minutes
     }
     
     /// Get quality description
@@ -105,7 +133,7 @@ struct HeartRateSampleCollection: Codable {
         self.samples = samples.sorted { $0.timestamp < $1.timestamp }
         self.startTime = self.samples.first?.timestamp ?? Date()
         self.endTime = self.samples.last?.timestamp ?? Date()
-        self.duration = endTime.timeIntervalSince(startTime)
+        self.duration = self.endTime.timeIntervalSince(self.startTime)
     }
     
     /// Calculate average heart rate
@@ -224,6 +252,28 @@ struct HeartRateSampleCollection: Codable {
                duration >= securityLevel.recommendedCaptureDuration &&
                qualityScore >= 0.7
     }
+    
+    // MARK: - Codable Conformance
+    enum CodingKeys: String, CodingKey {
+        case samples
+        case startTime
+        case endTime
+        case duration
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedSamples = try container.decode([HeartRateSample].self, forKey: .samples)
+        self.init(samples: decodedSamples)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(samples, forKey: .samples)
+        try container.encode(startTime, forKey: .startTime)
+        try container.encode(endTime, forKey: .endTime)
+        try container.encode(duration, forKey: .duration)
+    }
 }
 
 // MARK: - Heart Rate Analysis
@@ -247,6 +297,36 @@ struct HeartRateAnalysis: Codable {
         // Calculate pattern stability (lower HRV = more stable)
         let maxHRV: Double = 20.0 // Maximum expected HRV
         self.patternStability = max(0, 1.0 - (collection.heartRateVariability / maxHRV))
+    }
+    
+    // MARK: - Codable Conformance
+    enum CodingKeys: String, CodingKey {
+        case collection
+        case averageHeartRate
+        case heartRateVariability
+        case qualityScore
+        case patternStability
+        case analysisTimestamp
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.collection = try container.decode(HeartRateSampleCollection.self, forKey: .collection)
+        self.averageHeartRate = try container.decode(Double.self, forKey: .averageHeartRate)
+        self.heartRateVariability = try container.decode(Double.self, forKey: .heartRateVariability)
+        self.qualityScore = try container.decode(Double.self, forKey: .qualityScore)
+        self.patternStability = try container.decode(Double.self, forKey: .patternStability)
+        self.analysisTimestamp = try container.decode(Date.self, forKey: .analysisTimestamp)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(collection, forKey: .collection)
+        try container.encode(averageHeartRate, forKey: .averageHeartRate)
+        try container.encode(heartRateVariability, forKey: .heartRateVariability)
+        try container.encode(qualityScore, forKey: .qualityScore)
+        try container.encode(patternStability, forKey: .patternStability)
+        try container.encode(analysisTimestamp, forKey: .analysisTimestamp)
     }
     
     /// Check if analysis meets quality requirements

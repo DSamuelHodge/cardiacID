@@ -1,18 +1,22 @@
 //
-//  HeartIDiOSApp.swift
+//  X_HeartIDiOSApp.swift
 //  HeartID Watch App
 //
-//  Watch app with simplified connectivity
+//  ❌ DISABLED - This iOS app should not be in Watch App target
+//  🗑️ SAFE TO DELETE - This file contains iOS-specific code that conflicts with Watch App
 //
+
+#if false
+// Entire iOS app disabled to prevent conflicts with Watch App
 
 import SwiftUI
 #if os(iOS)
 import WatchConnectivity
 #endif
 
-struct HeartIDiOSApp: App {
+struct X_HeartIDiOSApp_DISABLED: App {
     @StateObject private var watchConnectivityService = WatchConnectivityService()
-    @StateObject private var dataManager = DataManager()
+    @StateObject private var dataManager = DataManager.shared  // Use shared instance
     @StateObject private var authenticationService = AuthenticationService()
     
     var body: some Scene {
@@ -934,12 +938,16 @@ extension WatchConnectivityService: WCSessionDelegate {
         replyHandler(["status": "received"])
     }
 }
-#endif
 
-// MARK: - Date Extensions
+// MARK: - Date Extensions (also disabled)
 extension Date {
     var daysSince: Int {
         Calendar.current.dateComponents([.day], from: self, to: Date()).day ?? 0
     }
 }
+
+#endif
+
+#endif // End of disabled HeartIDiOSApp.swift
+
 

@@ -1,23 +1,27 @@
 //
-//  MinimalWatchApp.swift
+//  X_MinimalWatchApp.swift
 //  HeartID Watch App
 //
-//  Fallback minimal app for troubleshooting build issues
+//  ❌ DISABLED - Fallback minimal app for troubleshooting build issues
+//  🗑️ SAFE TO DELETE - This is only needed for troubleshooting
 //
 
 import SwiftUI
 import HealthKit
 
-// MARK: - Minimal App Entry Point (Fallback)
+// MARK: - Minimal App Entry Point (Fallback) - DISABLED
 
 /*
- Use this as a temporary replacement for HeartIDWatchApp.swift
+ ❌ DISABLED - Use this as a temporary replacement for HeartIDWatchApp.swift
  if you're experiencing build issues. Once build is working,
  switch back to the full HeartIDWatchApp.swift implementation.
+ 
+ Currently disabled to resolve multiple @main attribute conflicts.
 */
 
-@main
-struct MinimalHeartIDApp: App {
+/*
+// @main - DISABLED
+struct X_MinimalHeartIDApp_DISABLED: App {
     var body: some Scene {
         WindowGroup {
             MinimalContentView()
@@ -111,6 +115,10 @@ struct MinimalErrorView: View {
             }
             .buttonStyle(.borderedProminent)
         }
+    }
+}
+
+*/ // End of disabled MinimalWatchApp.swift
         .padding()
     }
 }

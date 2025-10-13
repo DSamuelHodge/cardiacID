@@ -13,8 +13,8 @@ import HealthKit
 // Use the comprehensive EnhancedBiometricValidation from dedicated file
 typealias BiometricValidation = EnhancedBiometricValidation
 
-// Ensure we use the proper HeartRateSample from BiometricModels
-typealias HeartSample = HeartRateSample
+// Use the unified type from TypeAliases.swift
+// HeartRateSample is properly defined in HeartRateSample.swift
 
 // MARK: - Authentication View
 

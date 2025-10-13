@@ -9,6 +9,12 @@
 import SwiftUI
 import HealthKit
 
+// Import debug logger and type aliases
+import Foundation
+
+// Make sure debugLog is available - using the TypeAliases.swift definitions
+private let debugLog = DebugLogger.shared
+
 // MARK: - Main App Entry Point
 
 @main
@@ -30,7 +36,7 @@ struct HeartID_WatchApp: App {
                     // Fallback initialization after timeout
                     DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                         if !appState.isInitialized {
-                            AppLogger.log("⚠️ Forcing initialization due to timeout", category: .general)
+                            debugLog.warning("⚠️ Forcing initialization due to timeout")
                             appState.forceInitialization()
                         }
                     }
@@ -145,7 +151,7 @@ struct MainView: View {
     var body: some View {
         Group {
             if !appState.isInitialized {
-                LoadingView()
+                LoadingView() as LoadingView
             } else if let error = appState.errorMessage {
                 ErrorView(message: error) {
                     // Retry initialization

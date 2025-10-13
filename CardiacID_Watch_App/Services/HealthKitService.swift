@@ -9,6 +9,14 @@ import Foundation
 import HealthKit
 import Combine
 
+// MARK: - HealthKit Authorization Result
+
+enum HealthKitAuthorizationResult {
+    case authorized
+    case denied(String)
+    case notAvailable(String)
+}
+
 class HealthKitService: ObservableObject, @unchecked Sendable {
     private let healthStore = HKHealthStore()
     

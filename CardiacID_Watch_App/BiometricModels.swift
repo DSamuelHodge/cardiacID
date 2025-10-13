@@ -471,20 +471,7 @@ struct XenonXResult: Codable {
 }
 
 // MARK: - Heart Rate Sample Model
-
-/// Heart rate sample with timestamp and source information
-struct HeartRateSample: Codable, Identifiable {
-    let id = UUID()
-    let value: Double
-    let timestamp: Date
-    let source: String
-    
-    init(value: Double, timestamp: Date, source: String = "Apple Watch") {
-        self.value = value
-        self.timestamp = timestamp
-        self.source = source
-    }
-}
+// HeartRateSample is defined in HeartRateSample.swift
 
 // MARK: - App Configuration
 
@@ -503,6 +490,26 @@ struct UserStatistics: Codable {
         self.daysSinceLastAuth = daysSinceLastAuth
         self.securityLevel = securityLevel
     }
+}
+
+// MARK: - Progress Enums
+
+/// Enrollment progress states
+enum EnrollmentProgress {
+    case started
+    case capturing
+    case processing
+    case completed
+    case error(String)
+}
+
+/// Authentication progress states
+enum AuthenticationProgress {
+    case started
+    case capturing
+    case processing
+    case completed(AuthenticationResult)
+    case error(String)
 }
 
 // MARK: - User Auth Status

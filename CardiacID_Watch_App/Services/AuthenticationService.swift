@@ -51,11 +51,12 @@ class AuthenticationService: ObservableObject {
     
     /// Start enrollment process
     func startEnrollment() -> AnyPublisher<EnrollmentProgress, Never> {
-        return Publishers.Merge(
-            Just(EnrollmentProgress.started),
-            enrollmentPublisher()
-        )
-        .eraseToAnyPublisher()
+        let startPublisher = Just(EnrollmentProgress.started)
+            .eraseToAnyPublisher()
+        let progressPublisher = enrollmentPublisher()
+        
+        return Publishers.Merge(startPublisher, progressPublisher)
+            .eraseToAnyPublisher()
     }
     
     private func enrollmentPublisher() -> AnyPublisher<EnrollmentProgress, Never> {
@@ -67,6 +68,11 @@ class AuthenticationService: ObservableObject {
             }
         }
         .eraseToAnyPublisher()
+    }
+    
+    /// Enroll user with heart rate data (async version for UI)
+    func enroll(with heartRateValues: [Double]) async -> Bool {
+        return completeEnrollment(with: heartRateValues)
     }
     
     /// Complete enrollment with captured heart rate data
@@ -128,11 +134,12 @@ class AuthenticationService: ObservableObject {
                 .eraseToAnyPublisher()
         }
         
-        return Publishers.Merge(
-            Just(AuthenticationProgress.started),
-            authenticationPublisher()
-        )
-        .eraseToAnyPublisher()
+        let startPublisher = Just(AuthenticationProgress.started)
+            .eraseToAnyPublisher()
+        let progressPublisher = authenticationPublisher()
+        
+        return Publishers.Merge(startPublisher, progressPublisher)
+            .eraseToAnyPublisher()
     }
     
     private func authenticationPublisher() -> AnyPublisher<AuthenticationProgress, Never> {
@@ -392,23 +399,8 @@ class AuthenticationService: ObservableObject {
     }
 }
 
-// MARK: - Supporting Types
-
-enum EnrollmentProgress {
-    case started
-    case capturing
-    case processing
-    case completed
-    case error(String)
-}
-
-enum AuthenticationProgress {
-    case started
-    case capturing
-    case processing
-    case completed(AuthenticationResult)
-    case error(String)
-}
+// MARK: - Supporting Types - Defined in BiometricModels.swift
+// EnrollmentProgress, AuthenticationProgress, etc. are defined in BiometricModels.swift to avoid duplicates
 
 struct AuthenticationStatistics {
     let totalAttempts: Int
