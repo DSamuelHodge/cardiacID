@@ -207,56 +207,16 @@ struct CompletionStepView: View {
     }
 }
 
-// MARK: - Menu View
+// MARK: - Menu View (Stub - Real implementation in MenuView.swift)
+// This stub is disabled to prevent conflicts with the main MenuView.swift file
 
-struct MenuView: View {
+/*
+struct MenuViewStub: View {
     var body: some View {
-        VStack(spacing: 20) {
-            Text("HeartID")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            VStack(spacing: 12) {
-                MenuButtonView(
-                    title: "Authenticate",
-                    icon: "person.badge.key.fill",
-                    color: .blue
-                ) {
-                    // Navigate to authentication
-                }
-                
-                MenuButtonView(
-                    title: "Re-enroll",
-                    icon: "arrow.clockwise.heart.fill",
-                    color: .green
-                ) {
-                    // Navigate to re-enrollment
-                }
-                
-                MenuButtonView(
-                    title: "Settings",
-                    icon: "gearshape.fill",
-                    color: .gray
-                ) {
-                    // Navigate to settings
-                }
-            }
-            
-            Spacer()
-            
-            // Status indicator
-            HStack {
-                Circle()
-                    .fill(.green)
-                    .frame(width: 8, height: 8)
-                Text("Enrolled")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding()
+        Text("Use MenuView.swift for the main implementation")
     }
 }
+*/
 
 struct MenuButtonView: View {
     let title: String

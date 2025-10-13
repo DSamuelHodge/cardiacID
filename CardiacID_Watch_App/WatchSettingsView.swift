@@ -10,7 +10,7 @@ import SwiftUI
 struct WatchSettingsView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var authenticationService: AuthenticationService
-    @EnvironmentObject var healthKitService: MainHealthKitService
+    @EnvironmentObject var healthKitService: HealthKitService
     
     @State private var showingClearDataAlert = false
     @State private var showingResetAlert = false
@@ -193,6 +193,6 @@ struct SecurityLevelWatchView: View {
         WatchSettingsView()
             .environmentObject(DataManager.shared)
             .environmentObject(AuthenticationService())
-            .environmentObject(MainHealthKitService())
+            .environmentObject(HealthKitService())
     }
 }

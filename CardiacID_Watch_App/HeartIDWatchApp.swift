@@ -13,7 +13,7 @@ import HealthKit
 import Foundation
 
 // Make sure debugLog is available - using the TypeAliases.swift definitions
-private let debugLog = DebugLogger.shared
+// private let debugLog = DebugLogger.shared  // Commented out to prevent redeclaration
 
 // MARK: - Main App Entry Point
 
@@ -265,7 +265,7 @@ struct AuthenticatedAppView: View {
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .confirmationAction) {
                 Button("Test") {
                     showingTesting = true
                 }
@@ -273,7 +273,8 @@ struct AuthenticatedAppView: View {
             }
         }
         .sheet(isPresented: $showingTesting) {
-            FlowTestingView()
+            Text("Testing Feature")  // Temporarily disabled until TestRunnerView is created
+                .padding()
         }
     }
 }

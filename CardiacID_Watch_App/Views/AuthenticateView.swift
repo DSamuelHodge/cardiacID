@@ -8,12 +8,8 @@
 import SwiftUI
 import HealthKit
 
-// MARK: - Type Aliases to Resolve Conflicts
-
-// Use the comprehensive EnhancedBiometricValidation from dedicated file
-typealias BiometricValidation = EnhancedBiometricValidation
-
-// Use the unified type from TypeAliases.swift
+// MARK: - Type References
+// Using EnhancedBiometricValidation directly to avoid conflicts
 // HeartRateSample is properly defined in HeartRateSample.swift
 
 // MARK: - Authentication View
@@ -66,7 +62,7 @@ struct AuthenticateView: View {
             .navigationTitle("Authenticate")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         handleCancel()
                     }

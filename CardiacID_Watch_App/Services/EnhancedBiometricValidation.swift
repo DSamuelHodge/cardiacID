@@ -377,8 +377,8 @@ struct EnhancedBiometricValidation {
             recommendations.append("Low parasympathetic activity detected")
         }
         
-        // Heart rate variability assessment
-        if features.heartRateVariability >= 5 && features.heartRateVariability <= 50 {
+        // Heart rate variability assessment (using SDNN as proxy)
+        if features.sdnn >= 5 && features.sdnn <= 50 {
             score += 0.15
         } else {
             recommendations.append("Unusual heart rate variability pattern")

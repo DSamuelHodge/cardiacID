@@ -80,9 +80,10 @@ struct BiometricTestDataGenerator {
 }
 
 // MARK: - HRV Calculation Tests
-
+// DISABLED: HRVCalculator is defined in EnhancedBiometricValidation.swift to avoid conflicts
+/*
 /// Heart Rate Variability calculation and validation
-struct HRVCalculator {
+struct HRVCalculator_Disabled {
     
     struct HRVFeatures {
         let rmssd: Double
@@ -176,17 +177,19 @@ struct HRVCalculator {
         return sqrt(variance)
     }
 }
+*/
 
 // MARK: - Enhanced Biometric Validation
-
+// DISABLED: EnhancedBiometricValidation is defined in EnhancedBiometricValidation.swift to avoid conflicts
+/*
 /// Enhanced validation for biometric data quality
-struct EnhancedBiometricValidation {
+struct EnhancedBiometricValidation_Disabled {
     
     struct ValidationResult {
         let isValid: Bool
         let qualityScore: Double
         let errorMessage: String?
-        let hrvFeatures: HRVCalculator.HRVFeatures?
+        let hrvFeatures: EnhancedBiometricValidation.HRVFeatures?
         let recommendations: [String]
         
         init(isValid: Bool, qualityScore: Double, errorMessage: String? = nil, hrvFeatures: HRVCalculator.HRVFeatures? = nil, recommendations: [String] = []) {
@@ -315,6 +318,7 @@ struct EnhancedBiometricValidation {
         }
     }
 }
+*/
 
 // MARK: - Mock Services for Testing
 
