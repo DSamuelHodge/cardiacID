@@ -26,11 +26,11 @@ struct EnhancedBiometricValidation {
         let qualityScore: Double
         let errorMessage: String?
         let recommendations: [String]
-        let hrvFeatures: MainHRVCalculator.HRVFeatures?
+        let hrvFeatures: HRVFeatures?
         let validationDetails: ValidationDetails
         
         init(isValid: Bool, qualityScore: Double, errorMessage: String? = nil, 
-             recommendations: [String] = [], hrvFeatures: MainHRVCalculator.HRVFeatures? = nil,
+             recommendations: [String] = [], hrvFeatures: HRVFeatures? = nil,
              validationDetails: ValidationDetails) {
             self.isValid = isValid
             self.qualityScore = qualityScore
@@ -40,6 +40,77 @@ struct EnhancedBiometricValidation {
             self.validationDetails = validationDetails
         }
     }
+    
+    // MARK: - HRV Features Structure
+    
+    struct HRVFeatures {
+        let rmssd: Double      // Root mean square of successive differences
+        let pnn50: Double      // Percentage of NN intervals > 50ms
+        let sdnn: Double       // Standard deviation of NN intervals
+        let triangularIndex: Double  // HRV triangular index
+        let meanHR: Double     // Mean heart rate
+        let maxHR: Double      // Maximum heart rate
+        let minHR: Double      // Minimum heart rate
+        
+        init(rmssd: Double, pnn50: Double, sdnn: Double, triangularIndex: Double, 
+             meanHR: Double, maxHR: Double, minHR: Double) {
+            self.rmssd = rmssd
+            self.pnn50 = pnn50
+            self.sdnn = sdnn
+            self.triangularIndex = triangularIndex
+            self.meanHR = meanHR
+            self.maxHR = maxHR
+            self.minHR = minHR
+        }
+    }
+    
+    // MARK: - HRV Calculation
+    
+    private static func calculateHRV(_ samples: [Double]) -> HRVFeatures {
+        guard samples.count > 1 else {
+            return HRVFeatures(rmssd: 0, pnn50: 0, sdnn: 0, triangularIndex: 0, 
+                             meanHR: 0, maxHR: 0, minHR: 0)
+        }
+        
+        // Calculate successive differences
+        var successiveDifferences: [Double] = []
+        for i in 1..<samples.count {
+            successiveDifferences.append(abs(samples[i] - samples[i-1]))
+        }
+        
+        // RMSSD (Root Mean Square of Successive Differences)
+        let squaredDiffs = successiveDifferences.map { $0 * $0 }
+        let rmssd = sqrt(squaredDiffs.reduce(0, +) / Double(squaredDiffs.count))
+        
+        // PNN50 (Percentage of successive differences > 50ms)
+        let diffsOver50 = successiveDifferences.filter { $0 > 50.0 }.count
+        let pnn50 = Double(diffsOver50) / Double(successiveDifferences.count) * 100.0
+        
+        // Basic statistics
+        let meanHR = samples.reduce(0, +) / Double(samples.count)
+        let maxHR = samples.max() ?? 0
+        let minHR = samples.min() ?? 0
+        
+        // SDNN (Standard Deviation of NN intervals)
+        let variance = samples.map { pow($0 - meanHR, 2) }.reduce(0, +) / Double(samples.count)
+        let sdnn = sqrt(variance)
+        
+        // Simplified Triangular Index
+        let range = maxHR - minHR
+        let triangularIndex = range > 0 ? (maxHR - minHR) / meanHR : 0
+        
+        return HRVFeatures(
+            rmssd: rmssd,
+            pnn50: pnn50,
+            sdnn: sdnn,
+            triangularIndex: triangularIndex,
+            meanHR: meanHR,
+            maxHR: maxHR,
+            minHR: minHR
+        )
+    }
+
+    // MARK: - Validation Details Structure
     
     struct ValidationDetails {
         let sampleCount: Int
@@ -94,7 +165,7 @@ struct EnhancedBiometricValidation {
         recommendations.append(contentsOf: consistency.recommendations)
         
         // 6. HRV analysis
-        let hrvFeatures = MainHRVCalculator.calculateHRV(samples)
+        let hrvFeatures = calculateHRV(samples)
         let hrvValidation = validateHRVFeatures(hrvFeatures)
         qualityComponents["hrv"] = hrvValidation.score
         recommendations.append(contentsOf: hrvValidation.recommendations)
@@ -288,7 +359,7 @@ struct EnhancedBiometricValidation {
     
     // MARK: - HRV Features Validation
     
-    private static func validateHRVFeatures(_ features: MainHRVCalculator.HRVFeatures) -> (score: Double, recommendations: [String]) {
+    private static func validateHRVFeatures(_ features: HRVFeatures) -> (score: Double, recommendations: [String]) {
         var recommendations: [String] = []
         var score = 0.5  // Base score
         

@@ -243,6 +243,7 @@ struct ErrorView: View {
 
 struct AuthenticatedAppView: View {
     @State private var selectedTab = 1 // Start with Menu tab
+    @State private var showingTesting = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -263,5 +264,16 @@ struct AuthenticatedAppView: View {
                 .tag(4)
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Test") {
+                    showingTesting = true
+                }
+                .font(.caption)
+            }
+        }
+        .sheet(isPresented: $showingTesting) {
+            FlowTestingView()
+        }
     }
 }

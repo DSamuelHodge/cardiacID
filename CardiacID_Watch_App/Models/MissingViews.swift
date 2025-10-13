@@ -291,29 +291,7 @@ struct MenuButtonView: View {
     }
 }
 
-// MARK: - Basic Views Stubs
-
-struct EnrollView: View {
-    var body: some View {
-        Text("Enroll View")
-            .font(.headline)
-    }
-}
-
-struct AuthenticateView: View {
-    var body: some View {
-        Text("Authenticate View")
-            .font(.headline)
-    }
-}
-
-struct SettingsView: View {
-    var body: some View {
-        Text("Settings View")
-            .font(.headline)
-    }
-}
-
-// Note: XenonXCalculator is defined in XenonXCalculator.swift
-
-// Note: AuthenticationProgress and EnrollmentProgress are defined in BiometricModels.swift
+// MARK: - Notes
+// Full implementations of EnrollView, AuthenticateView, and SettingsView are in their respective files
+// XenonXCalculator is defined in XenonXCalculator.swift  
+// AuthenticationProgress and EnrollmentProgress are defined in BiometricModels.swift

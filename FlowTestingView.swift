@@ -12,6 +12,7 @@ struct FlowTestingView: View {
     @StateObject private var testHarness = ArchitectureTestHarness()
     @State private var selectedTest: TestType = .enrollment
     @State private var showingResults = false
+    @State private var showingIntegrationTest = false
     
     var body: some View {
         NavigationView {
@@ -42,8 +43,8 @@ struct FlowTestingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Full Test") {
-                        runFullArchitectureTest()
+                    Button("Integration") {
+                        showingIntegrationTest = true
                     }
                 }
             }
@@ -54,6 +55,9 @@ struct FlowTestingView: View {
                 authenticationResult: flowTester.authenticationResult,
                 architectureResults: testHarness.testResults
             )
+        }
+        .sheet(isPresented: $showingIntegrationTest) {
+            IntegrationTestView()
         }
     }
     
@@ -197,6 +201,10 @@ struct FlowTestingView: View {
             await testHarness.runArchitectureTests()
             showingResults = true
         }
+    }
+    
+    private func showIntegrationTest() {
+        showingIntegrationTest = true
     }
     
     private func clearResults() {

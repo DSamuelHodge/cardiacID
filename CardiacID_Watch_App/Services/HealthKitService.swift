@@ -9,9 +9,10 @@ import Foundation
 import HealthKit
 import Combine
 
-// MARK: - HealthKit Authorization Result
+// MARK: - HealthKit Authorization Types
 
-enum HealthKitAuthorizationResult {
+/// Result of HealthKit authorization request
+enum AuthorizationResult {
     case authorized
     case denied(String)
     case notAvailable(String)
@@ -489,13 +490,7 @@ enum HealthKitError: Error, LocalizedError {
     }
 }
 
-// MARK: - Authorization Result Types
-
-enum AuthorizationResult {
-    case authorized
-    case denied(String)
-    case notAvailable(String)
-}
+// MARK: - Additional Types
 
 enum SensorValidationResult {
     case ready
