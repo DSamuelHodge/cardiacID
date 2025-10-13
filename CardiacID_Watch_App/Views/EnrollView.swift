@@ -539,7 +539,7 @@ struct EnrollView: View {
             try TemplateStore.shared.save(pattern)
             
             // Update authentication service
-            authenticationService.markEnrolledAndAuthenticated()
+            authenticationService.markUserEnrolledAndAuthenticated()
             
             print("✅ Heart pattern stored successfully")
             return true
@@ -814,10 +814,10 @@ final class TemplateStore {
     }
 }
 
-// MARK: - AuthenticationService Extension
+// MARK: - AuthenticationService Extension for Enrollment
 
 extension AuthenticationService {
-    func markEnrolledAndAuthenticated() {
+    func markUserEnrolledAndAuthenticated() {
         DispatchQueue.main.async {
             self.isUserEnrolled = true
             self.isAuthenticated = true

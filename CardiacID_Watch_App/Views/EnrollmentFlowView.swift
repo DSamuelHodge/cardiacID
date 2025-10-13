@@ -1,4 +1,14 @@
 //
+//  XEnrollmentFlowView_DISABLED.swift
+//  HeartID Watch App
+//
+//  ❌ DISABLED - Conflicting with main EnrollView.swift implementation
+//  🗑️ SAFE TO DELETE - Use EnrollView.swift instead
+//
+
+#if false
+// Entire file disabled to prevent conflicts with main EnrollView
+
 //  EnrollmentFlowView.swift
 //  HeartID Watch App
 //
@@ -147,7 +157,7 @@ struct EnrollmentFlowView: View {
     }
 }
 
-struct WelcomeStepView: View {
+struct XWelcomeStepView_DISABLED: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "heart.fill")
@@ -193,7 +203,7 @@ struct WelcomeStepView: View {
     }
 }
 
-struct CaptureStepView: View {
+struct XCaptureStepView_DISABLED: View {
     @Binding var isCapturing: Bool
     @Binding var progress: Double
     let onCaptureComplete: ([Double]) -> Void
@@ -678,7 +688,7 @@ struct CaptureStepView: View {
     }
 }
 
-struct CompletionStepView: View {
+struct XCompletionStepView_DISABLED: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
@@ -734,4 +744,6 @@ struct CompletionStepView: View {
     .environmentObject(HealthKitService())
     .environmentObject(DataManager.shared)
 }
+
+#endif // End disabled EnrollmentFlowView
 

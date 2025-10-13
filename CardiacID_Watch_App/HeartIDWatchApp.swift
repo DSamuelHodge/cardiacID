@@ -161,17 +161,10 @@ struct MainView: View {
                     }
                 }
             } else if !appState.isUserEnrolled {
-                EnrollmentFlowView(
-                    isEnrolled: .constant(appState.isUserEnrolled),
-                    showEnrollment: .constant(true),
-                    onEnrollmentComplete: {
-                        appState.isUserEnrolled = true
-                        appState.dataManager.setUserEnrolled(true)
-                    }
-                )
-                .environmentObject(appState.authenticationService)
-                .environmentObject(appState.healthKitService)
-                .environmentObject(appState.dataManager)
+                EnrollView()
+                    .environmentObject(appState.authenticationService)
+                    .environmentObject(appState.healthKitService)
+                    .environmentObject(appState.dataManager)
             } else {
                 AuthenticatedAppView()
                     .environmentObject(appState.authenticationService)

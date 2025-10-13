@@ -8,7 +8,7 @@
 import XCTest
 @testable import CardiacID_Watch_App
 
-class BiometricAlgorithmTests: XCTestCase {
+class HeartRateVariabilityAlgorithmTests: XCTestCase {
     
     // MARK: - HRV Calculation Tests
     
@@ -25,8 +25,8 @@ class BiometricAlgorithmTests: XCTestCase {
                                  75, 76, 74, 77, 73, 78, 72, 79, 71, 80,
                                  75, 76, 74, 77, 73, 78, 72, 79, 71, 80]
         
-        // Calculate HRV features using specific HRVCalculator
-        let hrv = HRVCalculator.calculateHRV(samples)
+        // Calculate HRV features using MainHRVCalculator
+        let hrv = MainHRVCalculator.calculateHRV(samples)
         
         // Validate RMSSD calculation
         XCTAssertGreaterThan(hrv.rmssd, 0.0, "RMSSD should be greater than 0")
@@ -53,7 +53,7 @@ class BiometricAlgorithmTests: XCTestCase {
     func testHRVCalculationWithVariousData() {
         // Test with minimal data
         let minimalSamples = Array(repeating: 75.0, count: 60)
-        let minimalHRV = HRVCalculator.calculateHRV(minimalSamples)
+        let minimalHRV = MainHRVCalculator.calculateHRV(minimalSamples)
         
         // Should not crash and should return valid structure
         XCTAssertNotNil(minimalHRV, "HRV calculation should not return nil")
@@ -75,7 +75,7 @@ class BiometricAlgorithmTests: XCTestCase {
         
         // Measure performance
         let startTime = CFAbsoluteTimeGetCurrent()
-        let hrv = HRVCalculator.calculateHRV(samples)
+        let hrv = MainHRVCalculator.calculateHRV(samples)
         let duration = CFAbsoluteTimeGetCurrent() - startTime
         
         // Performance should be reasonable for 1000 samples
@@ -101,7 +101,7 @@ class BiometricAlgorithmTests: XCTestCase {
                                  70, 72, 68, 75, 73, 71, 76, 69, 77, 68,
                                  70, 72, 68, 75, 73, 71, 76, 69, 77, 68]
         
-        let hrv = HRVCalculator.calculateHRV(samples)
+        let hrv = MainHRVCalculator.calculateHRV(samples)
         let qualityScore = hrv.qualityScore
         
         XCTAssertGreaterThanOrEqual(qualityScore, 0.0, "Quality score should be non-negative")
@@ -115,16 +115,16 @@ class BiometricAlgorithmTests: XCTestCase {
     func testEdgeCases() {
         // Test with insufficient data
         let insufficientSamples = [75.0, 76.0, 74.0]
-        let insufficientHRV = HRVCalculator.calculateHRV(insufficientSamples)
+        let insufficientHRV = MainHRVCalculator.calculateHRV(insufficientSamples)
         XCTAssertEqual(insufficientHRV.rmssd, 0, "RMSSD should be 0 with insufficient data")
         
         // Test with empty array
-        let emptyHRV = HRVCalculator.calculateHRV([])
+        let emptyHRV = MainHRVCalculator.calculateHRV([])
         XCTAssertEqual(emptyHRV.rmssd, 0, "RMSSD should be 0 with empty data")
         
         // Test with identical values
         let identicalSamples = Array(repeating: 75.0, count: 100)
-        let identicalHRV = HRVCalculator.calculateHRV(identicalSamples)
+        let identicalHRV = MainHRVCalculator.calculateHRV(identicalSamples)
         
         print("✅ Edge Cases Test Results:")
         print("   Insufficient data RMSSD: \(insufficientHRV.rmssd)")
