@@ -5,33 +5,12 @@
       location = "self:">
    </FileRef>
    <FileRef
-      location = "group:PROJECT_FIX_INSTRUCTIONS.md">
+      location = "group:COMPLETE_BUILD_FIX.md">
    </FileRef>
    <FileRef
-      location = "group:CardiacID_Watch_AppApp.swift">
+      location = "group:fix_build_environment.sh">
    </FileRef>
    <FileRef
-      location = "group:WatchConnectivityService+Watch.swift">
-   </FileRef>
-   <FileRef
-      location = "group:fix_cardiac_id_config.sh">
-   </FileRef>
-   <FileRef
-      location = "group:NAMING_FIX_SOLUTION.md">
-   </FileRef>
-   <FileRef
-      location = "group:QUICK_FIX_NAMING.md">
-   </FileRef>
-   <FileRef
-      location = "group:TARGET_NAMING_FIX_COMPLETE.md">
-   </FileRef>
-   <FileRef
-      location = "group:COMPLETE_CHECKLIST.md">
-   </FileRef>
-   <FileRef
-      location = "group:HEARTID_BRANDING_COMPLETE.md">
-   </FileRef>
-   <FileRef
-      location = "group:HEARTID_BRANDING_VERIFICATION.md">
+      location = "group:SettingsView.swift">
    </FileRef>
 </Workspace>
