@@ -470,47 +470,19 @@ struct XenonXResult: Codable {
     }
 }
 
-// MARK: - Mock Services for Development
+// MARK: - Heart Rate Sample Model
 
-/// Mock XenonX calculator for pattern analysis
-class MockXenonXCalculator {
-    func analyzePattern(_ heartRateData: [Double]) -> XenonXResult {
-        // Mock implementation - in real app this would be sophisticated biometric analysis
-        let confidence = Double.random(in: 0.6...0.95)
-        let patternId = UUID().uuidString
-        let analysisData = try! JSONEncoder().encode(heartRateData)
-        
-        return XenonXResult(
-            patternId: patternId,
-            confidence: confidence,
-            analysisData: analysisData
-        )
-    }
+/// Heart rate sample with timestamp and source information
+struct HeartRateSample: Codable, Identifiable {
+    let id = UUID()
+    let value: Double
+    let timestamp: Date
+    let source: String
     
-    func comparePatterns(_ stored: XenonXResult, _ current: XenonXResult) -> Double {
-        // Mock implementation - in real app this would compare actual biometric patterns
-        let baseSimilarity = Double.random(in: 0.5...0.9)
-        
-        // Add some logic to make it more realistic
-        let confidenceFactor = min(stored.confidence, current.confidence)
-        let adjustedSimilarity = baseSimilarity * confidenceFactor
-        
-        return adjustedSimilarity
-    }
-}
-
-// MARK: - Encryption Service
-
-/// Service for encrypting/decrypting biometric templates
-class HeartIDEncryptionService {
-    func encryptXenonXResult(_ result: XenonXResult) -> Data? {
-        // Mock implementation - in real app this would use proper encryption
-        return try? JSONEncoder().encode(result)
-    }
-    
-    func decryptXenonXResult(_ encryptedData: Data) -> XenonXResult? {
-        // Mock implementation - in real app this would use proper decryption
-        return try? JSONDecoder().decode(XenonXResult.self, from: encryptedData)
+    init(value: Double, timestamp: Date, source: String = "Apple Watch") {
+        self.value = value
+        self.timestamp = timestamp
+        self.source = source
     }
 }
 

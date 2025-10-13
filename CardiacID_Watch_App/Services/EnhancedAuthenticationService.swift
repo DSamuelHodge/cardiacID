@@ -110,12 +110,19 @@ class EnhancedAuthenticationService: ObservableObject {
     
     /// Performance test for biometric operations
     func runPerformanceTest(with samples: [Double]) -> BiometricPerformanceMonitor.PerformanceMetrics {
-        return BiometricPerformanceMonitor.measure("Enhanced Authentication", sampleCount: samples.count) {
+        // Clear previous metrics to get clean measurement
+        BiometricPerformanceMonitor.clearMetrics()
+        
+        // Execute the operation being measured
+        let _ = BiometricPerformanceMonitor.measure("Enhanced Authentication", sampleCount: samples.count) {
             let validation = EnhancedBiometricValidation.validate(samples)
             let hrv = HRVCalculator.calculateHRV(samples)
             // Return a meaningful result for performance measurement
             return validation.isValid && hrv.rmssd > 0
         }
+        
+        // Return the performance metrics
+        return BiometricPerformanceMonitor.getMetrics().last!
     }
 }
 
@@ -134,12 +141,19 @@ extension AuthenticationService {
     
     /// Run performance benchmark
     func runPerformanceBenchmark(with samples: [Double]) -> BiometricPerformanceMonitor.PerformanceMetrics {
-        return BiometricPerformanceMonitor.measure("Authentication Service", sampleCount: samples.count) {
+        // Clear previous metrics to get clean measurement
+        BiometricPerformanceMonitor.clearMetrics()
+        
+        // Execute the operation being measured
+        let _ = BiometricPerformanceMonitor.measure("Authentication Service", sampleCount: samples.count) {
             let validation = EnhancedBiometricValidation.validate(samples)
             let hrv = HRVCalculator.calculateHRV(samples)
             // Return a meaningful result for performance measurement
             return validation.isValid && hrv.rmssd > 0
         }
+        
+        // Return the performance metrics
+        return BiometricPerformanceMonitor.getMetrics().last!
     }
 }
 

@@ -8,14 +8,6 @@
 import SwiftUI
 import HealthKit
 
-// MARK: - Type Aliases to Resolve Conflicts
-
-// Use the comprehensive EnhancedBiometricValidation from dedicated file
-typealias BiometricValidation = EnhancedBiometricValidation
-
-// Ensure we use the proper HeartRateSample from BiometricModels
-typealias HeartSample = HeartRateSample
-
 // MARK: - Enrollment View
 
 struct EnrollView: View {
@@ -31,7 +23,7 @@ struct EnrollView: View {
     @State private var processingProgress: Double = 0.0
     @State private var processingTimer: Timer?
     @State private var capturedSamples: [Double] = []
-    @State private var validationResult: BiometricValidation.ValidationResult?
+    @State private var validationResult: EnhancedBiometricValidation.ValidationResult?
     @State private var showingValidationDetails = false
     
     private let captureDuration: TimeInterval = 12.0
@@ -193,7 +185,7 @@ struct EnrollView: View {
         .cornerRadius(12)
     }
     
-    private func validationResultView(_ validation: BiometricValidation.ValidationResult) -> some View {
+    private func validationResultView(_ validation: EnhancedBiometricValidation.ValidationResult) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Validation Results")
@@ -464,7 +456,7 @@ struct EnrollView: View {
         }
     }
     
-    private func processCapturedSamples(_ samples: [HeartSample]) {
+    private func processCapturedSamples(_ samples: [HeartRateSample]) {
         let values = samples.map { $0.value }
         capturedSamples = values
         
@@ -500,7 +492,7 @@ struct EnrollView: View {
     
     private func processEnrollmentData(_ samples: [Double]) {
         // Enhanced validation
-        let validation = BiometricValidation.validate(samples)
+        let validation = EnhancedBiometricValidation.validate(samples)
         
         DispatchQueue.main.async {
             self.validationResult = validation
@@ -632,7 +624,7 @@ enum EnrollmentState: Equatable {
 // MARK: - Validation Details View
 
 struct ValidationDetailsView: View {
-    let validation: BiometricValidation.ValidationResult
+    let validation: EnhancedBiometricValidation.ValidationResult
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {

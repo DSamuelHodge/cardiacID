@@ -8,14 +8,6 @@
 import SwiftUI
 import HealthKit
 
-// MARK: - Type Aliases to Resolve Conflicts
-
-// Use the comprehensive EnhancedBiometricValidation from dedicated file
-typealias BiometricValidation = EnhancedBiometricValidation
-
-// Ensure we use the proper HeartRateSample from BiometricModels
-typealias HeartSample = HeartRateSample
-
 // MARK: - Authentication View
 
 struct AuthenticateView: View {
@@ -472,7 +464,7 @@ struct AuthenticateView: View {
         }
     }
     
-    private func processCapturedSamples(_ samples: [HeartSample]) {
+    private func processCapturedSamples(_ samples: [HeartRateSample]) {
         let values = samples.map { $0.value }
         capturedSamples = values
         
