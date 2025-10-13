@@ -265,3 +265,4 @@ struct AuthenticatedAppView: View {
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
+}
