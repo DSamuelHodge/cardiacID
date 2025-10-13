@@ -64,6 +64,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FB0C8A8A2E9C940000AE3538 /* WatchAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppTests.swift; sourceTree = "<group>"; };
+		FB0C8A8B2E9C941500AE3538 /* BUILD_FIX_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUILD_FIX_GUIDE.md; sourceTree = "<group>"; };
+		FB0C8A8C2E9C942300AE3538 /* MinimalWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalWatchApp.swift; sourceTree = "<group>"; };
+		FB0C8A8D2E9C97B800AE3538 /* BuildConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildConfiguration.swift; sourceTree = "<group>"; };
+		FB0C8A8E2E9C97CF00AE3538 /* FINAL_BUILD_FIX.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FINAL_BUILD_FIX.md; sourceTree = "<group>"; };
 		FB5169532E7F2EF800387BA8 /* CardiacID.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID.xctestplan; sourceTree = "<group>"; };
 		FB5169812E7F383E00387BA8 /* CardiacID_Watch_App_1.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CardiacID_Watch_App_1.xctestplan; sourceTree = "<group>"; };
 		FB5169832E7F41FC00387BA8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.5.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -202,6 +207,11 @@
 				FB54B92C2E94CDE900F2D2E9 /* FIX_LSTAT_ERROR_GUIDE.md */,
 				FB54B92D2E94CDFB00F2D2E9 /* fix_lstat_error.sh */,
 				FB54B92E2E94CE0E00F2D2E9 /* MANUAL_LSTAT_FIX.md */,
+				FB0C8A8A2E9C940000AE3538 /* WatchAppTests.swift */,
+				FB0C8A8B2E9C941500AE3538 /* BUILD_FIX_GUIDE.md */,
+				FB0C8A8C2E9C942300AE3538 /* MinimalWatchApp.swift */,
+				FB0C8A8D2E9C97B800AE3538 /* BuildConfiguration.swift */,
+				FB0C8A8E2E9C97CF00AE3538 /* FINAL_BUILD_FIX.md */,
 			);
 			sourceTree = "<group>";
 		};
