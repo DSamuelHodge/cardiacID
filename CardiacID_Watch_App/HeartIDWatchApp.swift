@@ -186,10 +186,10 @@ struct LoadingView: View {
                 .font(.system(size: 40))
                 .foregroundColor(.red)
                 .scaleEffect(animationPhase == 0 ? 1.0 : 1.2)
-                .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animationPhase)
+                .animation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true), value: animationPhase)
             
-            Text("HeartID")
-                .font(.headline)
+            Text("HeartID v0.4.1")
+                .font(.system(size: 28))
                 .fontWeight(.bold)
             
             Text("Initializing...")
