@@ -66,7 +66,7 @@ struct EnhancedBiometricValidation {
     
     // MARK: - HRV Calculation
     
-    private static func calculateHRV(_ samples: [Double]) -> HRVFeatures {
+    static func calculateHRV(_ samples: [Double]) -> HRVFeatures {
         guard samples.count > 1 else {
             return HRVFeatures(rmssd: 0, pnn50: 0, sdnn: 0, triangularIndex: 0, 
                              meanHR: 0, maxHR: 0, minHR: 0)

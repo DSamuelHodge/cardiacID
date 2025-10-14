@@ -104,8 +104,8 @@ class EnhancedAuthenticationService: ObservableObject {
     }
     
     /// Get HRV analysis
-    func getHRVAnalysis(for samples: [Double]) -> HRVCalculator.HRVFeatures {
-        return HRVCalculator.calculateHRV(samples)
+    func getHRVAnalysis(for samples: [Double]) -> EnhancedBiometricValidation.HRVFeatures {
+        return EnhancedBiometricValidation.calculateHRV(samples)
     }
     
     /// Performance test for biometric operations
@@ -135,8 +135,8 @@ extension AuthenticationService {
     }
     
     /// Get HRV analysis for samples
-    func getHRVAnalysis(for samples: [Double]) -> HRVCalculator.HRVFeatures {
-        return HRVCalculator.calculateHRV(samples)
+    func getHRVAnalysis(for samples: [Double]) -> EnhancedBiometricValidation.HRVFeatures {
+        return EnhancedBiometricValidation.calculateHRV(samples)
     }
     
     /// Run performance benchmark

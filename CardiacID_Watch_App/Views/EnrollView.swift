@@ -709,7 +709,7 @@ struct ValidationDetailsView: View {
         }
     }
     
-    private func hrvSection(_ hrv: HRVCalculator.HRVFeatures) -> some View {
+    private func hrvSection(_ hrv: BiometricValidation.HRVFeatures) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("HRV Analysis")
                 .font(.headline)
