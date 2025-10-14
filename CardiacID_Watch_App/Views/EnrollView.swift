@@ -69,7 +69,7 @@ struct EnrollView: View {
             .navigationTitle("Enrollment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         handleCancel()
                     }
@@ -662,7 +662,7 @@ struct ValidationDetailsView: View {
             .navigationTitle("Validation Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         dismiss()
                     }
@@ -825,3 +825,4 @@ extension AuthenticationService {
         }
     }
 }
+
