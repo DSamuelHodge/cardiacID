@@ -34,7 +34,7 @@ struct HeartID_WatchApp: App {
                     }
                     
                     // Fallback initialization after timeout
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                         if !appState.isInitialized {
                             debugLog.warning("⚠️ Forcing initialization due to timeout")
                             appState.forceInitialization()
@@ -54,12 +54,15 @@ final class AppState: ObservableObject {
     @Published var healthKitAvailable = false
     @Published var errorMessage: String?
     
+    private let minimumSplashDuration: TimeInterval = 5.0
+
     // Core services - single instances to avoid conflicts
     let dataManager = DataManager.shared
     let authenticationService = AuthenticationService()
     let healthKitService = HealthKitService()
     
     private var initializationTask: Task<Void, Never>?
+    private var _splashStartReference: Date? = nil
     
     init() {
         debugLog.info("🔧 AppState initializing")
@@ -67,6 +70,9 @@ final class AppState: ObservableObject {
     
     func initialize() async {
         guard !isInitialized else { return }
+        
+        let splashStart = Date()
+        _splashStartReference = splashStart
         
         debugLog.info("🔄 Starting app initialization")
         
@@ -105,6 +111,9 @@ final class AppState: ObservableObject {
             // Set up service connections
             authenticationService.setHealthKitService(healthKitService)
             
+            // Give HealthKit a brief window to be ready
+            try? await Task.sleep(nanoseconds: UInt64(0.5 * 1_000_000_000))
+            
             // Check authorization status
             let result = await healthKitService.ensureAuthorization()
             switch result {
@@ -135,6 +144,17 @@ final class AppState: ObservableObject {
     }
     
     private func finalizeInitialization() async {
+        // Ensure loading/entry screen is visible for at least the minimum duration
+        let elapsed = Date().timeIntervalSinceReferenceDate
+        // Use Task.sleep for precise delay if needed
+        if let start = _splashStartReference {
+            let delta = Date().timeIntervalSince(start)
+            if delta < minimumSplashDuration {
+                let remaining = minimumSplashDuration - delta
+                try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000))
+            }
+        }
+        
         // Mark as initialized
         isInitialized = true
         
@@ -278,3 +298,4 @@ struct AuthenticatedAppView: View {
         }
     }
 }
+

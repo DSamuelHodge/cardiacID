@@ -33,6 +33,7 @@ struct EnrollView: View {
     @State private var capturedSamples: [Double] = []
     @State private var validationResult: BiometricValidation.ValidationResult?
     @State private var showingValidationDetails = false
+    @State private var showingCancelConfirm = false
     
     private let captureDuration: TimeInterval = 12.0
     
@@ -90,6 +91,23 @@ struct EnrollView: View {
             if let validation = validationResult {
                 ValidationDetailsView(validation: validation)
             }
+        }
+        .confirmationDialog(
+            "Enrollment failed. What would you like to do?",
+            isPresented: $showingCancelConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Restart Enrollment", role: .none) {
+                restartInitialEnrollment()
+            }
+            Button("Go to Menu", role: .cancel) {
+                // Dismiss back to menu
+                if enrollmentState == .capturing { healthKitService.stopHeartRateCapture() }
+                stopProcessingAnimation()
+                dismiss()
+            }
+        } message: {
+            Text("You can restart the enrollment now or return to the menu.")
         }
         .onAppear {
             setupInitialState()
@@ -244,25 +262,44 @@ struct EnrollView: View {
     }
     
     private var actionButtonView: some View {
-        Button(action: handlePrimaryAction) {
-            HStack {
-                if enrollmentState == .capturing || enrollmentState == .processing {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Image(systemName: buttonIcon)
+        VStack(spacing: 12) {
+            Button(action: handlePrimaryAction) {
+                HStack {
+                    if enrollmentState == .capturing || enrollmentState == .processing {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(systemName: buttonIcon)
+                    }
+                    
+                    Text(buttonText)
+                        .fontWeight(.medium)
                 }
-                
-                Text(buttonText)
-                    .fontWeight(.medium)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .background(buttonColor)
+                .cornerRadius(12)
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity, minHeight: 44)
-            .background(buttonColor)
-            .cornerRadius(12)
+            .disabled(isButtonDisabled)
+            
+            if enrollmentState == .failed {
+                Button(action: {
+                    // Show confirmation dialog instead of immediate restart
+                    showingCancelConfirm = true
+                }) {
+                    HStack {
+                        Image(systemName: "xmark.circle")
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(Color.red)
+                    .cornerRadius(12)
+                }
+            }
         }
-        .disabled(isButtonDisabled)
     }
     
     private var instructionsView: some View {
@@ -582,12 +619,33 @@ struct EnrollView: View {
         errorMessage = nil
     }
     
+    private func restartInitialEnrollment() {
+        // Stop any ongoing activity
+        if enrollmentState == .capturing {
+            healthKitService.stopHeartRateCapture()
+        }
+        stopProcessingAnimation()
+        // Clear any error state and reset
+        showingError = false
+        errorMessage = nil
+        // Reset state to initial and immediately start enrollment again
+        resetEnrollment()
+        // Optionally re-check HealthKit before starting
+        Task { await checkHealthKitAuthorization() }
+        // Start fresh enrollment
+        startEnrollment()
+    }
+    
     private func handleCancel() {
+        if enrollmentState == .failed {
+            // Ask user to Restart or go to Menu
+            showingCancelConfirm = true
+            return
+        }
         // Stop any ongoing capture
         if enrollmentState == .capturing {
             healthKitService.stopHeartRateCapture()
         }
-        
         stopProcessingAnimation()
         dismiss()
     }
